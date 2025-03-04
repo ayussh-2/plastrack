@@ -5,8 +5,4 @@ const router = Router();
 
 router.use("/users", userRoutes);
 
-router.get("/", (req, res) => {
-    res.status(200).json({ status: "ok" });
-});
-
 export default router;

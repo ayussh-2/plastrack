@@ -26,6 +26,10 @@ app.use("/api", apiRoutes);
 
 app.use(errorHandler);
 
+app.use("/", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
+});
+
 app.use((req, res) => {
     res.status(404).json({
         success: false,
