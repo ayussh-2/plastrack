@@ -37,6 +37,8 @@ definePageMeta({
 
 const authStore = useAuthStore();
 
+console.log(authStore.user);
+
 const handleLogout = async () => {
     try {
         await authStore.logout();

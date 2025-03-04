@@ -26,15 +26,15 @@ app.use("/api", apiRoutes);
 
 app.use(errorHandler);
 
-app.use("/", (req, res) => {
-    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
-});
-
 app.use((req, res) => {
     res.status(404).json({
         success: false,
         message: "API endpoint not found",
     });
+});
+
+app.use("/", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
 });
 
 export default app;

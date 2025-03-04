@@ -3,6 +3,16 @@
         <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
         <form @submit.prevent="handleRegister" class="space-y-4">
             <div>
+                <label class="block mb-2">Name</label>
+                <input
+                    v-model="name"
+                    type="text"
+                    required
+                    class="w-full px-3 py-2 border rounded-lg"
+                    placeholder="Enter your name"
+                />
+            </div>
+            <div>
                 <label class="block mb-2">Email</label>
                 <input
                     v-model="email"
@@ -52,11 +62,12 @@
 definePageMeta({
     middleware: ["auth"],
 });
-
+const name = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const authStore = useAuthStore();
+const { post } = useApi();
 
 const handleRegister = async () => {
     if (password.value !== confirmPassword.value) {
@@ -66,7 +77,13 @@ const handleRegister = async () => {
 
     try {
         await authStore.register(email.value, password.value);
-        await navigateTo("/profile");
+        await post("/users/register", {
+            firebaseId: authStore.user.uid,
+            email: email.value,
+            name: name.value,
+        });
+
+        await navigateTo("/dashboard");
     } catch (error) {
         console.error("Registration failed", error);
     }

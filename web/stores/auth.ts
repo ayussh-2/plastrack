@@ -22,7 +22,10 @@ export const useAuthStore = defineStore("auth", {
     actions: {
         async initAuth() {
             return new Promise<void>((resolve) => {
+                console.log("Initializing auth store");
+
                 const { getAuthInstance } = useFirebaseAuth();
+
                 const auth = getAuthInstance();
                 setPersistence(auth, browserLocalPersistence).catch((error) => {
                     console.error("Auth persistence error:", error);
