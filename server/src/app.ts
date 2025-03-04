@@ -22,7 +22,7 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/", apiRoutes);
+app.use("/api", apiRoutes);
 
 app.use(errorHandler);
 

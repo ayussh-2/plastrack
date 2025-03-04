@@ -9,10 +9,7 @@
         "start": "bun run dist/index.js",
         "prisma:generate": "prisma generate",
         "prisma:migrate": "prisma migrate dev",
-        "prisma:studio": "prisma studio",
-        "docker:up": "docker-compose up -d",
-        "docker:down": "docker-compose down",
-        "docker:logs": "docker-compose logs -f"
+        "prisma:studio": "prisma studio"
     },
     "devDependencies": {
         "@types/bun": "latest",
@@ -37,5 +34,6 @@
         "firebase-admin": "^13.1.0",
         "helmet": "^8.0.0",
         "morgan": "^1.10.0"
-    }
+    },
+    "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
 }

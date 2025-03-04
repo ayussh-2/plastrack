@@ -51,7 +51,7 @@ export class UserService {
         return user;
     }
 
-    async createUserIfNotExists(
+    async createUser(
         firebaseId: string,
         email: string,
         name?: string,

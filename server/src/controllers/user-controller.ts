@@ -8,7 +8,6 @@ export const userController = {
     getMe: asyncHandler(async (req: Request, res: Response) => {
         const userId = req.user!.id;
         const user = await userService.getUserById(userId);
-
         return handleSuccess(res, user, "User profile retrieved successfully");
     }),
 
@@ -40,5 +39,17 @@ export const userController = {
         const user = await userService.getUserById(userId);
 
         return handleSuccess(res, user, "User retrieved successfully");
+    }),
+
+    createUser: asyncHandler(async (req: Request, res: Response) => {
+        const { firebaseId, email, name, profilePicture } = req.body;
+        const user = await userService.createUser(
+            firebaseId,
+            email,
+            name,
+            profilePicture
+        );
+
+        return handleSuccess(res, user, "User created successfully", 201);
     }),
 };
