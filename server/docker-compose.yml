@@ -1,0 +1,40 @@
+services:
+    postgres:
+        image: postgres:15
+        container_name: postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: app_db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+    prisma-studio:
+        build: .
+        container_name: prisma-studio
+        restart: always
+        ports:
+            - "5555:5555"
+        depends_on:
+            - postgres
+        environment:
+            DATABASE_URL: postgresql://postgres:postgres@postgres:5432/app_db?schema=public
+        command: bun run prisma:studio
+
+    server:
+        build: .
+        container_name: server
+        restart: always
+        ports:
+            - "${PORT:-4000}:4000"
+        depends_on:
+            - postgres
+        env_file:
+            - .env
+        command: bun run dev
+
+volumes:
+    postgres_data:

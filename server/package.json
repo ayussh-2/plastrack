@@ -1,0 +1,40 @@
+{
+    "name": "server",
+    "module": "src/index.ts",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "bun --watch src/index.ts",
+        "build": "bun build src/index.ts --outdir ./dist",
+        "start": "bun run dist/index.js",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:studio": "prisma studio",
+        "docker:up": "docker-compose up -d",
+        "docker:down": "docker-compose down"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/compression": "^1.7.5",
+        "@types/cors": "^2.8.17",
+        "@types/express": "^5.0.0",
+        "@types/morgan": "^1.9.9",
+        "@types/node": "^22.13.9",
+        "bun-types": "^1.2.4",
+        "prisma": "^6.4.1"
+    },
+    "peerDependencies": {
+        "typescript": "^5.8.2"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.4.1",
+        "compression": "^1.8.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "express-rate-limit": "^7.5.0",
+        "firebase-admin": "^13.1.0",
+        "helmet": "^8.0.0",
+        "morgan": "^1.10.0"
+    }
+}
