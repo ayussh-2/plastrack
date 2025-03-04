@@ -1,422 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>OceanBeacon - Technical Stack</title>
-        <style>
-            body {
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                max-width: 900px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #f9f9f9;
-            }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OceanBeacon - Technical Stack</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
 
-            header {
-                text-align: center;
-                padding: 20px 0;
-                margin-bottom: 40px;
-                background-color: #0077b6;
-                color: white;
-                border-radius: 8px;
-            }
+      header {
+        text-align: center;
+        padding: 20px 0;
+        margin-bottom: 40px;
+        background-color: #0077b6;
+        color: white;
+        border-radius: 8px;
+      }
 
-            h1,
-            h2,
-            h3,
-            h4 {
-                color: #0077b6;
-            }
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: #0077b6;
+      }
 
-            header h1 {
-                color: white;
-            }
+      header h1 {
+        color: white;
+      }
 
-            .container {
-                background-color: white;
-                padding: 30px;
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-            .next-btn {
-                display: inline-block;
-                background-color: #0077b6;
-                color: white;
-                border: none;
-                padding: 12px 24px;
-                font-size: 16px;
-                border-radius: 4px;
-                cursor: pointer;
-                margin: 10px;
-                transition: background-color 0.3s;
-                text-decoration: none;
-                text-align: center;
-            }
+      .next-btn {
+        display: inline-block;
+        background-color: #0077b6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        text-align: center;
+      }
 
-            .next-btn:hover {
-                background-color: #005b8a;
-            }
+      .next-btn:hover {
+        background-color: #005b8a;
+      }
 
-            .back-btn {
-                background-color: #6c757d;
-            }
+      .back-btn {
+        background-color: #6c757d;
+      }
 
-            .back-btn:hover {
-                background-color: #5a6268;
-            }
+      .back-btn:hover {
+        background-color: #5a6268;
+      }
 
-            section {
-                margin-bottom: 30px;
-            }
+      section {
+        margin-bottom: 30px;
+      }
 
-            ul {
-                padding-left: 20px;
-            }
+      ul {
+        padding-left: 20px;
+      }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-            }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
 
-            table,
-            th,
-            td {
-                border: 1px solid #ddd;
-            }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
 
-            th,
-            td {
-                padding: 12px;
-                text-align: left;
-            }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
 
-            th {
-                background-color: #f2f2f2;
-            }
+      th {
+        background-color: #f2f2f2;
+      }
 
-            .highlight {
-                background-color: #e6f7ff;
-                padding: 15px;
-                border-left: 4px solid #0077b6;
-                margin: 20px 0;
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <h1>OceanBeacon</h1>
-            <p>Citizen Science Platform for Marine Pollution Reporting</p>
-        </header>
+      .highlight {
+        background-color: #e6f7ff;
+        padding: 15px;
+        border-left: 4px solid #0077b6;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>OceanBeacon</h1>
+      <p>Citizen Science Platform for Marine Pollution Reporting</p>
+    </header>
 
-        <div class="container">
-            <h2>OceanBeacon: Technical Stack & Implementation</h2>
+    <div class="container">
+      <h2>OceanBeacon: Technical Stack & Implementation</h2>
 
-            <section id="tech-overview">
-                <h3>Technology Overview</h3>
-                <p>
-                    OceanBeacon leverages a modern, cloud-native architecture
-                    with Google ecosystem integration to provide a scalable,
-                    responsive platform for marine pollution reporting. Our
-                    stack is designed for rapid development while maintaining
-                    future extensibility.
-                </p>
+      <section id="tech-overview">
+        <h3>Technology Overview</h3>
+        <p>
+          OceanBeacon leverages a modern, cloud-native architecture with Google
+          ecosystem integration to provide a scalable, responsive platform for
+          marine pollution reporting. Our stack is designed for rapid
+          development while maintaining future extensibility.
+        </p>
 
-                <div class="highlight">
-                    <p>
-                        <strong>Development Challenge:</strong> Maximize use of
-                        Google Cloud products while maintaining a flexible,
-                        modern architecture.
-                    </p>
-                </div>
-            </section>
-
-            <section id="frontend-stack">
-                <h3>Frontend Technologies</h3>
-
-                <h4>Web Application</h4>
-                <ul>
-                    <li><strong>Framework:</strong> Vue.js with Nuxt.js</li>
-                    <li>
-                        <strong>Benefits:</strong>
-                        <ul>
-                            <li>
-                                Server-side rendering for improved SEO and
-                                performance
-                            </li>
-                            <li>
-                                Automatic code splitting for faster page loads
-                            </li>
-                            <li>
-                                Vue's reactive data binding for responsive UI
-                            </li>
-                            <li>Progressive Web App capabilities</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <strong>UI Components:</strong> Vuetify (Material
-                        Design)
-                    </li>
-                    <li><strong>State Management:</strong> Pinia</li>
-                    <li>
-                        <strong>Maps Integration:</strong> Google Maps
-                        JavaScript API
-                    </li>
-                </ul>
-
-                <h4>Mobile Application</h4>
-                <ul>
-                    <li><strong>Framework:</strong> Flutter</li>
-                    <li>
-                        <strong>Benefits:</strong>
-                        <ul>
-                            <li>
-                                Cross-platform development (iOS & Android from
-                                single codebase)
-                            </li>
-                            <li>Native-like performance</li>
-                            <li>Rich widget library</li>
-                            <li>Offline capabilities</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <strong>State Management:</strong> Provider + Riverpod
-                    </li>
-                    <li>
-                        <strong>Maps Integration:</strong> Google Maps Flutter
-                        plugin
-                    </li>
-                    <li>
-                        <strong>Camera Access:</strong> Flutter Camera plugin
-                    </li>
-                </ul>
-            </section>
-
-            <section id="backend-stack">
-                <h3>Backend Technologies</h3>
-
-                <h4>API Server</h4>
-                <ul>
-                    <li><strong>Framework:</strong> Express.js (Node.js)</li>
-                    <li><strong>ORM:</strong> Prisma</li>
-                    <li>
-                        <strong>Database:</strong> PostgreSQL (with PostGIS
-                        extension for geospatial data)
-                    </li>
-                    <li><strong>Hosting:</strong> Google Cloud Run</li>
-                    <li><strong>API Documentation:</strong> Swagger UI</li>
-                </ul>
-
-                <h4>Authentication</h4>
-                <ul>
-                    <li><strong>Service:</strong> Firebase Authentication</li>
-                    <li>
-                        <strong>Features:</strong>
-                        <ul>
-                            <li>Email/password authentication</li>
-                            <li>Social login (Google, Facebook)</li>
-                            <li>JWT token management</li>
-                            <li>Security rules</li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <h4>Storage</h4>
-                <ul>
-                    <li>
-                        <strong>Media Storage:</strong> Google Cloud Storage
-                    </li>
-                    <li>
-                        <strong>Database:</strong> Google Cloud SQL (PostgreSQL)
-                    </li>
-                    <li>
-                        <strong>Caching:</strong> Redis on Google Cloud
-                        Memorystore
-                    </li>
-                </ul>
-            </section>
-
-            <section id="ai-ml-integration">
-                <h3>AI/ML Integration</h3>
-
-                <p>
-                    For pollution classification and validation, we'll implement
-                    a tiered approach:
-                </p>
-
-                <h4>Phase 1 (MVP - 2 Weeks)</h4>
-                <ul>
-                    <li>
-                        <strong>Google Vision API</strong> for basic image
-                        classification and inappropriate content filtering
-                    </li>
-                    <li>Manual verification by administrators</li>
-                    <li>Simple rule-based validation</li>
-                </ul>
-
-                <h4>Phase 2 (Post-MVP)</h4>
-                <ul>
-                    <li>
-                        <strong>Custom TensorFlow.js model</strong> for
-                        pollution-specific classification
-                    </li>
-                    <li>
-                        Training data generated from validated user submissions
-                    </li>
-                    <li>Deployment on Google Cloud AI Platform</li>
-                    <li>
-                        Integration of Google AutoML for continuous model
-                        improvement
-                    </li>
-                </ul>
-            </section>
-
-            <section id="google-ecosystem">
-                <h3>Google Ecosystem Integration</h3>
-
-                <p>
-                    We'll maximize use of Google products for seamless
-                    integration and scalability:
-                </p>
-
-                <table>
-                    <tr>
-                        <th>Component</th>
-                        <th>Google Product</th>
-                        <th>Implementation</th>
-                    </tr>
-                    <tr>
-                        <td>Authentication</td>
-                        <td>Firebase Authentication</td>
-                        <td>User management, social login, security</td>
-                    </tr>
-                    <tr>
-                        <td>Database</td>
-                        <td>Cloud SQL</td>
-                        <td>PostgreSQL with PostGIS extension</td>
-                    </tr>
-                    <tr>
-                        <td>Media Storage</td>
-                        <td>Cloud Storage</td>
-                        <td>Pollution images and videos</td>
-                    </tr>
-                    <tr>
-                        <td>Hosting</td>
-                        <td>Firebase Hosting + Cloud Run</td>
-                        <td>Frontend and backend deployment</td>
-                    </tr>
-                    <tr>
-                        <td>Maps</td>
-                        <td>Google Maps Platform</td>
-                        <td>Visualization, geolocation, geocoding</td>
-                    </tr>
-                    <tr>
-                        <td>Analytics</td>
-                        <td>Google Analytics</td>
-                        <td>User behavior, feature usage</td>
-                    </tr>
-                    <tr>
-                        <td>Image Analysis</td>
-                        <td>Google Vision API</td>
-                        <td>Content classification, safety detection</td>
-                    </tr>
-                    <tr>
-                        <td>Push Notifications</td>
-                        <td>Firebase Cloud Messaging</td>
-                        <td>User alerts, nearby pollution notices</td>
-                    </tr>
-                    <tr>
-                        <td>CI/CD</td>
-                        <td>Google Cloud Build</td>
-                        <td>Automated testing and deployment</td>
-                    </tr>
-                </table>
-            </section>
-
-            <section id="technical-challenges">
-                <h3>Technical Challenges & Solutions</h3>
-
-                <h4>Challenge 1: Offline Functionality</h4>
-                <p>
-                    <strong>Solution:</strong> Implement service workers in the
-                    web app and local storage in Flutter to queue submissions
-                    when offline, syncing when connectivity is restored.
-                </p>
-
-                <h4>Challenge 2: AI Model Integration</h4>
-                <p>
-                    <strong>Solution:</strong> Start with Google Vision API for
-                    MVP while collecting training data. Later develop custom
-                    model using TensorFlow and Google AutoML.
-                </p>
-
-                <h4>Challenge 3: Geospatial Queries</h4>
-                <p>
-                    <strong>Solution:</strong> Use PostGIS extension with
-                    PostgreSQL on Google Cloud SQL for efficient spatial
-                    queries. Implement caching for common query patterns.
-                </p>
-
-                <h4>Challenge 4: Cross-Platform Consistency</h4>
-                <p>
-                    <strong>Solution:</strong> Develop shared API contracts and
-                    validation logic. Implement feature flags to manage feature
-                    parity between web and mobile applications.
-                </p>
-
-                <h4>Challenge 5: Media Storage Optimization</h4>
-                <p>
-                    <strong>Solution:</strong> Use Google Cloud Storage with
-                    image resizing and optimization. Implement efficient
-                    client-side compression before upload.
-                </p>
-            </section>
-
-            <section id="development-approach">
-                <h3>Development Approach</h3>
-
-                <h4>Week 1 Technical Focus</h4>
-                <ul>
-                    <li>Set up project repositories and CI/CD pipelines</li>
-                    <li>Configure Google Cloud infrastructure</li>
-                    <li>Implement core API endpoints and database schema</li>
-                    <li>
-                        Develop basic frontend components for web and mobile
-                    </li>
-                    <li>Establish Firebase Authentication integration</li>
-                </ul>
-
-                <h4>Week 2 Technical Focus</h4>
-                <ul>
-                    <li>Implement Google Maps integration</li>
-                    <li>
-                        Integrate Google Vision API for basic image analysis
-                    </li>
-                    <li>Develop admin dashboard for report management</li>
-                    <li>Optimize performance and responsiveness</li>
-                    <li>Implement analytics and monitoring</li>
-                </ul>
-            </section>
-
-            <div
-                class="button-container"
-                style="
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: 30px;
-                "
-            >
-                <a href="index.html" class="next-btn back-btn"
-                    >Simple Overview</a
-                >
-                <a href="complete.html" class="next-btn"
-                    >Complete Documentation</a
-                >
-            </div>
+        <div class="highlight">
+          <p>
+            <strong>Development Challenge:</strong> Maximize use of Google Cloud
+            products while maintaining a flexible, modern architecture.
+          </p>
         </div>
-    </body>
+      </section>
+
+      <section id="frontend-stack">
+        <h3>Frontend Technologies</h3>
+
+        <h4>Web Application</h4>
+        <ul>
+          <li><strong>Framework:</strong> Vue.js with Nuxt.js</li>
+          <li>
+            <strong>Benefits:</strong>
+            <ul>
+              <li>Server-side rendering for improved SEO and performance</li>
+              <li>Automatic code splitting for faster page loads</li>
+              <li>Vue's reactive data binding for responsive UI</li>
+              <li>Progressive Web App capabilities</li>
+            </ul>
+          </li>
+          <li><strong>UI Components:</strong> Vuetify (Material Design)</li>
+          <li><strong>State Management:</strong> Pinia</li>
+          <li><strong>Maps Integration:</strong> Google Maps JavaScript API</li>
+        </ul>
+
+        <h4>Mobile Application</h4>
+        <ul>
+          <li><strong>Framework:</strong> Flutter</li>
+          <li>
+            <strong>Benefits:</strong>
+            <ul>
+              <li>
+                Cross-platform development (iOS & Android from single codebase)
+              </li>
+              <li>Native-like performance</li>
+              <li>Rich widget library</li>
+              <li>Offline capabilities</li>
+            </ul>
+          </li>
+          <li><strong>State Management:</strong> Provider + Riverpod</li>
+          <li><strong>Maps Integration:</strong> Google Maps Flutter plugin</li>
+          <li><strong>Camera Access:</strong> Flutter Camera plugin</li>
+        </ul>
+      </section>
+
+      <section id="backend-stack">
+        <h3>Backend Technologies</h3>
+
+        <h4>API Server</h4>
+        <ul>
+          <li><strong>Framework:</strong> Express.js (Node.js)</li>
+          <li><strong>ORM:</strong> Prisma</li>
+          <li>
+            <strong>Database:</strong> PostgreSQL (with PostGIS extension for
+            geospatial data)
+          </li>
+          <li><strong>Hosting:</strong> Google Cloud Run</li>
+          <li><strong>API Documentation:</strong> Swagger UI</li>
+        </ul>
+
+        <h4>Authentication</h4>
+        <ul>
+          <li><strong>Service:</strong> Firebase Authentication</li>
+          <li>
+            <strong>Features:</strong>
+            <ul>
+              <li>Email/password authentication</li>
+              <li>Social login (Google, Facebook)</li>
+              <li>JWT token management</li>
+              <li>Security rules</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Storage</h4>
+        <ul>
+          <li><strong>Media Storage:</strong> Google Cloud Storage</li>
+          <li><strong>Database:</strong> Google Cloud SQL (PostgreSQL)</li>
+          <li><strong>Caching:</strong> Redis on Google Cloud Memorystore</li>
+        </ul>
+      </section>
+
+      <section id="ai-ml-integration">
+        <h3>AI/ML Integration</h3>
+
+        <p>
+          For pollution classification and validation, we'll implement a tiered
+          approach:
+        </p>
+
+        <h4>Phase 1 (MVP - 2 Weeks)</h4>
+        <ul>
+          <li>
+            <strong>Google Vision API</strong> for basic image classification
+            and inappropriate content filtering
+          </li>
+          <li>Manual verification by administrators</li>
+          <li>Simple rule-based validation</li>
+        </ul>
+
+        <h4>Phase 2 (Post-MVP)</h4>
+        <ul>
+          <li>
+            <strong>Custom TensorFlow.js model</strong> for pollution-specific
+            classification
+          </li>
+          <li>Training data generated from validated user submissions</li>
+          <li>Deployment on Google Cloud AI Platform</li>
+          <li>Integration of Google AutoML for continuous model improvement</li>
+        </ul>
+      </section>
+
+      <section id="google-ecosystem">
+        <h3>Google Ecosystem Integration</h3>
+
+        <p>
+          We'll maximize use of Google products for seamless integration and
+          scalability:
+        </p>
+
+        <table>
+          <tr>
+            <th>Component</th>
+            <th>Google Product</th>
+            <th>Implementation</th>
+          </tr>
+          <tr>
+            <td>Authentication</td>
+            <td>Firebase Authentication</td>
+            <td>User management, social login, security</td>
+          </tr>
+          <tr>
+            <td>Database</td>
+            <td>Cloud SQL</td>
+            <td>PostgreSQL with PostGIS extension</td>
+          </tr>
+          <tr>
+            <td>Media Storage</td>
+            <td>Cloud Storage</td>
+            <td>Pollution images and videos</td>
+          </tr>
+          <tr>
+            <td>Hosting</td>
+            <td>Firebase Hosting + Cloud Run</td>
+            <td>Frontend and backend deployment</td>
+          </tr>
+          <tr>
+            <td>Maps</td>
+            <td>Google Maps Platform</td>
+            <td>Visualization, geolocation, geocoding</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td>Google Analytics</td>
+            <td>User behavior, feature usage</td>
+          </tr>
+          <tr>
+            <td>Image Analysis</td>
+            <td>Google Vision API</td>
+            <td>Content classification, safety detection</td>
+          </tr>
+          <tr>
+            <td>Push Notifications</td>
+            <td>Firebase Cloud Messaging</td>
+            <td>User alerts, nearby pollution notices</td>
+          </tr>
+          <tr>
+            <td>CI/CD</td>
+            <td>Google Cloud Build</td>
+            <td>Automated testing and deployment</td>
+          </tr>
+        </table>
+      </section>
+
+      <section id="technical-challenges">
+        <h3>Technical Challenges & Solutions</h3>
+
+        <h4>Challenge 1: Offline Functionality</h4>
+        <p>
+          <strong>Solution:</strong> Implement service workers in the web app
+          and local storage in Flutter to queue submissions when offline,
+          syncing when connectivity is restored.
+        </p>
+
+        <h4>Challenge 2: AI Model Integration</h4>
+        <p>
+          <strong>Solution:</strong> Start with Google Vision API for MVP while
+          collecting training data. Later develop custom model using TensorFlow
+          and Google AutoML.
+        </p>
+
+        <h4>Challenge 3: Geospatial Queries</h4>
+        <p>
+          <strong>Solution:</strong> Use PostGIS extension with PostgreSQL on
+          Google Cloud SQL for efficient spatial queries. Implement caching for
+          common query patterns.
+        </p>
+
+        <h4>Challenge 4: Cross-Platform Consistency</h4>
+        <p>
+          <strong>Solution:</strong> Develop shared API contracts and validation
+          logic. Implement feature flags to manage feature parity between web
+          and mobile applications.
+        </p>
+
+        <h4>Challenge 5: Media Storage Optimization</h4>
+        <p>
+          <strong>Solution:</strong> Use Google Cloud Storage with image
+          resizing and optimization. Implement efficient client-side compression
+          before upload.
+        </p>
+      </section>
+
+      <section id="development-approach">
+        <h3>Development Approach</h3>
+
+        <h4>Week 1 Technical Focus</h4>
+        <ul>
+          <li>Set up project repositories and CI/CD pipelines</li>
+          <li>Configure Google Cloud infrastructure</li>
+          <li>Implement core API endpoints and database schema</li>
+          <li>Develop basic frontend components for web and mobile</li>
+          <li>Establish Firebase Authentication integration</li>
+        </ul>
+
+        <h4>Week 2 Technical Focus</h4>
+        <ul>
+          <li>Implement Google Maps integration</li>
+          <li>Integrate Google Vision API for basic image analysis</li>
+          <li>Develop admin dashboard for report management</li>
+          <li>Optimize performance and responsiveness</li>
+          <li>Implement analytics and monitoring</li>
+        </ul>
+      </section>
+
+      <div
+        class="button-container"
+        style="display: flex; justify-content: space-between; margin-top: 30px"
+      >
+        <a href="index.html" class="next-btn back-btn">Simple Overview</a>
+        <a href="complete.html" class="next-btn">Complete Documentation</a>
+        <a href="stats.html" class="next-btn back-btn">Supporting Stats</a>
+      </div>
+    </div>
+  </body>
 </html>
