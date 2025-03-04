@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     vite: {
         plugins: [tailwindcss()],
     },
+    plugins: ["~/plugins/firebase.ts"],
     modules: [
         [
             "@pinia/nuxt",
@@ -23,6 +24,7 @@ export default defineNuxtConfig({
             firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET,
             firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
             firebaseAppId: process.env.FIREBASE_APP_ID,
+            firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID,
         },
     },
 });

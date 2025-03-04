@@ -5,7 +5,11 @@ import {
     signOut,
     updateProfile,
     type User,
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence,
 } from "firebase/auth";
+import { useCookie } from "nuxt/app";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -13,9 +17,31 @@ export const useAuthStore = defineStore("auth", {
         isAuthenticated: false,
         loading: false,
         error: null as string | null,
+        initialized: false,
     }),
 
     actions: {
+        async initAuth() {
+            return new Promise<void>((resolve) => {
+                const { getAuthInstance } = useFirebaseAuth();
+                const auth = getAuthInstance();
+                setPersistence(auth, browserLocalPersistence).catch((error) => {
+                    console.error("Auth persistence error:", error);
+                });
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        this.user = user;
+                        this.isAuthenticated = true;
+                    } else {
+                        this.user = null;
+                        this.isAuthenticated = false;
+                    }
+                    this.initialized = true;
+                    resolve();
+                });
+            });
+        },
+
         async login(email: string, password: string) {
             this.loading = true;
             this.error = null;
@@ -32,10 +58,10 @@ export const useAuthStore = defineStore("auth", {
 
                 this.user = userCredential.user;
                 this.isAuthenticated = true;
+
                 return userCredential.user;
             } catch (error: any) {
                 this.error = this.formatErrorMessage(error);
-                this.isAuthenticated = false;
                 throw error;
             } finally {
                 this.loading = false;
@@ -56,13 +82,13 @@ export const useAuthStore = defineStore("auth", {
                     password
                 );
 
-                // Update profile if display name is provided
                 if (displayName && userCredential.user) {
                     await updateProfile(userCredential.user, { displayName });
                 }
 
                 this.user = userCredential.user;
                 this.isAuthenticated = true;
+
                 return userCredential.user;
             } catch (error: any) {
                 this.error = this.formatErrorMessage(error);
