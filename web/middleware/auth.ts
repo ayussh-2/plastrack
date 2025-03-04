@@ -4,7 +4,6 @@ export default defineNuxtRouteMiddleware((to) => {
     const authStore = useAuthStore();
     const loading = useState("auth:loading");
     const publicRoutes = ["/", "/login", "/register"];
-    console.log("auth middleware", loading.value, authStore.initialized);
     if (loading.value || !authStore.initialized) {
         return;
     }

@@ -8,7 +8,6 @@ export default defineNuxtPlugin(async ({ $pinia, app }) => {
     if (process.client) {
         try {
             await authStore.initAuth();
-            console.log("After initAuth call");
         } finally {
             loading.value = false;
         }
