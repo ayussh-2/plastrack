@@ -52,7 +52,7 @@
 definePageMeta({
     middleware: ["auth"],
 });
-
+const isAuthLoading = useState("auth:loading", () => true);
 const email = ref("");
 const password = ref("");
 const authStore = useAuthStore();

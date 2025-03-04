@@ -9,7 +9,6 @@ import {
     setPersistence,
     browserLocalPersistence,
 } from "firebase/auth";
-import { useCookie } from "nuxt/app";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -40,6 +39,9 @@ export const useAuthStore = defineStore("auth", {
                     resolve();
                 });
             });
+        },
+        setInitialized(value: boolean) {
+            this.initialized = value;
         },
 
         async login(email: string, password: string) {

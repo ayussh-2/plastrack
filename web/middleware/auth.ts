@@ -2,8 +2,12 @@ import { useAuthStore } from "~/stores/auth";
 
 export default defineNuxtRouteMiddleware((to) => {
     const authStore = useAuthStore();
+    const loading = useState("auth:loading");
     const publicRoutes = ["/", "/login", "/register"];
-    console.log(authStore.user);
+    console.log("auth middleware", loading.value, authStore.initialized);
+    if (loading.value || !authStore.initialized) {
+        return;
+    }
 
     if (!authStore.isAuthenticated && !publicRoutes.includes(to.path)) {
         return navigateTo("/login");
