@@ -11,7 +11,8 @@
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "prisma studio",
         "docker:up": "docker-compose up -d",
-        "docker:down": "docker-compose down"
+        "docker:down": "docker-compose down",
+        "docker:logs": "docker-compose logs -f"
     },
     "devDependencies": {
         "@types/bun": "latest",

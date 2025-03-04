@@ -1,16 +1,10 @@
 import { initializeApp, cert, ServiceAccount } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import prisma from "@/lib/prisma";
-import { env } from "@/config";
-
-const serviceAccount: ServiceAccount = {
-    projectId: env.firebase.projectId,
-    clientEmail: env.firebase.clientEmail,
-    privateKey: env.firebase.privateKey,
-};
+import serviceAccountJSON from "./cert.json";
 
 const app = initializeApp({
-    credential: cert(serviceAccount),
+    credential: cert(serviceAccountJSON as ServiceAccount),
 });
 
 export const auth = getAuth(app);

@@ -54,7 +54,8 @@ export class UserService {
     async createUserIfNotExists(
         firebaseId: string,
         email: string,
-        name?: string
+        name?: string,
+        profilePicture?: string
     ): Promise<IUser> {
         const existingUser = await prisma.user.findUnique({
             where: { firebaseId },
@@ -69,6 +70,7 @@ export class UserService {
                 firebaseId,
                 email,
                 name,
+                profilePicture,
             },
         });
     }
