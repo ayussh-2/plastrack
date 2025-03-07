@@ -7,9 +7,9 @@
         "dev": "bun --watch src/index.ts",
         "build": "bun build src/index.ts --outdir ./dist",
         "start": "bun run dist/index.js",
-        "prisma:generate": "prisma generate",
-        "prisma:migrate": "prisma migrate dev",
-        "prisma:studio": "prisma studio"
+        "generate": "prisma generate",
+        "migrate": "prisma migrate dev",
+        "studio": "prisma studio"
     },
     "devDependencies": {
         "@types/bun": "latest",

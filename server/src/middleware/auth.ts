@@ -24,7 +24,7 @@ export const authMiddleware = async (
 
         const token = authHeader.split("Bearer ")[1];
         const decodedToken = await verifyIdToken(token);
-        console.log(decodedToken);
+
         if (!decodedToken) {
             throw new AppError("Unauthorized - Invalid token", 401);
         }

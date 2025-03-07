@@ -3,6 +3,9 @@ export interface IUser {
     firebaseId: string;
     email: string;
     name: string | null;
+    phone: string | null;
+    city: string | null;
+    state: string | null;
     createdAt: Date;
     updatedAt: Date;
 }

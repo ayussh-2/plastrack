@@ -9,24 +9,19 @@ datasource db {
 
 model User {
   id                String    @id @default(uuid())
+  firebaseId       String    @unique
   email             String    @unique
   name              String
   phone             String?
   profilePicture    String?   @default("default-avatar.png")
   city              String
-  neighborhood      String?
+  state             String
   
   
   // System Fields
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   accountStatus     UserStatus @default(ACTIVE)
-  
-  // Relations
-  contributionStats   ContributionStats?
-  gamification        Gamification?
-  homeLocation        Location?
-  wasteReports        WasteReport[]
 
 }
 
@@ -34,178 +29,4 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   DEACTIVATED
-}
-
-model ContributionStats {
-  id                            String @id @default(uuid())
-  wasteReportsSubmitted         Int    @default(0)
-  verifiedReports               Int    @default(0)
-  totalWasteVolume              Float  @default(0) // in kilograms
-  potentialInfrastructureContribution Float @default(0) // in square meters
-  impactScore                   Float  @default(0)
-
-// Relation
-  userId                        String @unique
-  user                          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Gamification {
-  id            String    @id @default(uuid())
-  level         Int       @default(1)
-  points        Int       @default(0)
-  currentStreak Int       @default(0)
-  longestStreak Int       @default(0)
-  lastActivity  DateTime?
-  
-  // Relation
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-
-model Location {
-  id          String   @id @default(uuid())
-  latitude    Float
-  longitude   Float
-  
-  // Define the PostGIS geography point - requires extension
-  point       Unsupported("geography(Point, 4326)")
-  
-  // Relations
-  userId      String?  @unique
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wasteReportId String? @unique
-  wasteReport WasteReport? @relation(fields: [wasteReportId], references: [id], onDelete: Cascade)
-  
-}
-
-model WasteReport {
-  id               String    @id @default(uuid())
-  reportDate       DateTime  @default(now())
-  imageUrl         String[]
-  classificationId String?
-  verificationStatus VerificationStatus @default(PENDING)
-  verifiedBy       String[]
-  wasteVolume      Float?    // Estimated in kilograms
-  notes            String?
-  
-  // Relations
-  userId           String
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  location         Location?
-  classification   WasteClassification? @relation(fields: [classificationId], references: [id])
-  
-  // For infrastructure suitability
-  suitabilityScore Float?
-  potentialUses    InfrastructureType[]
-}
-
-model WasteClassification {
-  id              String @id @default(uuid())
-  name            String @unique
-  description     String
-  recyclable      Boolean
-  
-  // Material properties relevant for infrastructure use
-  densityRange    String?
-  durabilityScore Float?
-  processingDifficulty Float?
-  
-  // Relations
-  wasteReports    WasteReport[]
-}
-
-enum VerificationStatus {
-  PENDING
-  VERIFIED
-  REJECTED
-}
-
-model InfrastructureType {
-  id          String @id @default(uuid())
-  name        String @unique
-  description String
-  
-  // Relations
-  wasteReports WasteReport[]
-  
-  // Technical requirements
-  minimumDurabilityNeeded Float
-  requiredProperties      String[]
-}
-
-// For heat map generation
-model WasteHotspot {
-  id           String   @id @default(uuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  clusterSize  Int      @default(1) // Number of reports in this cluster
-  severityScore Float    @default(0)
-  
-  // PostGIS specific
-  area         Unsupported("geography(Polygon, 4326)")
-  centroid     Unsupported("geography(Point, 4326)")
-  
-  // Plain coordinates for easier access
-  latitude     Float
-  longitude    Float
-  radius       Float    // in meters
-}
-
-// For municipal integration
-model MunicipalNotification {
-  id             String   @id @default(uuid())
-  createdAt      DateTime @default(now())
-  status         NotificationStatus @default(PENDING)
-  priority       Int      @default(1) // 1-5 scale
-  description    String
-  wasteVolume    Float?   // Estimated in kilograms
-  addressDetails String
-  
-  // PostGIS specific
-  location       Unsupported("geography(Point, 4326)")
-  
-  // Municipal response tracking
-  assignedTo     String?
-  responseDate   DateTime?
-  resolutionDate DateTime?
-  feedback       String?
-}
-
-enum NotificationStatus {
-  PENDING
-  ASSIGNED
-  IN_PROGRESS
-  RESOLVED
-  REJECTED
-}
-
-model InfrastructureProject {
-  id              String   @id @default(uuid())
-  name            String
-  description     String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  status          ProjectStatus @default(PLANNING)
-  
-  coverage        Unsupported("geography(Polygon, 4326)")  
-  
-  estimatedMaterialNeeded  Float    // in kg
-  estimatedArea            Float    // in square meters
-  trafficDensity           Float?   // vehicles per hour
-  durabilityRequirement    Float    // years
-  wasteMaterialSuitability String[]
-  
-  plannedStartDate         DateTime?
-  plannedCompletionDate    DateTime?
-  actualStartDate          DateTime?
-  actualCompletionDate     DateTime?
-}
-
-enum ProjectStatus {
-  PLANNING
-  APPROVED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
 }

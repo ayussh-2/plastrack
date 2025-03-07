@@ -42,12 +42,21 @@ export const userController = {
     }),
 
     createUser: asyncHandler(async (req: Request, res: Response) => {
-        const { firebaseId, email, name, profilePicture } = req.body;
+        const {
+            firebase_id: firebaseId,
+            email,
+            name,
+            phone,
+            city,
+            state,
+        } = req.body;
         const user = await userService.createUser(
             firebaseId,
             email,
             name,
-            profilePicture
+            String(phone),
+            city,
+            state
         );
 
         return handleSuccess(res, user, "User created successfully", 201);

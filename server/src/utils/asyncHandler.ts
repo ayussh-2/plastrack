@@ -56,6 +56,9 @@ export const handleSuccess = (
 // Handle error responses
 export const handleError = (err: any, res: Response): Response => {
     // If it's our custom error
+
+    console.log("mubarak ho error hua hai: ", err);
+
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({
             success: false,
