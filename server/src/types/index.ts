@@ -21,7 +21,7 @@ export type TrashReport = {
     longitude: number;
     trashType?: string;
     severity: number;
-    timestamp: Date;
+    image?: string;
     userId?: string;
 };
 export interface HotspotData {

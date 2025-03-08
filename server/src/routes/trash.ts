@@ -6,5 +6,6 @@ const trash = trashController;
 
 router.get("/hotspots", trash.getHotspots);
 router.post("/generate", trash.createTrashReport);
+router.post("/generate-many", trash.createMultipleReports);
 
 export default router;

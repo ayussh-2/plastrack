@@ -8,6 +8,6 @@ const router = Router();
 
 router.use("/users", authMiddleware, userRoutes);
 router.use("/gemini", geminiRoutes);
-router.use("/trash", authMiddleware, trashRoutes);
+router.use("/trash", trashRoutes);
 
 export default router;

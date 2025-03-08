@@ -64,10 +64,12 @@ const initializeMap = async () => {
         });
 
         googleInstance.value = await loader.load();
+        console.log(props.geoLocation);
         const center = new googleInstance.value.maps.LatLng(
             props.geoLocation.lat,
             props.geoLocation.lng
         );
+        console.log(center);
         map.value = new googleInstance.value.maps.Map(
             document.getElementById("map"),
             {
@@ -97,16 +99,6 @@ watch(
     (newData) => {
         if (map.value && googleInstance.value) {
             renderHotspots(newData, googleInstance.value);
-        }
-    },
-    { deep: true }
-);
-
-watch(
-    () => props.geoLocation,
-    (newLocation) => {
-        if (map.value && newLocation) {
-            map.value.setCenter(newLocation);
         }
     },
     { deep: true }
@@ -214,14 +206,4 @@ onMounted(() => {
         initializeMap();
     }
 });
-
-watch(
-    () => props.geoLocation,
-    (newLocation) => {
-        if (newLocation && !map.value) {
-            console.log("Initializing map...", newLocation);
-            initializeMap();
-        }
-    }
-);
 </script>

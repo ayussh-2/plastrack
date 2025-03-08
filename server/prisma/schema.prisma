@@ -41,6 +41,7 @@ model TrashReport {
   longitude   Decimal   @db.Decimal(11, 8)
   trashType   String?
   severity    Int
+  image       String
   timestamp   DateTime  @default(now())
   user        User?     @relation(fields: [userId], references: [id])
   userId      String?

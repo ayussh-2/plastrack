@@ -10,6 +10,15 @@ export const trashController = {
         return handleSuccess(res, report, "Trash report created successfully");
     }),
 
+    createMultipleReports: asyncHandler(async (req: Request, res: Response) => {
+        const reports = await trashService.createMultipleReports(req.body);
+        return handleSuccess(
+            res,
+            reports,
+            "Module reports created successfully"
+        );
+    }),
+
     getHotspots: asyncHandler(async (req: Request, res: Response) => {
         const { days = 30, gridPrecision = 4 } = req.query;
         const hotspots = await trashService.getHotspots(

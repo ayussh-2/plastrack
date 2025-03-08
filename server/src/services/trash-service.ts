@@ -2,8 +2,14 @@ import prisma from "@/lib/prisma";
 import { TrashReport, HotspotData } from "../types";
 
 export class TrashService {
-    async createReport(data: Omit<TrashReport, "id" | "timestamp">) {
+    async createReport(data: Omit<TrashReport, "id">) {
         return await prisma.trashReport.create({
+            data,
+        });
+    }
+
+    async createMultipleReports(data: Omit<TrashReport, "id">[]) {
+        return await prisma.trashReport.createMany({
             data,
         });
     }
