@@ -14,3 +14,25 @@ export interface PaginationParams {
     page?: number;
     limit?: number;
 }
+
+export type TrashReport = {
+    id: number;
+    latitude: number;
+    longitude: number;
+    trashType?: string;
+    severity: number;
+    timestamp: Date;
+    userId?: string;
+};
+export interface HotspotData {
+    latGroup: number;
+    lngGroup: number;
+    reportCount: number;
+    severitySum: number;
+    reports: {
+        id: number;
+        trashType: string;
+        severity: number;
+        timestamp: Date;
+    }[];
+}
