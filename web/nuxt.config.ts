@@ -26,6 +26,7 @@ export default defineNuxtConfig({
             firebaseAppId: process.env.FIREBASE_APP_ID,
             firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID,
             apiBaseUrl: process.env.API_BASE_URL,
+            GOOGLE_MAPS_API_KEY: process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY,
         },
     },
 });

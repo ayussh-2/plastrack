@@ -2,7 +2,7 @@
     <nav class="bg-[#0a2540] shadow-md py-4">
         <div class="container mx-auto px-4 flex items-center justify-between">
             <router-link to="/" class="font-bold">
-                <span class="text-[#38bdf8] text-2xl">Ocean Beacon</span>
+                <span class="text-[#38bdf8] text-2xl">Trash2Way</span>
             </router-link>
             <button
                 class="lg:hidden text-white bg-[#38bdf8] p-2 rounded"
@@ -56,6 +56,13 @@
                             to="/dashboard"
                             class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
                             >Dashboard</router-link
+                        >
+                    </li>
+                    <li>
+                        <router-link
+                            to="/hotspot"
+                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
+                            >Hotspots</router-link
                         >
                     </li>
                 </ul>

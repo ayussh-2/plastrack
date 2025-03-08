@@ -11,7 +11,7 @@ export const trashController = {
     }),
 
     getHotspots: asyncHandler(async (req: Request, res: Response) => {
-        const { days, gridPrecision } = req.query;
+        const { days = 30, gridPrecision = 4 } = req.query;
         const hotspots = await trashService.getHotspots(
             Number(days),
             Number(gridPrecision)
