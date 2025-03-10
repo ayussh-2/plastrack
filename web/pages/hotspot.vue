@@ -41,7 +41,7 @@ function getGeoLocation() {
 async function getHotspots() {
     isLoading.value = true;
     try {
-        const { data } = await get("/trash/hotspots?days=30&gridPrecision=3");
+        const { data } = await get("/trash/hotspots");
         hotspotData.value = data;
 
         try {
