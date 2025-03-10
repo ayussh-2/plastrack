@@ -39,7 +39,7 @@
                     >
                 </div>
 
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 -space-y-2">
                     <span class="text-gradient">Plastic Waste</span> to
                     <br class="hidden sm:block" />
                     <span class="text-gradient">
