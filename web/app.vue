@@ -1,8 +1,10 @@
 <!-- app.vue -->
 <template>
-    <div>
+    <div class="flex flex-col min-h-screen">
         <Navbar />
-        <AuthLoading />
-        <NuxtPage />
+        <main class="py-20">
+            <NuxtPage />
+        </main>
+        <Footer />
     </div>
 </template>

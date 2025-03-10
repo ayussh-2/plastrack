@@ -1,72 +1,120 @@
 <template>
-    <nav class="bg-[#0a2540] shadow-md py-4">
-        <div class="container mx-auto px-4 flex items-center justify-between">
-            <router-link to="/" class="font-bold">
-                <span class="text-[#38bdf8] text-2xl">Trash2Way</span>
-            </router-link>
-            <button
-                class="lg:hidden text-white bg-[#38bdf8] p-2 rounded"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+    <nav
+        :class="[
+            'fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4',
+            isScrolled
+                ? 'bg-white/10 dark:bg-black/20 backdrop-blur-lg border-b border-white/10 shadow-sm'
+                : 'bg-transparent',
+        ]"
+    >
+        <div class="container flex items-center justify-between">
+            <NuxtLink to="/" class="flex items-center space-x-2">
+                <Icon
+                    name="lucide:recycle"
+                    class="text-waste2way-teal scale-150"
+                />
+                <span class="font-display font-bold text-xl">Waste2Way</span>
+            </NuxtLink>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center space-x-8">
+                <NuxtLink
+                    v-for="item in navItems"
+                    :key="item.name"
+                    :to="item.path"
+                    :class="[
+                        'font-medium transition-colors hover:text-waste2way-teal relative',
+                        'after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-waste2way-teal after:transition-all',
+                        $route.path === item.path
+                            ? 'text-waste2way-teal after:w-full'
+                            : '',
+                    ]"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                </svg>
-            </button>
-            <div class="hidden lg:flex items-center">
-                <ul class="flex space-x-4">
-                    <li>
-                        <router-link
-                            to="/"
-                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
-                            >Home</router-link
-                        >
-                    </li>
-                    <li>
-                        <router-link
-                            to="/login"
-                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
-                            >Login</router-link
-                        >
-                    </li>
-                    <li>
-                        <router-link
-                            to="/register"
-                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
-                            >Signup</router-link
-                        >
-                    </li>
-                    <li>
-                        <router-link
-                            to="/dashboard"
-                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
-                            >Dashboard</router-link
-                        >
-                    </li>
-                    <li>
-                        <router-link
-                            to="/hotspot"
-                            class="text-white hover:text-[#38bdf8] px-3 py-2 rounded hover:bg-[#38bdf8]/10"
-                            >Hotspots</router-link
-                        >
-                    </li>
-                </ul>
+                    {{ item.name }}
+                </NuxtLink>
+                <NuxtLink to="/dashboard" class="btn-primary">
+                    Get Started
+                </NuxtLink>
             </div>
+
+            <!-- Mobile Menu Button -->
+            <button
+                class="md:hidden text-2xl p-2"
+                @click="mobileMenuOpen = !mobileMenuOpen"
+            >
+                <Icon v-if="mobileMenuOpen" name="lucide:x" />
+                <Icon v-else name="lucide:menu" />
+            </button>
         </div>
+
+        <!-- Mobile Menu -->
+        <Transition name="slide">
+            <div
+                v-if="mobileMenuOpen"
+                class="fixed inset-0 z-40 bg-white/90 dark:bg-waste2way-dark/95 backdrop-blur-lg flex flex-col items-center justify-center space-y-8 md:hidden pt-20"
+            >
+                <NuxtLink
+                    v-for="item in navItems"
+                    :key="item.name"
+                    :to="item.path"
+                    :class="[
+                        'text-xl font-medium transition-colors hover:text-waste2way-teal',
+                        $route.path === item.path ? 'text-waste2way-teal' : '',
+                    ]"
+                    @click="mobileMenuOpen = false"
+                >
+                    {{ item.name }}
+                </NuxtLink>
+                <NuxtLink
+                    to="/dashboard"
+                    class="btn-primary mt-4"
+                    @click="mobileMenuOpen = false"
+                >
+                    Get Started
+                </NuxtLink>
+            </div>
+        </Transition>
     </nav>
 </template>
+
+<script setup>
+const isScrolled = ref(false);
+const mobileMenuOpen = ref(false);
+
+const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Features", path: "/features" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Community", path: "/community" },
+];
+
+// Handle scroll effect for navbar
+onMounted(() => {
+    const handleScroll = () => {
+        isScrolled.value = window.scrollY > 10;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    onUnmounted(() => {
+        window.removeEventListener("scroll", handleScroll);
+    });
+});
+</script>
+
+<style scoped>
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(100%);
+}
+
+.slide-enter-to,
+.slide-leave-from {
+    transform: translateX(0);
+}
+</style>

@@ -1,1 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
+@config "../../tailwind.config.js";
+
+@layer base {
+    :root {
+        --background: 210 20% 98%;
+        --foreground: 222 47% 11%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+
+        --primary: 184 48% 40%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 160 53% 57%;
+        --secondary-foreground: 222 47% 11%;
+
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 16% 47%;
+
+        --accent: 199 84% 59%;
+        --accent-foreground: 222 47% 11%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 222 47% 11%;
+
+        --radius: 1rem;
+    }
+
+    .dark {
+        --background: 222 47% 10%;
+        --foreground: 210 40% 98%;
+
+        --card: 222 47% 9%;
+        --card-foreground: 210 40% 98%;
+
+        --popover: 222 47% 10%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 184 48% 40%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 160 53% 57%;
+        --secondary-foreground: 222 47% 11%;
+
+        --muted: 217 33% 17%;
+        --muted-foreground: 215 20% 65%;
+
+        --accent: 199 84% 59%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 62% 30%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217 33% 17%;
+        --input: 217 33% 17%;
+        --ring: 213 27% 84%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    html {
+        @apply scroll-smooth;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-display tracking-tight;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl;
+    }
+
+    .glass-card-dark {
+        @apply bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl;
+    }
+
+    .section-container {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24;
+    }
+
+    .btn-primary {
+        @apply bg-waste2way-teal hover:bg-waste2way-teal/90 text-white font-medium rounded-full px-6 py-3 
+    transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1;
+    }
+
+    .btn-secondary {
+        @apply bg-transparent hover:bg-waste2way-coral/10 text-waste2way-coral border border-waste2way-coral/50 
+    font-medium rounded-full px-6 py-3 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1;
+    }
+
+    .card-hover {
+        @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+    }
+
+    .text-gradient {
+        @apply bg-gradient-to-r from-waste2way-teal to-waste2way-blue bg-clip-text text-transparent;
+    }
+}
+
+/* Custom Animations */
+.stagger-item {
+    opacity: 0;
+}
+
+.stagger-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.stagger-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.stagger-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.stagger-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+.stagger-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+.stagger-item:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* Smooth Page Transitions */
+.page-transition {
+    animation: fadeAndSlide 0.5s ease-out;
+}
+
+@keyframes fadeAndSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
