@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler, handleSuccess } from "../utils/asyncHandler";
 import { TrashService } from "@/services/trash-service";
+import { serializeBigInt } from "@/utils/serializeBigInt";
 
 const trashService = new TrashService();
 
@@ -25,6 +26,7 @@ export const trashController = {
             Number(days),
             Number(gridPrecision)
         );
+        // const serializedHotspots = serializeBigInt(hotspots);
         return handleSuccess(res, hotspots, "Hotspots retrieved successfully");
     }),
 

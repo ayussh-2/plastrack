@@ -120,6 +120,23 @@ const renderHotspots = (hotspots, google) => {
 
         bounds.extend(position);
 
+        // Create a small marker to represent the grid cell center
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map.value,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 4 + hotspot.avgSeverity,
+                fillColor: getSeverityColor(hotspot.avgSeverity, 0.9),
+                fillOpacity: 0.9,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 2,
+            },
+            zIndex: 100 + Math.floor(hotspot.avgSeverity * 10),
+        });
+        markers.value.push(marker);
+        const radius = 8;
+
         const circle = new google.maps.Circle({
             strokeColor: getSeverityColor(hotspot.avgSeverity, 1),
             strokeOpacity: 0.8,
@@ -128,11 +145,11 @@ const renderHotspots = (hotspots, google) => {
             fillOpacity: 0.6,
             map: map.value,
             center: position,
-            radius: hotspot.reportCount * 50 + hotspot.avgSeverity * 20,
+            radius: radius,
+            zIndex: Math.floor(hotspot.avgSeverity * 5),
         });
         circles.value.push(circle);
 
-        // info window content
         const infoContent = `
         <div style="font-family: ui-sans-serif, system-ui; padding: 0.75rem; max-width: 320px;">
           <h3 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Trash Hotspot</h3>
@@ -184,6 +201,11 @@ const renderHotspots = (hotspots, google) => {
             maxWidth: 350,
         });
 
+        marker.addListener("click", () => {
+            infoWindow.setPosition(position);
+            infoWindow.open(map.value);
+        });
+
         circle.addListener("click", () => {
             infoWindow.setPosition(position);
             infoWindow.open(map.value);
@@ -193,11 +215,15 @@ const renderHotspots = (hotspots, google) => {
     if (!bounds.isEmpty()) {
         map.value.fitBounds(bounds);
 
-        if (props.geoLocation) {
-            setTimeout(() => {
-                map.value.setCenter(props.geoLocation);
-            }, 100);
-        }
+        google.maps.event.addListenerOnce(map.value, "bounds_changed", () => {
+            if (map.value.getZoom() < 19) {
+                map.value.setZoom(19);
+            }
+
+            if (hotspots.length === 1) {
+                map.value.setZoom(20);
+            }
+        });
     }
 };
 
