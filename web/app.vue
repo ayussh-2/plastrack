@@ -1,8 +1,11 @@
+<script setup lang="ts">
+import DefaultTheme from "./layouts/DefaultTheme.vue";
+</script>
+
 <!-- app.vue -->
 <template>
-    <div>
-        <Navbar />
-        <AuthLoading />
-        <NuxtPage />
-    </div>
+  <div>
+    <AuthLoading />
+    <DefaultTheme><NuxtPage /></DefaultTheme>
+  </div>
 </template>
