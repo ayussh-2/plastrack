@@ -33,5 +33,10 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Finder (MacOS) folder config
 .DS_Store
 
+#misc
 firebase.txt
 cert.json
+custom-rigging-453212-e5-482844aac48d.json
+
+# lockfile
+bun.lockb
