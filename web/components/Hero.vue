@@ -46,17 +46,12 @@
         </h1>
 
         <p
-          class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
-        >
-          Our AI-powered platform combines community participation with
-          cutting-edge technology to convert waste into reusable and recyclable
-          materials.
-        </p>
-        <p
           class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
         >
-          Also cooperating with local Authorities/Muncipalities to create a
-          sustainable waste management system.
+          Our AI-powered platform optimizes waste collection, sorting, and
+          recycling, maximizing resource recovery and minimizing environmental
+          impact. Through collaboration with local authorities, we’re building a
+          sustainable, tech-driven waste management ecosystem.
         </p>
 
         <div class="flex flex-wrap justify-center gap-4">
