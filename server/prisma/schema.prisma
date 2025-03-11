@@ -16,8 +16,7 @@ model User {
   profilePicture    String?   @default("default-avatar.png")
   city              String
   state             String
-  
-  
+
   // System Fields
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt

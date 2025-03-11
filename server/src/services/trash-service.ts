@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { TrashReport, HotspotData } from "../types";
+import { validateFeedback } from "@/utils/validateFeedback";
 
 export class TrashService {
     async createReport(data: Omit<TrashReport, "id">) {
@@ -111,6 +112,20 @@ export class TrashService {
             return {
                 success: false,
                 message: "Report not found",
+            };
+        }
+
+        const feedbackReview = await validateFeedback(
+            existingReport.trashType,
+            feedback
+        );
+
+        if (!feedbackReview.isValid) {
+            return {
+                success: false,
+                message:
+                    "The feedback you provided seems not correct for the given trash." +
+                    feedbackReview.explanation,
             };
         }
 

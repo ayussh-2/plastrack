@@ -123,7 +123,7 @@ async function getGeminiResponse(input: string | any) {
                 "Max attempts exceeded or no response from the server"
             );
         }
-
+        console.log("Gemini response:", result.response.text());
         return result.response.text();
     } catch (e: any) {
         console.error("Gemini API error:", e);
