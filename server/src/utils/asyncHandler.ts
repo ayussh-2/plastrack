@@ -53,7 +53,6 @@ export const handleSuccess = (
     return res.status(statusCode).json(response);
 };
 
-// Handle error responses
 export const handleError = (err: any, res: Response): Response => {
     // If it's our custom error
 

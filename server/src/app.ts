@@ -22,10 +22,23 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Define the root path first
+app.get("/", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
+});
+
+// Then API routes
 app.use("/api", apiRoutes);
 
-app.use(errorHandler);
+// Method not allowed handler for routes that exist but with wrong method
+app.use("/api", (req, res, next) => {
+    res.status(405).json({
+        success: false,
+        message: "Method not allowed",
+    });
+});
 
+// Finally 404 handler for undefined routes
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -33,8 +46,7 @@ app.use((req, res) => {
     });
 });
 
-app.use("/", (req, res) => {
-    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
-});
+// Error handler should be last
+app.use(errorHandler);
 
 export default app;

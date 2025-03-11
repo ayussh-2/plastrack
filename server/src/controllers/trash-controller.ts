@@ -50,4 +50,42 @@ export const trashController = {
             "Trash report updated successfully"
         );
     }),
+
+    deleteTrashReport: asyncHandler(async (req: Request, res: Response) => {
+        const { id } = req.params;
+        await trashService.deleteReport(Number(id));
+        return handleSuccess(res, null, "Trash report deleted successfully");
+    }),
+
+    createTrashFeedback: asyncHandler(async (req: Request, res: Response) => {
+        const { trashId, feedback } = req.body;
+        console.log(trashId, feedback);
+        const response = await trashService.createTrashFeedback(
+            trashId,
+            feedback
+        );
+        return handleSuccess(res, response, "success");
+    }),
+
+    getTrashFeedBack: asyncHandler(async (req: Request, res: Response) => {
+        const { reportId } = req.params;
+        const feedback = await trashService.getTrashFeedback(Number(reportId));
+        return handleSuccess(res, feedback, "Feedback retrieved successfully");
+    }),
+
+    getTrashFeedbackForArea: asyncHandler(
+        async (req: Request, res: Response) => {
+            const { latitude, longitude, radius } = req.query;
+            const feedback = await trashService.getTrashFeedbacksForArea(
+                Number(latitude),
+                Number(longitude),
+                Number(radius)
+            );
+            return handleSuccess(
+                res,
+                feedback,
+                "Feedback for area retrieved successfully"
+            );
+        }
+    ),
 };

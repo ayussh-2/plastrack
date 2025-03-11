@@ -45,4 +45,14 @@ model TrashReport {
   timestamp   DateTime  @default(now())
   user        User?     @relation(fields: [userId], references: [id])
   userId      String?
+
+  TrashFeedback TrashFeedback[]
+}
+
+model TrashFeedback {
+  id         Int       @id @default(autoincrement())
+  reportId   Int
+  report     TrashReport @relation(fields: [reportId], references: [id])
+  feedback   String
+  timestamp  DateTime  @default(now())
 }
