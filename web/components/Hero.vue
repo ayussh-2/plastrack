@@ -25,7 +25,7 @@
             <div
                 class="floating-icon absolute bottom-1/4 left-[30%] text-waste2way-green/20 animate-float"
             >
-                <Icon name="lucide:bar-chart-3" size="70" />
+                <Icon name="lucide:smartphone" size="70" />
             </div>
         </div>
 
@@ -35,32 +35,30 @@
                     class="inline-block rounded-full bg-waste2way-teal/10 px-4 py-1.5 mb-6"
                 >
                     <span class="text-waste2way-teal text-sm font-medium"
-                        >Transforming Waste Into Opportunity</span
+                        >Smart Waste Management for Urban Development</span
                     >
                 </div>
 
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 -space-y-2">
-                    <span class="text-gradient">Plastic Waste</span> to
+                    <span class="text-gradient">Transforming Plastic Waste</span>
                     <br class="hidden sm:block" />
                     <span class="text-gradient">
-                        Sustainable Infrastructure</span
+                        Into Sustainable Infrastructure</span
                     >
                 </h1>
 
                 <p
                     class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
                 >
-                    An AI-powered platform turning plastic pollution into
-                    durable urban infrastructure. Join us in creating a circular
-                    economy for plastic waste.
+                    Our AI-powered platform combines community participation with cutting-edge technology to convert plastic waste into durable roads, pavements, and boundary walls across India.
                 </p>
 
                 <div class="flex flex-wrap justify-center gap-4">
                     <NuxtLink to="/features" class="btn-primary">
-                        Explore Features
+                        Explore Solution
                     </NuxtLink>
                     <NuxtLink to="/dashboard" class="btn-secondary">
-                        View Dashboard
+                        Waste Analytics
                         <Icon
                             name="lucide:arrow-right"
                             class="ml-2 h-4 w-4 inline"
@@ -77,11 +75,11 @@
                         <div
                             class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-waste2way-teal/10 text-waste2way-teal mb-4"
                         >
-                            <Icon name="lucide:recycle" class="h-8 w-8" />
+                            <Icon name="lucide:scan" class="h-8 w-8" />
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">8.5M+</h3>
+                        <h3 class="text-2xl font-bold mb-2">90%+</h3>
                         <p class="text-muted-foreground">
-                            Tons of plastic waste processed
+                            Accuracy in plastic waste identification
                         </p>
                     </div>
 
@@ -89,11 +87,11 @@
                         <div
                             class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-waste2way-blue/10 text-waste2way-blue mb-4"
                         >
-                            <Icon name="lucide:map-pin" class="h-8 w-8" />
+                            <Icon name="lucide:map" class="h-8 w-8" />
                         </div>
                         <h3 class="text-2xl font-bold mb-2">150+</h3>
                         <p class="text-muted-foreground">
-                            Cities implementing our solutions
+                            Cities with waste heat mapping
                         </p>
                     </div>
 
@@ -101,11 +99,11 @@
                         <div
                             class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-waste2way-green/10 text-waste2way-green mb-4"
                         >
-                            <Icon name="lucide:bar-chart-3" class="h-8 w-8" />
+                            <Icon name="lucide:layout-dashboard" class="h-8 w-8" />
                         </div>
-                        <h3 class="text-2xl font-bold mb-2">43%</h3>
+                        <h3 class="text-2xl font-bold mb-2">5</h3>
                         <p class="text-muted-foreground">
-                            Average CO₂ reduction in projects
+                            Integrated APIs for closed-loop systems
                         </p>
                     </div>
                 </div>

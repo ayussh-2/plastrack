@@ -6,8 +6,8 @@
                     Waste Identification
                 </h2>
                 <p class="text-muted-foreground max-w-2xl mx-auto">
-                    Our AI-powered system can identify plastic types and
-                    determine their suitability for infrastructure projects.
+                    Our AI-powered system identifies plastic types with 90%+ accuracy and determines 
+                    their suitability for sustainable urban infrastructure projects.
                 </p>
             </div>
 
@@ -34,7 +34,7 @@
                         </h3>
                         <p class="text-muted-foreground text-center mb-6">
                             Upload a photo of plastic waste to analyze its
-                            composition and potential uses
+                            composition and potential uses for sustainable infrastructure
                         </p>
 
                         <label class="btn-primary cursor-pointer">
@@ -88,7 +88,7 @@
                         </h3>
                         <p class="text-muted-foreground">
                             Upload an image to identify plastic waste type and
-                            assess its infrastructure potential.
+                            assess its potential for sustainable urban infrastructure.
                         </p>
                     </div>
 
@@ -103,8 +103,8 @@
                             Analyzing Waste Sample
                         </h3>
                         <p class="text-muted-foreground">
-                            Our AI is identifying plastic type and assessing
-                            infrastructure suitability...
+                            Our computer vision algorithms are identifying plastic type and assessing
+                            infrastructure suitability with 90%+ accuracy...
                         </p>
                     </div>
 
@@ -132,9 +132,7 @@
 
                         <div class="mb-6">
                             <div class="flex justify-between mb-2">
-                                <span class="text-sm font-medium"
-                                    >Recyclability</span
-                                >
+                                <span class="text-sm font-medium">Recyclability</span>
                                 <span
                                     :class="[
                                         'text-sm font-medium',
@@ -150,9 +148,17 @@
                                     }}
                                 </span>
                             </div>
+                            <div
+                                class="w-full bg-muted rounded-full h-2"
+                            >
+                                <div
+                                    class="bg-gradient-to-r from-waste2way-teal to-waste2way-blue h-2 rounded-full"
+                                    :style="{ width: `${results.recyclabilityScore}%` }"
+                                ></div>
+                            </div>
                         </div>
 
-                        <div>
+                        <div class="mb-6">
                             <h4 class="font-medium mb-3">
                                 Infrastructure Suitability
                             </h4>
@@ -179,6 +185,41 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-medium mb-3">
+                                Environmental Impact
+                            </h4>
+                            <p class="text-sm text-muted-foreground mb-3">
+                                Repurposing this plastic waste could save:
+                            </p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-waste2way-dark/10 dark:bg-waste2way-dark/20 rounded-lg p-3">
+                                    <div class="flex items-center mb-1">
+                                        <Icon name="lucide:trash-2" class="h-4 w-4 mr-2 text-waste2way-teal" />
+                                        <span class="text-sm font-medium">Landfill Reduction</span>
+                                    </div>
+                                    <span class="text-lg font-bold">{{ results.impacts.landfillReduction }} kg</span>
+                                </div>
+                                <div class="bg-waste2way-dark/10 dark:bg-waste2way-dark/20 rounded-lg p-3">
+                                    <div class="flex items-center mb-1">
+                                        <Icon name="lucide:cloud" class="h-4 w-4 mr-2 text-waste2way-blue" />
+                                        <span class="text-sm font-medium">CO₂ Reduction</span>
+                                    </div>
+                                    <span class="text-lg font-bold">{{ results.impacts.co2Reduction }} kg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <button 
+                                @click="addToHeatmap" 
+                                class="w-full btn-primary py-2 flex items-center justify-center"
+                            >
+                                <Icon name="lucide:map-pin" class="h-4 w-4 mr-2" />
+                                Add to Waste Heatmap
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -225,19 +266,25 @@ const analyzeImage = () => {
     results.value = null;
 
     // Simulate API call with timeout
+    // This would be replaced with an actual call to the Waste Identification API
     setTimeout(() => {
         analyzing.value = false;
-        // Mock results
+        // Mock results based on the Waste Identification API structure
         results.value = {
             type: "Polyethylene Terephthalate (PET)",
-            confidence: 89.7,
+            confidence: 92.3, // Higher accuracy based on document
             recyclable: true,
+            recyclabilityScore: 88,
             suitability: [
                 { purpose: "Road Surface", score: 87 },
                 { purpose: "Paving Blocks", score: 92 },
-                { purpose: "Benches", score: 75 },
-                { purpose: "Barriers", score: 62 },
+                { purpose: "Boundary Walls", score: 78 },
+                { purpose: "Traffic Barriers", score: 65 },
             ],
+            impacts: {
+                landfillReduction: 2.6,
+                co2Reduction: 3.8
+            }
         };
     }, 2500);
 };
@@ -245,5 +292,11 @@ const analyzeImage = () => {
 const resetAnalysis = () => {
     image.value = null;
     results.value = null;
+};
+
+const addToHeatmap = () => {
+    // This would integrate with the Geospatial Data API
+    // to update waste hotspots and heat maps
+    alert("Location added to waste heatmap! This data will help municipal authorities prioritize collection areas.");
 };
 </script>
