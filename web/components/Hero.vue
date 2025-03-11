@@ -49,9 +49,8 @@
           class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
         >
           Our AI-powered platform optimizes waste collection, sorting, and
-          recycling, maximizing resource recovery and minimizing environmental
-          impact. Through collaboration with local authorities, we’re building a
-          sustainable, tech-driven waste management ecosystem.
+          recycling. Through collaboration with local authorities, we’re
+          building a sustainable, tech-driven waste management solution.
         </p>
 
         <div class="flex flex-wrap justify-center gap-4">
