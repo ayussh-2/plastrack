@@ -3,8 +3,8 @@ import {
     generationConfig,
     safetySettings,
     systemInstruction,
-} from "@/controllers/config/gemini";
-import { env } from "@/controllers/config";
+} from "@/config/gemini";
+import { env } from "@/config";
 
 const genAI = new GoogleGenerativeAI(env.geminiKey!);
 

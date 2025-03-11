@@ -2,10 +2,21 @@ import { Router } from "express";
 import { trashController } from "@/controllers/trash-controller";
 
 const router = Router();
-const trash = trashController;
 
-router.get("/hotspots", trash.getHotspots);
-router.post("/generate", trash.createTrashReport);
-router.post("/generate-many", trash.createMultipleReports);
+const {
+    createMultipleReports,
+    createTrashFeedback,
+    createTrashReport,
+    getHotspots,
+    getTrashFeedBack,
+    getTrashFeedbackForArea,
+} = trashController;
+
+router.get("/hotspots", getHotspots);
+router.post("/generate", createTrashReport);
+router.post("/generate-many", createMultipleReports);
+router.post("/feedback", createTrashFeedback);
+router.get("/feedback", getTrashFeedBack);
+router.get("/feedbacks", getTrashFeedbackForArea);
 
 export default router;
