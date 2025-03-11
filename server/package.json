@@ -1,40 +1,41 @@
 {
-    "name": "server",
-    "module": "src/index.ts",
-    "type": "module",
-    "private": true,
-    "scripts": {
-        "dev": "bun --watch src/index.ts",
-        "build": "bun build src/index.ts --outdir ./dist",
-        "start": "bun run dist/index.js",
-        "generate": "prisma generate",
-        "migrate": "prisma migrate dev",
-        "studio": "prisma studio"
-    },
-    "devDependencies": {
-        "@types/bun": "latest",
-        "@types/compression": "^1.7.5",
-        "@types/cors": "^2.8.17",
-        "@types/express": "^5.0.0",
-        "@types/morgan": "^1.9.9",
-        "@types/node": "^22.13.9",
-        "bun-types": "^1.2.4",
-        "prisma": "^6.4.1"
-    },
-    "peerDependencies": {
-        "typescript": "^5.8.2"
-    },
-    "dependencies": {
-        "@google/generative-ai": "^0.24.0",
-        "@prisma/client": "^6.4.1",
-        "compression": "^1.8.0",
-        "cors": "^2.8.5",
-        "dotenv": "^16.4.7",
-        "express": "^4.21.2",
-        "express-rate-limit": "^7.5.0",
-        "firebase-admin": "^13.1.0",
-        "helmet": "^8.0.0",
-        "morgan": "^1.10.0"
-    },
-    "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
+  "name": "server",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir ./dist",
+    "start": "bun run dist/index.js",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "studio": "prisma studio"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.13.9",
+    "bun-types": "^1.2.4",
+    "prisma": "^6.4.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@google-cloud/vision": "^4.3.3",
+    "@google/generative-ai": "^0.24.0",
+    "@prisma/client": "^6.4.1",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^13.1.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0"
+  },
+  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
 }
