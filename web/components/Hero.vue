@@ -40,7 +40,7 @@
                 </div>
 
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 -space-y-2">
-                    <span class="text-gradient">Transforming Plastic Waste</span>
+                    <span class="text-gradient">Transforming Waste</span>
                     <br class="hidden sm:block" />
                     <span class="text-gradient">
                         Into Sustainable Infrastructure</span
@@ -50,7 +50,7 @@
                 <p
                     class="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
                 >
-                    Our AI-powered platform combines community participation with cutting-edge technology to convert plastic waste into durable roads, pavements, and boundary walls across India.
+                    Our AI-powered platform combines community participation with cutting-edge technology to convert waste into reusable and recyclable materials.
                 </p>
 
                 <div class="flex flex-wrap justify-center gap-4">
@@ -79,7 +79,7 @@
                         </div>
                         <h3 class="text-2xl font-bold mb-2">90%+</h3>
                         <p class="text-muted-foreground">
-                            Accuracy in plastic waste identification
+                            Accuracy in waste identification
                         </p>
                     </div>
 

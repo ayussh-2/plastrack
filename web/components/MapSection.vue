@@ -6,7 +6,7 @@
                     Geospatial Insights
                 </h2>
                 <p class="text-muted-foreground max-w-2xl mx-auto">
-                    Visualize plastic waste hotspots and identify areas for
+                    Visualize waste hotspots and identify areas for
                     potential infrastructure projects.
                 </p>
             </div>

@@ -3,11 +3,11 @@
         <div class="section-container">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    Waste2Way Infrastructure Planning
+                    Future Infrastructure Planning
                 </h2>
                 <p class="text-muted-foreground max-w-2xl mx-auto">
-                    Transforming plastic waste into sustainable urban infrastructure with 
-                    intelligent waste management technology.
+                    Visualize the future of urban infrastructure built with
+                    recycled plastic waste.
                 </p>
             </div>
 
@@ -115,72 +115,17 @@
                 </div>
             </div>
 
-            <!-- Waste Analysis Dashboard -->
+            <!-- Implementation Map Preview -->
             <div class="mt-16 glass-card dark:glass-card-dark p-6 rounded-2xl">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-medium">
-                        Waste Analytics Engine
+                        Implementation Priority Map
                     </h3>
                     <button
                         class="text-waste2way-blue text-sm flex items-center hover:underline"
                     >
-                        Detailed Analytics <ArrowRight class="ml-1 h-4 w-4" />
+                        Full Map View <ArrowRight class="ml-1 h-4 w-4" />
                     </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="p-4 bg-white/5 rounded-xl">
-                        <h4 class="text-sm font-medium mb-2">Waste Collection</h4>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-3xl font-bold">{{ wasteStats.collected }}</p>
-                                <p class="text-xs text-muted-foreground">Tons collected</p>
-                            </div>
-                            <div class="text-waste2way-green text-sm flex items-center">
-                                +{{ wasteStats.collectionIncrease }}%
-                                <TrendingUp class="ml-1 h-4 w-4" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-xl">
-                        <h4 class="text-sm font-medium mb-2">Waste Classification</h4>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-3xl font-bold">{{ wasteStats.classificationAccuracy }}%</p>
-                                <p class="text-xs text-muted-foreground">AI Accuracy</p>
-                            </div>
-                            <div class="text-waste2way-green text-sm flex items-center">
-                                +{{ wasteStats.accuracyImprovement }}%
-                                <TrendingUp class="ml-1 h-4 w-4" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-white/5 rounded-xl">
-                        <h4 class="text-sm font-medium mb-2">Infrastructure Potential</h4>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-3xl font-bold">{{ wasteStats.roadKm }}</p>
-                                <p class="text-xs text-muted-foreground">Km of roads possible</p>
-                            </div>
-                            <div class="text-waste2way-green text-sm flex items-center">
-                                +{{ wasteStats.potentialIncrease }}%
-                                <TrendingUp class="ml-1 h-4 w-4" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Waste Heatmap -->
-                <div class="flex justify-between items-center mb-4">
-                    <h4 class="text-sm font-medium">Waste Hotspot Heatmap</h4>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs text-muted-foreground">View by:</span>
-                        <select class="text-xs bg-transparent border border-white/20 rounded px-2 py-1">
-                            <option>Material Type</option>
-                            <option>Collection Rate</option>
-                            <option>Infrastructure Suitability</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div
@@ -238,106 +183,22 @@
                 </div>
 
                 <!-- Legend -->
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="flex items-center space-x-8">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                            <span class="text-xs">High Volume</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div
-                                class="w-3 h-3 rounded-full bg-yellow-500 mr-2"
-                            ></div>
-                            <span class="text-xs">Medium Volume</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div
-                                class="w-3 h-3 rounded-full bg-green-500 mr-2"
-                            ></div>
-                            <span class="text-xs">Low Volume</span>
-                        </div>
+                <div class="mt-4 flex items-center justify-center space-x-8">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                        <span class="text-xs">High Priority</span>
                     </div>
-                    <button class="text-waste2way-blue text-xs flex items-center">
-                        Open in Mobile App
-                        <Smartphone class="ml-1 h-3 w-3" />
-                    </button>
-                </div>
-            </div>
-
-            <!-- Implementation Planning -->
-            <div class="mt-10 glass-card dark:glass-card-dark p-6 rounded-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-medium">
-                        Infrastructure Planning Module
-                    </h3>
-                    <button
-                        class="text-waste2way-blue text-sm flex items-center hover:underline"
-                    >
-                        Full Map View <ArrowRight class="ml-1 h-4 w-4" />
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <h4 class="text-sm font-medium mb-4">Digital Twin Modeling</h4>
-                        <div class="p-4 bg-white/5 rounded-xl h-40 flex items-center justify-center">
-                            <div class="text-center">
-                                <Activity class="h-10 w-10 text-waste2way-blue mx-auto mb-2" />
-                                <p class="text-sm">Traffic Pattern Analysis</p>
-                                <p class="text-xs text-muted-foreground mt-1">Predicting infrastructure durability</p>
-                            </div>
-                        </div>
+                    <div class="flex items-center">
+                        <div
+                            class="w-3 h-3 rounded-full bg-yellow-500 mr-2"
+                        ></div>
+                        <span class="text-xs">Medium Priority</span>
                     </div>
-                    <div>
-                        <h4 class="text-sm font-medium mb-4">Project Prioritization</h4>
-                        <div class="space-y-3">
-                            <div v-for="(project, index) in priorityProjects" :key="index" class="p-3 bg-white/5 rounded-xl flex justify-between">
-                                <div>
-                                    <p class="text-sm font-medium">{{ project.name }}</p>
-                                    <p class="text-xs text-muted-foreground">{{ project.location }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm font-bold">{{ project.priority }}</p>
-                                    <p class="text-xs text-muted-foreground">Priority Score</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-white/5 rounded-xl">
-                    <h4 class="text-sm font-medium mb-3">System Integration</h4>
-                    <div class="flex items-center justify-between">
-                        <div class="flex space-x-4">
-                            <div class="flex flex-col items-center">
-                                <Smartphone class="h-8 w-8 text-waste2way-blue mb-1" />
-                                <p class="text-xs">Citizen App</p>
-                            </div>
-                            <div class="self-center">
-                                <ArrowRight class="h-5 w-5 text-muted-foreground" />
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <Database class="h-8 w-8 text-waste2way-teal mb-1" />
-                                <p class="text-xs">Waste Analytics</p>
-                            </div>
-                            <div class="self-center">
-                                <ArrowRight class="h-5 w-5 text-muted-foreground" />
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <Building class="h-8 w-8 text-waste2way-green mb-1" />
-                                <p class="text-xs">City Planning</p>
-                            </div>
-                            <div class="self-center">
-                                <ArrowRight class="h-5 w-5 text-muted-foreground" />
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <Map class="h-8 w-8 text-waste2way-blue mb-1" />
-                                <p class="text-xs">Infrastructure</p>
-                            </div>
-                        </div>
-                        <button class="px-3 py-1 bg-waste2way-blue/20 text-waste2way-blue rounded-full text-xs">
-                            View API Documentation
-                        </button>
+                    <div class="flex items-center">
+                        <div
+                            class="w-3 h-3 rounded-full bg-green-500 mr-2"
+                        ></div>
+                        <span class="text-xs">Low Priority</span>
                     </div>
                 </div>
             </div>
@@ -346,7 +207,7 @@
 </template>
 
 <script>
-import { ArrowRight, MapPin, TrendingUp, CheckCircle, Smartphone, Activity, Database, Building, Map } from "lucide-vue-next";
+import { ArrowRight, MapPin, TrendingUp, CheckCircle } from "lucide-vue-next";
 
 export default {
     name: "FutureProjects",
@@ -355,11 +216,6 @@ export default {
         MapPin,
         TrendingUp,
         CheckCircle,
-        Smartphone,
-        Activity,
-        Database,
-        Building,
-        Map
     },
     data() {
         return {
@@ -368,7 +224,7 @@ export default {
                 roads: {
                     title: "Plastic Roads",
                     description:
-                        "Roads built with plastic waste are more durable, weather-resistant, and reduce the carbon footprint of traditional asphalt. Our AI-powered planning system identifies optimal locations based on waste collection and traffic patterns.",
+                        "Roads built with plastic waste are more durable, weather-resistant, and reduce the carbon footprint of traditional asphalt.",
                     stats: [
                         { label: "Durability", value: "+45%" },
                         { label: "Cost Efficiency", value: "+30%" },
@@ -379,14 +235,13 @@ export default {
                         "Water-resistant surface",
                         "Lower greenhouse gas emissions",
                         "Utilizes up to 8 tons of plastic per km",
-                        "AI-verified material suitability",
                     ],
                     image: "https://images.unsplash.com/photo-1515630771457-09367d0ae68e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
                 },
                 pavements: {
                     title: "Plastic Pavements",
                     description:
-                        "Sidewalks and pavements built using recycled plastic waste provide enhanced durability and reduced maintenance costs. Our computer vision technology ensures only suitable plastic types are used.",
+                        "Sidewalks and pavements built using recycled plastic waste provide enhanced durability and reduced maintenance costs.",
                     stats: [
                         { label: "Durability", value: "+35%" },
                         { label: "Cost Efficiency", value: "+25%" },
@@ -397,14 +252,13 @@ export default {
                         "Flexible and crack-resistant",
                         "Easy installation process",
                         "Utilizes up to 4 tons of plastic per km",
-                        "90%+ waste classification accuracy",
                     ],
                     image: "https://images.unsplash.com/photo-1584036553516-bf83210aa16c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
                 },
                 furniture: {
                     title: "Urban Furniture",
                     description:
-                        "Benches, tables, and playground equipment made from recycled plastic waste that are weather-resistant and durable. Each item is mapped in our community-driven mobile application.",
+                        "Benches, tables, and playground equipment made from recycled plastic waste that are weather-resistant and durable.",
                     stats: [
                         { label: "Durability", value: "+50%" },
                         { label: "Cost Efficiency", value: "+20%" },
@@ -415,42 +269,10 @@ export default {
                         "No painting or waterproofing needed",
                         "Splinter-free and safe for all ages",
                         "Each bench recycles ~3,000 plastic bottles",
-                        "Community engagement through gamification",
                     ],
                     image: "https://images.unsplash.com/photo-1620331310125-0bef072eae42?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
                 },
-                walls: {
-                    title: "Boundary Walls",
-                    description:
-                        "Sustainable boundary walls constructed from processed plastic waste with digital twin modeling to ensure structural integrity and longevity in various environmental conditions.",
-                    stats: [
-                        { label: "Durability", value: "+40%" },
-                        { label: "Cost Efficiency", value: "+35%" },
-                        { label: "CO₂ Reduction", value: "-30%" },
-                    ],
-                    benefits: [
-                        "Modular and easily replaceable",
-                        "Weather and impact resistant",
-                        "Lower carbon footprint than concrete",
-                        "Each section recycles ~500kg of plastic",
-                        "Digital monitoring of structural health",
-                    ],
-                    image: "https://images.unsplash.com/photo-1508391742937-e19e04d38661?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-                },
             },
-            wasteStats: {
-                collected: "823",
-                collectionIncrease: "12.7",
-                classificationAccuracy: "93.5",
-                accuracyImprovement: "5.2",
-                roadKm: "103",
-                potentialIncrease: "18.4"
-            },
-            priorityProjects: [
-                { name: "Rajiv Chowk Pavement", location: "Central Delhi", priority: "87/100" },
-                { name: "Andheri East Road", location: "Mumbai", priority: "82/100" },
-                { name: "Salt Lake Boundary Wall", location: "Kolkata", priority: "79/100" }
-            ]
         };
     },
     computed: {
