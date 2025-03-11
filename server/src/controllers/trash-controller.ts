@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { asyncHandler, handleSuccess } from "../utils/asyncHandler";
+import {
+    asyncHandler,
+    handleError,
+    handleSuccess,
+} from "../utils/asyncHandler";
 import { TrashService } from "@/services/trash-service";
 
 const trashService = new TrashService();
@@ -52,23 +56,22 @@ export const trashController = {
     }),
 
     deleteTrashReport: asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id } = req.query;
         await trashService.deleteReport(Number(id));
         return handleSuccess(res, null, "Trash report deleted successfully");
     }),
 
     createTrashFeedback: asyncHandler(async (req: Request, res: Response) => {
-        const { trashId, feedback } = req.body;
-        console.log(trashId, feedback);
+        const { reportId, feedback } = req.body;
         const response = await trashService.createTrashFeedback(
-            trashId,
+            reportId,
             feedback
         );
         return handleSuccess(res, response, "success");
     }),
 
     getTrashFeedBack: asyncHandler(async (req: Request, res: Response) => {
-        const { reportId } = req.params;
+        const { reportId } = req.query;
         const feedback = await trashService.getTrashFeedback(Number(reportId));
         return handleSuccess(res, feedback, "Feedback retrieved successfully");
     }),
@@ -76,6 +79,13 @@ export const trashController = {
     getTrashFeedbackForArea: asyncHandler(
         async (req: Request, res: Response) => {
             const { latitude, longitude, radius } = req.query;
+            if (!latitude || !longitude || !radius) {
+                return res.json({
+                    success: false,
+                    message: "Please provide latitude, longitude and radius",
+                });
+            }
+
             const feedback = await trashService.getTrashFeedbacksForArea(
                 Number(latitude),
                 Number(longitude),

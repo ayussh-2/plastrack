@@ -133,7 +133,7 @@ export class TrashService {
     async getTrashFeedbacksForArea(
         latitude: number,
         longitude: number,
-        radiusInMeters: number = 100
+        radiusInMeters: number
     ) {
         const radiusDegrees = radiusInMeters / 111000;
 
