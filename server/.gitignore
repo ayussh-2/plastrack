@@ -37,6 +37,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 firebase.txt
 cert.json
 custom-rigging-453212-e5-482844aac48d.json
+vision.json
 
 # lockfile
 bun.lockb

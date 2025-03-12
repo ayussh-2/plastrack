@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -52,11 +53,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCAjy1Rg8wFBois9OQy00mcHPeid3lBoHY',
-    appId: '1:255311568480:android:417d81c4b39fa43698ed05',
-    messagingSenderId: '255311568480',
-    projectId: 'ocean-beacon',
-    storageBucket: 'ocean-beacon.firebasestorage.app',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
+    appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+    projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
   );
 }
