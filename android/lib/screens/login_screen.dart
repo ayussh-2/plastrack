@@ -180,7 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                      // Login Button
                       _buildPrimaryButton(
                         text: 'SIGN IN',
                         isLoading: authService.isLoading,
@@ -189,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 24.0),
 
-                      // Register Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

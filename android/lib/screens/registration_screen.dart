@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../config/theme.dart';
+import '../widgets/commons/text_field.dart';
+import '../widgets/commons/primary_button.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -53,142 +56,237 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Create an Account',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24.0),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.backgroundColor1, AppTheme.backgroundColor2],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 20.0),
+
+                      // App Title with Gradient
+                      Container(
+                        height: 80,
+                        width: 80,
+                        alignment: Alignment.center,
+                        child: ShaderMask(
+                          shaderCallback:
+                              (bounds) => LinearGradient(
+                                colors: [
+                                  AppTheme.primaryColor,
+                                  AppTheme.secondaryColor,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ).createShader(bounds),
+                          child: const Text(
+                            "Waste 2 Way",
+                            style: TextStyle(
+                              fontSize: 28.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10.0),
+
+                      Text(
+                        'Create your account',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black54,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: 40.0),
+
+                      // Email Field
+                      CustomTextField(
+                        label: 'Email',
+                        hintText: 'Enter your email',
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an email';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      // Password Field
+                      CustomTextField(
+                        label: 'Password',
+                        hintText: 'Enter your password',
+                        controller: _passwordController,
+                        obscureText: true,
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      // Full Name Field
+                      CustomTextField(
+                        label: 'Full Name',
+                        hintText: 'Enter your full name',
+                        controller: _nameController,
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      // Phone Field
+                      CustomTextField(
+                        label: 'Phone',
+                        hintText: 'Enter your phone number',
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        prefixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                      ),
+
+                      // City Field
+                      CustomTextField(
+                        label: 'City',
+                        hintText: 'Enter your city',
+                        controller: _cityController,
+                        prefixIcon: Icon(
+                          Icons.location_city_outlined,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your city';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      // State Field
+                      CustomTextField(
+                        label: 'State',
+                        hintText: 'Enter your state',
+                        controller: _stateController,
+                        prefixIcon: Icon(
+                          Icons.map_outlined,
+                          color: AppTheme.primaryColor,
+                          size: 22,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your state';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 24.0),
+
+                      // Error message
+                      if (authService.error != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            authService.error!,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.red[700],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+
+                      // Register Button
+                      PrimaryButton(
+                        text: 'REGISTER',
+                        isLoading: authService.isLoading,
+                        onPressed: authService.isLoading ? null : _submit,
+                      ),
+
+                      const SizedBox(height: 24.0),
+
+                      // Login Link
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account?",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20.0),
+                    ],
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
                 ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _cityController,
-                  decoration: InputDecoration(
-                    labelText: 'City',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.location_city),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your city';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _stateController,
-                  decoration: InputDecoration(
-                    labelText: 'State',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.map),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your state';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 24.0),
-                if (authService.error != null)
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      authService.error!,
-                      style: TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ElevatedButton(
-                  onPressed: authService.isLoading ? null : _submit,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    child:
-                        authService.isLoading
-                            ? CircularProgressIndicator()
-                            : Text('REGISTER'),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  child: Text('Already have an account? Login'),
-                ),
-              ],
+              ),
             ),
           ),
         ),

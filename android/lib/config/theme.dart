@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Waste2Way brand colors
@@ -87,6 +88,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       primaryColor: teal,
+      fontFamily: 'Inter', // Set Inter as default font
       colorScheme: ColorScheme.light(
         primary: teal, // --primary: 184 48% 40%
         onPrimary: light, // --primary-foreground: 210 40% 98%
@@ -106,6 +108,12 @@ class AppTheme {
         backgroundColor: teal,
         foregroundColor: light,
         elevation: 0,
+        // Apply Inter font to AppBar
+        titleTextStyle: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       cardTheme: const CardTheme(color: cardLight, elevation: 2),
       dialogTheme: const DialogTheme(
@@ -128,19 +136,21 @@ class AppTheme {
           borderSide: BorderSide(color: teal, width: 2),
         ),
       ),
-      textTheme: TextTheme(
-        displayLarge: TextStyle(color: foregroundLight),
-        displayMedium: TextStyle(color: foregroundLight),
-        displaySmall: TextStyle(color: foregroundLight),
-        headlineLarge: TextStyle(color: foregroundLight),
-        headlineMedium: TextStyle(color: foregroundLight),
-        headlineSmall: TextStyle(color: foregroundLight),
-        titleLarge: TextStyle(color: foregroundLight),
-        titleMedium: TextStyle(color: foregroundLight),
-        titleSmall: TextStyle(color: foregroundLight),
-        bodyLarge: TextStyle(color: foregroundLight),
-        bodyMedium: TextStyle(color: foregroundLight),
-        bodySmall: TextStyle(color: mutedForegroundLight),
+      textTheme: GoogleFonts.interTextTheme(
+        TextTheme(
+          displayLarge: TextStyle(color: foregroundLight),
+          displayMedium: TextStyle(color: foregroundLight),
+          displaySmall: TextStyle(color: foregroundLight),
+          headlineLarge: TextStyle(color: foregroundLight),
+          headlineMedium: TextStyle(color: foregroundLight),
+          headlineSmall: TextStyle(color: foregroundLight),
+          titleLarge: TextStyle(color: foregroundLight),
+          titleMedium: TextStyle(color: foregroundLight),
+          titleSmall: TextStyle(color: foregroundLight),
+          bodyLarge: TextStyle(color: foregroundLight),
+          bodyMedium: TextStyle(color: foregroundLight),
+          bodySmall: TextStyle(color: mutedForegroundLight),
+        ),
       ),
       dividerTheme: DividerThemeData(color: borderLight),
     );
@@ -151,6 +161,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       primaryColor: teal,
+      fontFamily: 'Inter', // Set Inter as default font
       colorScheme: ColorScheme.dark(
         primary: teal, // --primary: 184 48% 40%
         onPrimary: light, // --primary-foreground: 210 40% 98%
@@ -192,19 +203,21 @@ class AppTheme {
           borderSide: BorderSide(color: teal, width: 2),
         ),
       ),
-      textTheme: TextTheme(
-        displayLarge: TextStyle(color: foregroundDark),
-        displayMedium: TextStyle(color: foregroundDark),
-        displaySmall: TextStyle(color: foregroundDark),
-        headlineLarge: TextStyle(color: foregroundDark),
-        headlineMedium: TextStyle(color: foregroundDark),
-        headlineSmall: TextStyle(color: foregroundDark),
-        titleLarge: TextStyle(color: foregroundDark),
-        titleMedium: TextStyle(color: foregroundDark),
-        titleSmall: TextStyle(color: foregroundDark),
-        bodyLarge: TextStyle(color: foregroundDark),
-        bodyMedium: TextStyle(color: foregroundDark),
-        bodySmall: TextStyle(color: mutedForegroundDark),
+      textTheme: GoogleFonts.interTextTheme(
+        TextTheme(
+          displayLarge: TextStyle(color: foregroundDark),
+          displayMedium: TextStyle(color: foregroundDark),
+          displaySmall: TextStyle(color: foregroundDark),
+          headlineLarge: TextStyle(color: foregroundDark),
+          headlineMedium: TextStyle(color: foregroundDark),
+          headlineSmall: TextStyle(color: foregroundDark),
+          titleLarge: TextStyle(color: foregroundDark),
+          titleMedium: TextStyle(color: foregroundDark),
+          titleSmall: TextStyle(color: foregroundDark),
+          bodyLarge: TextStyle(color: foregroundDark),
+          bodyMedium: TextStyle(color: foregroundDark),
+          bodySmall: TextStyle(color: mutedForegroundDark),
+        ),
       ),
       dividerTheme: DividerThemeData(color: borderDark),
     );
