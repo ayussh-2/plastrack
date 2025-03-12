@@ -9,6 +9,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final user = authService.userModel;
+    print(user)
 
     return Scaffold(
       appBar: AppBar(

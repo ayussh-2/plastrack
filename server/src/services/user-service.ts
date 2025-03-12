@@ -3,13 +3,13 @@ import { IUser, PaginationParams } from "../types";
 import { AppError } from "../utils/asyncHandler";
 
 export class UserService {
-    async findUserByFirebaseId(firebaseId: string): Promise<IUser> {
+    async findUserByFirebaseId(firebaseId: string): Promise<IUser | null> {
         const user = await prisma.user.findUnique({
             where: { firebaseId },
         });
 
         if (!user) {
-            throw new AppError("User not found", 404);
+            return null;
         }
 
         return user;

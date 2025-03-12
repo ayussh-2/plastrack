@@ -7,7 +7,7 @@ const userService = new UserService();
 export const userController = {
     getMe: asyncHandler(async (req: Request, res: Response) => {
         const userId = req.user!.id;
-        const user = await userService.getUserById(userId);
+        const user = await userService.findUserByFirebaseId(userId);
         return handleSuccess(res, user, "User profile retrieved successfully");
     }),
 
