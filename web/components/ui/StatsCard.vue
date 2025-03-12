@@ -1,11 +1,12 @@
 <template>
-  <div class="glass-card dark:glass-card-dark p-5 rounded-xl">
-    <div class="flex items-center space-x-2 mb-2">
+  <div class="p-5 glass-card dark:glass-card-dark rounded-xl">
+    <div class="flex items-center mb-2 space-x-2">
       <div
-        class="w-8 h-8 rounded-full bg-waste2way-teal/10 flex items-center justify-center"
+        class="flex items-center justify-center w-8 h-8 rounded-full bg-waste2way-teal/10"
       >
-        <component :is="icon" class="h-4 w-4 text-waste2way-teal" v-if="icon" />
-        <MapPin v-else class="h-4 w-4 text-waste2way-teal" />
+        <slot name="icon">
+          <MapPin class="w-4 h-4 text-waste2way-teal" />
+        </slot>
       </div>
       <p class="text-sm text-muted-foreground">{{ title }}</p>
     </div>
@@ -28,11 +29,10 @@
 <script setup lang="ts">
 import { MapPin } from "lucide-vue-next";
 
-defineProps<{
-  title: string;
-  value: string;
-  change?: string;
-  positive?: boolean;
-  icon?: any;
-}>();
+defineProps({
+  title: { type: String, required: true },
+  value: { type: String, required: true },
+  change: { type: String, default: undefined },
+  positive: { type: Boolean, default: true }
+});
 </script>

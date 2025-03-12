@@ -1,29 +1,29 @@
 <template>
   <div class="py-16 bg-gradient-to-b from-background to-waste2way-blue/5">
     <div class="section-container">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+      <div class="mb-12 text-center">
+        <h2 class="mb-4 text-3xl font-bold md:text-4xl">
           Community & Gamification
         </h2>
-        <p class="text-muted-foreground max-w-2xl mx-auto">
+        <p class="max-w-2xl mx-auto text-muted-foreground">
           Join a global network of changemakers and earn rewards for your
           contributions.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
         <!-- Leaderboard Section -->
-        <div class="glass-card dark:glass-card-dark p-6 rounded-2xl">
+        <div class="p-6 glass-card dark:glass-card-dark rounded-2xl">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-medium flex items-center">
-              <Trophy class="mr-2 h-5 w-5 text-waste2way-coral" />
+            <h3 class="flex items-center text-xl font-medium">
+              <Trophy class="w-5 h-5 mr-2 text-waste2way-coral" />
               Top Contributors
             </h3>
             <router-link
               to="/community"
-              class="text-waste2way-blue text-sm flex items-center hover:underline"
+              class="flex items-center text-sm text-waste2way-blue hover:underline"
             >
-              View All <ArrowRight class="ml-1 h-4 w-4" />
+              View All <ArrowRight class="w-4 h-4 ml-1" />
             </router-link>
           </div>
 
@@ -38,15 +38,15 @@
             />
           </div>
 
-          <div class="mt-6 pt-6 border-t border-white/10">
+          <div class="pt-6 mt-6 border-t border-white/10">
             <div class="text-center">
-              <p class="text-muted-foreground mb-3">Your current rank</p>
+              <p class="mb-3 text-muted-foreground">Your current rank</p>
               <div class="inline-flex items-center justify-center space-x-2">
-                <div class="w-12 h-12 rounded-full overflow-hidden">
+                <div class="w-12 h-12 overflow-hidden rounded-full">
                   <img
                     src="https://i.pravatar.cc/150?img=8"
                     alt="Your Avatar"
-                    class="w-full h-full object-cover"
+                    class="object-cover w-full h-full"
                   />
                 </div>
                 <div class="text-left">
@@ -62,8 +62,8 @@
 
         <!-- Achievements Section -->
         <div>
-          <h3 class="text-xl font-medium mb-6 flex items-center">
-            <Award class="mr-2 h-5 w-5 text-waste2way-teal" />
+          <h3 class="flex items-center mb-6 text-xl font-medium">
+            <Award class="w-5 h-5 mr-2 text-waste2way-teal" />
             Your Achievements
           </h3>
 
@@ -78,11 +78,11 @@
             />
           </div>
 
-          <div class="glass-card dark:glass-card-dark p-6 rounded-2xl mt-8">
-            <h4 class="font-medium mb-4">Recent Activity</h4>
+          <div class="p-6 mt-8 glass-card dark:glass-card-dark rounded-2xl">
+            <h4 class="mb-4 font-medium">Recent Activity</h4>
             <div class="space-y-4">
               <div class="flex space-x-3">
-                <div class="w-1 bg-waste2way-teal rounded-full"></div>
+                <div class="w-1 rounded-full bg-waste2way-teal"></div>
                 <div>
                   <p class="text-sm">You identified a new PET waste sample</p>
                   <p class="text-xs text-muted-foreground">
@@ -91,7 +91,7 @@
                 </div>
               </div>
               <div class="flex space-x-3">
-                <div class="w-1 bg-waste2way-blue rounded-full"></div>
+                <div class="w-1 rounded-full bg-waste2way-blue"></div>
                 <div>
                   <p class="text-sm">
                     You reached level 5 in waste identification
@@ -102,7 +102,7 @@
                 </div>
               </div>
               <div class="flex space-x-3">
-                <div class="w-1 bg-waste2way-coral rounded-full"></div>
+                <div class="w-1 rounded-full bg-waste2way-coral"></div>
                 <div>
                   <p class="text-sm">
                     You reported a waste hotspot in your area
@@ -128,90 +128,92 @@
 
 <script>
 import { Trophy, Users, Globe, Award, ArrowRight } from "lucide-vue-next";
+import AchievementCard from "./AchievementCard.vue";
+import LeaderboardItem from "./LeaderboardItem.vue";
 
-const LeaderboardItem = {
-  props: {
-    rank: {
-      type: Number,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    contributions: {
-      type: Number,
-      required: true,
-    },
-    avatar: {
-      type: String,
-      required: true,
-    },
-  },
-  template: `
-      <div class="flex items-center justify-between py-3 border-b border-white/10 last:border-0">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 flex items-center justify-center font-medium">
-            {{ rank }}
-          </div>
-          <div class="w-10 h-10 rounded-full overflow-hidden">
-            <img :src="avatar" :alt="name" class="w-full h-full object-cover" />
-          </div>
-          <span class="font-medium">{{ name }}</span>
-        </div>
-        <div class="flex items-center">
-          <span class="font-medium">{{ contributions }}</span>
-          <Trophy class="w-4 h-4 ml-2 text-waste2way-coral" />
-        </div>
-      </div>
-    `,
-};
+// const LeaderboardItem = {
+//   props: {
+//     rank: {
+//       type: Number,
+//       required: true,
+//     },
+//     name: {
+//       type: String,
+//       required: true,
+//     },
+//     contributions: {
+//       type: Number,
+//       required: true,
+//     },
+//     avatar: {
+//       type: String,
+//       required: true,
+//     },
+//   },
+//   template: `
+//       <div class="flex items-center justify-between py-3 border-b border-white/10 last:border-0">
+//         <div class="flex items-center space-x-3">
+//           <div class="flex items-center justify-center w-8 h-8 font-medium">
+//             {{ rank }}
+//           </div>
+//           <div class="w-10 h-10 overflow-hidden rounded-full">
+//             <img :src="avatar" :alt="name" class="object-cover w-full h-full" />
+//           </div>
+//           <span class="font-medium">{{ name }}</span>
+//         </div>
+//         <div class="flex items-center">
+//           <span class="font-medium">{{ contributions }}</span>
+//           <Trophy class="w-4 h-4 ml-2 text-waste2way-coral" />
+//         </div>
+//       </div>
+//     `,
+// };
 
-const AchievementCard = {
-  props: {
-    icon: {
-      type: Object,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    progress: {
-      type: Number,
-      required: true,
-    },
-  },
-  template: `
-      <div class="glass-card dark:glass-card-dark p-5 rounded-xl transition-all hover:shadow-lg hover:-translate-y-1">
-        <div class="flex items-center space-x-4 mb-3">
-          <div class="p-3 rounded-full bg-waste2way-teal/10">
-            <component :is="icon" />
-          </div>
-          <div>
-            <h3 class="font-medium">{{ title }}</h3>
-            <p class="text-sm text-muted-foreground">{{ description }}</p>
-          </div>
-        </div>
-        <div class="mt-2">
-          <div class="flex justify-between text-sm mb-1">
-            <span>Progress</span>
-            <span class="font-medium">{{ progress }}%</span>
-          </div>
-          <div class="w-full bg-muted rounded-full h-2">
-            <div 
-              class="bg-gradient-to-r from-waste2way-teal to-waste2way-blue h-2 rounded-full"
-              :style="{ width: progress + '%' }"
-            ></div>
-          </div>
-        </div>
-      </div>
-    `,
-};
+// const AchievementCard = {
+//   props: {
+//     icon: {
+//       type: Object,
+//       required: true,
+//     },
+//     title: {
+//       type: String,
+//       required: true,
+//     },
+//     description: {
+//       type: String,
+//       required: true,
+//     },
+//     progress: {
+//       type: Number,
+//       required: true,
+//     },
+//   },
+//   template: `
+//       <div class="p-5 transition-all glass-card dark:glass-card-dark rounded-xl hover:shadow-lg hover:-translate-y-1">
+//         <div class="flex items-center mb-3 space-x-4">
+//           <div class="p-3 rounded-full bg-waste2way-teal/10">
+//             <component :is="icon" />
+//           </div>
+//           <div>
+//             <h3 class="font-medium">{{ title }}</h3>
+//             <p class="text-sm text-muted-foreground">{{ description }}</p>
+//           </div>
+//         </div>
+//         <div class="mt-2">
+//           <div class="flex justify-between mb-1 text-sm">
+//             <span>Progress</span>
+//             <span class="font-medium">{{ progress }}%</span>
+//           </div>
+//           <div class="w-full h-2 rounded-full bg-muted">
+//             <div
+//               class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
+//               :style="{ width: progress + '%' }"
+//             ></div>
+//           </div>
+//         </div>
+//       </div>
+//     `,
+// };
 
 export default {
   name: "CommunitySection",
