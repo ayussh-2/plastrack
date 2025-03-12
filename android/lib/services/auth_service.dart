@@ -5,7 +5,7 @@ import '../models/user_model.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final ApiClient _apiClient = ApiClient();
+  final ApiClient _apiClient = ApiClient(enableLogging: true);
 
   User? _user;
   UserModel? _userModel;
@@ -70,11 +70,10 @@ class AuthService extends ChangeNotifier {
         password: password,
       );
 
-      print(result.user);
-
       if (result.user != null) {
         final newUser = UserModel(
           firebaseId: result.user!.uid,
+          // firebaseId: "J1VF5x1e7XdOB5qT20S2HWHh7zr2",
           email: email,
           name: name,
           phone: phone,

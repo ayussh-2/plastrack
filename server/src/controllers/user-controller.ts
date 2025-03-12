@@ -42,14 +42,7 @@ export const userController = {
     }),
 
     createUser: asyncHandler(async (req: Request, res: Response) => {
-        const {
-            firebase_id: firebaseId,
-            email,
-            name,
-            phone,
-            city,
-            state,
-        } = req.body;
+        const { firebaseId, email, name, phone, city, state } = req.body;
         const user = await userService.createUser(
             firebaseId,
             email,

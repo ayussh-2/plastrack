@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../config/theme.dart';
 import '../widgets/commons/text_field.dart';
+import '../widgets/commons/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -147,23 +148,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
 
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {
-                            // Forgot password functionality
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w500,
-                              color: AppTheme.secondaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-
+                      // Align(
+                      //   alignment: Alignment.centerRight,
+                      //   child: TextButton(
+                      //     onPressed: () {
+                      //       // Forgot password functionality
+                      //     },
+                      //     child: Text(
+                      //       'Forgot Password?',
+                      //       style: TextStyle(
+                      //         fontSize: 14.0,
+                      //         fontWeight: FontWeight.w500,
+                      //         color: AppTheme.secondaryColor,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       const SizedBox(height: 16.0),
 
                       // Error message
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                      _buildPrimaryButton(
+                      PrimaryButton(
                         text: 'SIGN IN',
                         isLoading: authService.isLoading,
                         onPressed: authService.isLoading ? null : _submit,
@@ -220,68 +220,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrimaryButton({
-    required String text,
-    required VoidCallback? onPressed,
-    bool isLoading = false,
-  }) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:
-              onPressed == null
-                  ? [Colors.grey[400]!, Colors.grey[500]!]
-                  : [
-                    AppTheme.primaryColor,
-                    AppTheme.primaryColor.withOpacity(0.8),
-                  ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(16.0),
-        boxShadow:
-            onPressed == null
-                ? []
-                : [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16.0),
-          child: Center(
-            child:
-                isLoading
-                    ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 3,
-                      ),
-                    )
-                    : Text(
-                      text,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
           ),
         ),
       ),

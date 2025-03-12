@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -83,8 +84,22 @@ class AppTheme {
   static const Color borderDark = Color(0xFF1F2937); // --border: 217 33% 17%
   static const Color inputDark = Color(0xFF1F2937); // --input: 217 33% 17%
 
+  // Create a method to set appropriate status bar style
+  static void setStatusBarStyle({bool darkMode = false}) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
+        statusBarBrightness: darkMode ? Brightness.dark : Brightness.light,
+      ),
+    );
+  }
+
   // Create a ThemeData instance to use with MaterialApp
   static ThemeData get lightTheme {
+    // Set status bar for light theme
+    setStatusBarStyle(darkMode: false);
+
     return ThemeData(
       useMaterial3: true,
       primaryColor: teal,
@@ -108,6 +123,11 @@ class AppTheme {
         backgroundColor: teal,
         foregroundColor: light,
         elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         // Apply Inter font to AppBar
         titleTextStyle: TextStyle(
           fontFamily: 'Inter',
@@ -158,6 +178,9 @@ class AppTheme {
 
   // Dark theme
   static ThemeData get darkTheme {
+    // Set status bar for dark theme
+    setStatusBarStyle(darkMode: true);
+
     return ThemeData(
       useMaterial3: true,
       primaryColor: teal,
@@ -181,6 +204,11 @@ class AppTheme {
         backgroundColor: dark,
         foregroundColor: light,
         elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
       ),
       cardTheme: const CardTheme(color: cardDark, elevation: 2),
       dialogTheme: const DialogTheme(

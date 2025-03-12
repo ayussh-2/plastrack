@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:waste2ways/services/test_service.dart';
 import '../services/auth_service.dart';
 import '../config/theme.dart';
 import '../widgets/commons/text_field.dart';
 import '../widgets/commons/primary_button.dart';
+import 'dart:developer';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
