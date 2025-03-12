@@ -1,18 +1,17 @@
 <template>
   <div class="py-16">
     <div class="section-container">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+      <div class="mb-12 text-center">
+        <h2 class="mb-4 text-3xl font-bold md:text-4xl">
           Waste Identification
         </h2>
-        <p class="text-muted-foreground max-w-2xl mx-auto">
+        <p class="max-w-2xl mx-auto text-muted-foreground">
           Our AI-powered system identifies waste types with 90%+ accuracy and
-          determines their suitability for sustainable urban infrastructure
-          projects.
+          determines their suitability for their usage in sustainable infrastructure.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2">
         <div>
           <div
             v-if="!image"
@@ -28,52 +27,52 @@
           >
             <Icon
               name="lucide:upload"
-              class="h-12 w-12 text-muted-foreground mb-4"
+              class="w-12 h-12 mb-4 text-muted-foreground"
             />
-            <h3 class="text-xl font-medium mb-2">Drag & drop image</h3>
-            <p class="text-muted-foreground text-center mb-6">
+            <h3 class="mb-2 text-xl font-medium">Drag & drop image</h3>
+            <p class="mb-6 text-center text-muted-foreground">
               Upload a photo of pliable waste to analyze its composition and
               potential uses for sustainable infrastructure
             </p>
 
-            <label class="btn-primary cursor-pointer">
+            <label class="cursor-pointer btn-primary">
               <input
                 type="file"
                 class="hidden"
                 accept="image/*"
                 @change="handleFileSelect"
               />
-              <Icon name="lucide:file-up" class="h-4 w-4 mr-2 inline" />
+              <Icon name="lucide:file-up" class="inline w-4 h-4 mr-2" />
               Upload Image
             </label>
           </div>
 
-          <div v-else class="relative rounded-2xl overflow-hidden h-80 group">
+          <div v-else class="relative overflow-hidden rounded-2xl h-80 group">
             <img
               :src="image"
               alt="Uploaded plastic waste"
-              class="w-full h-full object-cover"
+              class="object-cover w-full h-full"
             />
             <button
               @click="resetAnalysis"
-              class="absolute top-4 right-4 bg-waste2way-dark/60 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              class="absolute p-2 text-white transition-opacity rounded-full opacity-0 top-4 right-4 bg-waste2way-dark/60 group-hover:opacity-100"
             >
-              <Icon name="lucide:x" class="h-5 w-5" />
+              <Icon name="lucide:x" class="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div class="glass-card dark:glass-card-dark p-6">
+        <div class="p-6 glass-card dark:glass-card-dark">
           <div
             v-if="!image"
-            class="h-full flex flex-col items-center justify-center text-center p-6"
+            class="flex flex-col items-center justify-center h-full p-6 text-center"
           >
             <div
-              class="w-16 h-16 rounded-full bg-waste2way-blue/10 flex items-center justify-center mb-4"
+              class="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-waste2way-blue/10"
             >
-              <Icon name="lucide:upload" class="h-8 w-8 text-waste2way-blue" />
+              <Icon name="lucide:upload" class="w-8 h-8 text-waste2way-blue" />
             </div>
-            <h3 class="text-xl font-medium mb-2">No Image Uploaded</h3>
+            <h3 class="mb-2 text-xl font-medium">No Image Uploaded</h3>
             <p class="text-muted-foreground">
               Upload an image to identify waste type and assess its
               potential for sustainable usage.
@@ -82,12 +81,12 @@
 
           <div
             v-else-if="analyzing"
-            class="h-full flex flex-col items-center justify-center p-6"
+            class="flex flex-col items-center justify-center h-full p-6"
           >
             <div
-              class="w-20 h-20 rounded-full border-4 border-waste2way-teal/30 border-t-waste2way-teal animate-spin mb-6"
+              class="w-20 h-20 mb-6 border-4 rounded-full border-waste2way-teal/30 border-t-waste2way-teal animate-spin"
             ></div>
-            <h3 class="text-xl font-medium mb-2">Analyzing Waste Sample</h3>
+            <h3 class="mb-2 text-xl font-medium">Analyzing Waste Sample</h3>
             <p class="text-muted-foreground">
               Our computer vision algorithms are identifying waste type and
               assessing infrastructure suitability with 90%+ accuracy...
@@ -97,11 +96,11 @@
           <div v-else-if="results" class="h-full">
             <div class="flex items-center mb-6">
               <div
-                class="w-12 h-12 rounded-full bg-waste2way-green/10 flex items-center justify-center mr-4"
+                class="flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-waste2way-green/10"
               >
                 <Icon
                   name="lucide:check"
-                  class="h-6 w-6 text-waste2way-green"
+                  class="w-6 h-6 text-waste2way-green"
                 />
               </div>
               <div>
@@ -129,25 +128,25 @@
                   {{ results.recyclable ? "Recyclable" : "Non-recyclable" }}
                 </span>
               </div>
-              <div class="w-full bg-muted rounded-full h-2">
+              <div class="w-full h-2 rounded-full bg-muted">
                 <div
-                  class="bg-gradient-to-r from-waste2way-teal to-waste2way-blue h-2 rounded-full"
+                  class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
                   :style="{ width: `${results.recyclabilityScore}%` }"
                 ></div>
               </div>
             </div>
 
             <div class="mb-6">
-              <h4 class="font-medium mb-3">Infrastructure Suitability</h4>
+              <h4 class="mb-3 font-medium">Infrastructure Suitability</h4>
               <div class="space-y-3">
                 <div v-for="(item, index) in results.suitability" :key="index">
                   <div class="flex justify-between mb-1">
                     <span class="text-sm">{{ item.purpose }}</span>
                     <span class="text-sm font-medium">{{ item.score }}%</span>
                   </div>
-                  <div class="w-full bg-muted rounded-full h-2">
+                  <div class="w-full h-2 rounded-full bg-muted">
                     <div
-                      class="bg-gradient-to-r from-waste2way-teal to-waste2way-blue h-2 rounded-full"
+                      class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
                       :style="{ width: `${item.score}%` }"
                     ></div>
                   </div>
@@ -156,18 +155,18 @@
             </div>
 
             <div>
-              <h4 class="font-medium mb-3">Environmental Impact</h4>
-              <p class="text-sm text-muted-foreground mb-3">
+              <h4 class="mb-3 font-medium">Environmental Impact</h4>
+              <p class="mb-3 text-sm text-muted-foreground">
                 Repurposing this waste could save:
               </p>
               <div class="grid grid-cols-2 gap-3">
                 <div
-                  class="bg-waste2way-dark/10 dark:bg-waste2way-dark/20 rounded-lg p-3"
+                  class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
                 >
                   <div class="flex items-center mb-1">
                     <Icon
                       name="lucide:trash-2"
-                      class="h-4 w-4 mr-2 text-waste2way-teal"
+                      class="w-4 h-4 mr-2 text-waste2way-teal"
                     />
                     <span class="text-sm font-medium">Landfill Reduction</span>
                   </div>
@@ -176,12 +175,12 @@
                   >
                 </div>
                 <div
-                  class="bg-waste2way-dark/10 dark:bg-waste2way-dark/20 rounded-lg p-3"
+                  class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
                 >
                   <div class="flex items-center mb-1">
                     <Icon
                       name="lucide:cloud"
-                      class="h-4 w-4 mr-2 text-waste2way-blue"
+                      class="w-4 h-4 mr-2 text-waste2way-blue"
                     />
                     <span class="text-sm font-medium">CO₂ Reduction</span>
                   </div>
@@ -195,9 +194,9 @@
             <div class="mt-6">
               <button
                 @click="addToHeatmap"
-                class="w-full btn-primary py-2 flex items-center justify-center"
+                class="flex items-center justify-center w-full py-2 btn-primary"
               >
-                <Icon name="lucide:map-pin" class="h-4 w-4 mr-2" />
+                <Icon name="lucide:map-pin" class="w-4 h-4 mr-2" />
                 Add to Waste Heatmap
               </button>
             </div>
