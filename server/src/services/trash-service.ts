@@ -1,18 +1,18 @@
 // @ts-nocheck (ignore typescript errors)
 
-import prisma from '@/lib/prisma';
-import { TrashReport, HotspotData } from '../types';
-import { validateFeedback } from '@/utils/validateFeedback';
-import { ImageAnnotatorClient } from '@google-cloud/vision';
-import { getGeminiResponse } from '@/lib/gemini';
+import prisma from "@/lib/prisma";
+import { TrashReport, HotspotData } from "../types";
+import { validateFeedback } from "@/utils/validateFeedback";
+import { ImageAnnotatorClient } from "@google-cloud/vision";
+import { getGeminiResponse } from "@/lib/gemini";
 
 const client = new ImageAnnotatorClient();
 
 export class TrashService {
-    async createReport(data: Omit<TrashReport, 'id'>) {
-        const { imageURL } = req.body;
-        const [result] = await client.labelDetection(imageURL);
-        const [safeSearchResult] = await client.safeSearchDetection(imageURL);
+    async createReport(data: Omit<TrashReport, "id">) {
+        const { image } = data;
+        const [result] = await client.labelDetection(image);
+        const [safeSearchResult] = await client.safeSearchDetection(image);
         const labels = result.labelAnnotations || [];
         const safeSearch = safeSearchResult.safeSearchAnnotation || {};
         const visionData = {
@@ -20,16 +20,15 @@ export class TrashService {
             safeSearchAnnotation: safeSearch,
         };
         const geminiResponse = await getGeminiResponse(visionData);
-        const response = await prisma.trashReport.create({
+        return await prisma.trashReport.create({
             data: {
                 ...data,
                 aiResponse: geminiResponse,
             },
         });
-        return response;
     }
 
-    async createMultipleReports(data: Omit<TrashReport, 'id'>[]) {
+    async createMultipleReports(data: Omit<TrashReport, "id">[]) {
         return await prisma.trashReport.createMany({
             data,
         });
@@ -104,7 +103,7 @@ export class TrashService {
             hotspots[key].severitySum += report.severity;
             hotspots[key].reports.push({
                 id: report.id,
-                trashType: report.trashType || 'unknown',
+                trashType: report.trashType || "unknown",
                 severity: report.severity,
                 timestamp: report.timestamp,
             });
@@ -129,20 +128,20 @@ export class TrashService {
         if (!existingReport) {
             return {
                 success: false,
-                message: 'Report not found',
+                message: "Report not found",
             };
         }
 
         const feedbackReview = await validateFeedback(
             existingReport.trashType,
-            feedback,
+            feedback
         );
 
         if (!feedbackReview.isValid) {
             return {
                 success: false,
                 message:
-                    'The feedback you provided seems not correct for the given trash.' +
+                    "The feedback you provided seems not correct for the given trash." +
                     feedbackReview.explanation,
             };
         }
@@ -166,7 +165,7 @@ export class TrashService {
     async getTrashFeedbacksForArea(
         latitude: number,
         longitude: number,
-        radiusInMeters: number,
+        radiusInMeters: number
     ) {
         const radiusDegrees = radiusInMeters / 111000;
 
