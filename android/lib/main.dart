@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:waste2ways/config/theme.dart';
+import 'package:waste2ways/widgets/auth_state_wrapper.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
@@ -27,12 +28,27 @@ class Waste2Way extends StatelessWidget {
       child: MaterialApp(
         title: 'Firebase Auth Demo',
         theme: AppTheme.lightTheme,
-        initialRoute: '/login',
         routes: {
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegistrationScreen(),
           '/home': (context) => HomeScreen(),
         },
+        home: AuthStateWrapper(
+          authenticatedRoute: HomeScreen(),
+          unauthenticatedRoute: LoginScreen(),
+          loadingWidget: Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading...'),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

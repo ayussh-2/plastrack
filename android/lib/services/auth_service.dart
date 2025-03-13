@@ -11,22 +11,49 @@ class AuthService extends ChangeNotifier {
   UserModel? _userModel;
   bool _isLoading = false;
   String? _error;
+  bool _isInitialized = false;
 
   User? get user => _user;
   UserModel? get userModel => _userModel;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  bool get isAuthenticated => _user != null;
+  bool get isInitialized => _isInitialized;
 
   AuthService() {
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
     _auth.authStateChanges().listen((User? user) {
       _user = user;
-      notifyListeners();
       if (user != null) {
         _fetchUserData(user.uid);
       } else {
         _userModel = null;
       }
+      _isInitialized = true;
+      notifyListeners();
     });
+  }
+
+  // Check if user is authenticated and redirect if needed
+  Future<bool> checkAuthState(BuildContext context) async {
+    // Wait for auth to initialize if it hasn't already
+    if (!_isInitialized) {
+      await Future.doWhile(
+        () => Future.delayed(
+          Duration(milliseconds: 100),
+        ).then((_) => !_isInitialized),
+      );
+    }
+
+    if (_user != null) {
+      // User is logged in, redirect to home if on auth screens
+      return true;
+    }
+    // User is not logged in
+    return false;
   }
 
   void _setLoading(bool loading) {
