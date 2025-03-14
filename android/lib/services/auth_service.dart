@@ -147,6 +147,43 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateProfile({
+    required String name,
+    String? phone,
+    required String city,
+    required String state,
+  }) async {
+    try {
+      // Update user profile in your backend
+      // Example API call:
+      // final response = await _dio.put(
+      //   '/api/users/profile',
+      //   data: {
+      //     'name': name,
+      //     'phone': phone,
+      //     'city': city,
+      //     'state': state,
+      //   },
+      // );
+
+      // Update local user model
+      _userModel = UserModel(
+        email: _userModel!.email,
+        name: name,
+        phone: phone,
+        city: city,
+        state: state,
+        firebaseId: '',
+      );
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      developer.log(e.toString(), name: 'AuthService');
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
   }

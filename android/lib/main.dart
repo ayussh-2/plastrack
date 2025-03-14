@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:waste2ways/config/theme.dart';
+import 'package:waste2ways/screens/profile_screen.dart';
 import 'package:waste2ways/widgets/auth_state_wrapper.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
@@ -31,6 +32,7 @@ class Waste2Way extends StatelessWidget {
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegistrationScreen(),
           '/home': (context) => HomeScreen(),
+          '/profile': (context) => ProfileScreen(),
         },
         home: AuthStateWrapper(
           authenticatedRoute: HomeScreen(),
