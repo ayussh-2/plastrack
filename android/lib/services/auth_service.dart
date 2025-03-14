@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:waste2ways/utils/api_client.dart';
 import '../models/user_model.dart';
+import 'dart:developer' as developer;
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -37,9 +38,7 @@ class AuthService extends ChangeNotifier {
     });
   }
 
-  // Check if user is authenticated and redirect if needed
   Future<bool> checkAuthState(BuildContext context) async {
-    // Wait for auth to initialize if it hasn't already
     if (!_isInitialized) {
       await Future.doWhile(
         () => Future.delayed(
@@ -49,10 +48,8 @@ class AuthService extends ChangeNotifier {
     }
 
     if (_user != null) {
-      // User is logged in, redirect to home if on auth screens
       return true;
     }
-    // User is not logged in
     return false;
   }
 
@@ -68,15 +65,24 @@ class AuthService extends ChangeNotifier {
 
   Future<void> _fetchUserData(String firebaseId) async {
     try {
-      final userDetails = await _apiClient.get(
+      final response = await _apiClient.get(
         "/users/me",
         fromJson: (json) => UserModel.fromJson(json),
       );
+      if (response.data != null) {
+        _userModel = response.data;
+      } else {
+        developer.log(
+          'Error fetching user data: ${response.error}',
+          name: 'AuthService',
+        );
+        _userModel = null;
+      }
 
-      _userModel = userDetails as UserModel?;
       notifyListeners();
     } catch (e) {
-      print('Error fetching user data: $e');
+      developer.log(e.toString(), name: 'AuthService');
+      _userModel = null;
     }
   }
 
@@ -100,7 +106,6 @@ class AuthService extends ChangeNotifier {
       if (result.user != null) {
         final newUser = UserModel(
           firebaseId: result.user!.uid,
-          // firebaseId: "J1VF5x1e7XdOB5qT20S2HWHh7zr2",
           email: email,
           name: name,
           phone: phone,
@@ -108,13 +113,11 @@ class AuthService extends ChangeNotifier {
           state: state,
         );
 
-        final object = await _apiClient.post(
+        await _apiClient.post(
           "/users/register",
           body: newUser,
           fromJson: (json) => UserModel.fromJson(json),
         );
-
-        print(object);
 
         notifyListeners();
         _setLoading(false);

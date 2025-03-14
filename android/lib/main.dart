@@ -9,7 +9,6 @@ import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart';
-import "config/theme.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

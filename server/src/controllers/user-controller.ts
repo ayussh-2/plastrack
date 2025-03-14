@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { asyncHandler, handleSuccess } from "../utils/asyncHandler";
+import {
+    AppError,
+    asyncHandler,
+    handleError,
+    handleSuccess,
+} from "../utils/asyncHandler";
 import { UserService } from "@/services/user-service";
 
 const userService = new UserService();
@@ -8,6 +13,11 @@ export const userController = {
     getMe: asyncHandler(async (req: Request, res: Response) => {
         const userId = req.user!.id;
         const user = await userService.findUserByFirebaseId(userId);
+        console.log("user", user);
+        if (!user) {
+            const error = new AppError("User not found", 404);
+            return handleError(error, res);
+        }
         return handleSuccess(res, user, "User profile retrieved successfully");
     }),
 

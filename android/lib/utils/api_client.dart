@@ -54,8 +54,8 @@ class ApiClient {
   ) {
     if (!enableLogging) return;
 
-    developer.log('API Request: $method ${uri.toString()}', name: 'ApiClient');
-    developer.log('Headers: ${headers.toString()}', name: 'ApiClient');
+    // developer.log('API Request: $method ${uri.toString()}', name: 'ApiClient');
+    // developer.log('Headers: ${headers.toString()}', name: 'ApiClient');
     if (body != null) {
       developer.log(
         'Body: ${body is String ? body : json.encode(body)}',
@@ -66,19 +66,14 @@ class ApiClient {
 
   void _logResponse(http.Response response) {
     if (!enableLogging) return;
-
-    developer.log(
-      'API Response Status: ${response.statusCode}',
-      name: 'ApiClient',
-    );
-    // developer.log('Response Headers: ${response.headers}', name: 'ApiClient');
+    developer.log('Response Headers: ${response.headers}', name: 'ApiClient');
 
     try {
-      final dynamic jsonData = json.decode(response.toString());
-      final prettyJson = const JsonEncoder.withIndent('  ').convert(jsonData);
-      developer.log('Response Body:\n$prettyJson', name: 'ApiClient');
-    } catch (_) {
-      developer.log('Response Body: ${response.body}', name: 'ApiClient');
+      final dynamic jsonData = json.decode(response.body);
+      developer.log('Response Body: $jsonData', name: 'ApiClient');
+    } catch (e) {
+      developer.log('Response parsing error: $e', name: 'ApiClient');
+      developer.log('Raw response body: ${response.body}', name: 'ApiClient');
     }
   }
 
@@ -94,12 +89,13 @@ class ApiClient {
       ).replace(queryParameters: queryParams);
 
       final requestHeaders = await _getHeaders(additionalHeaders: headers);
-      _logRequest('GET', uri, requestHeaders, null);
+
+      // _logRequest('GET', uri, requestHeaders, null);
 
       final response = await http.get(uri, headers: requestHeaders);
-
-      _logResponse(response);
-      return _processResponse<T>(response, fromJson);
+      // _logResponse(response);
+      final resp = _processResponse<T>(response, fromJson);
+      return resp;
     } catch (e) {
       developer.log('API Error: ${e.toString()}', name: 'ApiClient', error: e);
       return ApiResponse(error: e.toString(), statusCode: 500);
@@ -114,7 +110,6 @@ class ApiClient {
   }) async {
     try {
       final uri = Uri.parse('$baseUrl$endpoint');
-      developer.log(uri.toString());
       final requestHeaders = await _getHeaders(additionalHeaders: headers);
       final jsonBody = body != null ? json.encode(body) : null;
 
@@ -126,7 +121,7 @@ class ApiClient {
         body: jsonBody,
       );
 
-      _logResponse(response);
+      // _logResponse(response);
       return _processResponse<T>(response, fromJson);
     } catch (e) {
       developer.log('API Error: ${e.toString()}', name: 'ApiClient', error: e);
@@ -196,33 +191,86 @@ class ApiClient {
     http.Response response,
     T Function(dynamic)? fromJson,
   ) {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isEmpty) {
-        return ApiResponse<T>(statusCode: response.statusCode);
+    try {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (response.body.isEmpty) {
+          return ApiResponse<T>(statusCode: response.statusCode);
+        }
+
+        final dynamic jsonData = json.decode(response.body);
+
+        if (fromJson != null) {
+          try {
+            final dynamic dataToConvert =
+                jsonData is Map<String, dynamic> && jsonData.containsKey('data')
+                    ? jsonData['data']
+                    : jsonData;
+
+            final T data = fromJson(dataToConvert);
+            return ApiResponse<T>(data: data, statusCode: response.statusCode);
+          } catch (e) {
+            developer.log(
+              '[Parse error] Failed to convert with fromJson: ${e.toString()}',
+              name: 'ApiClient',
+              error: e,
+            );
+            return ApiResponse<T>(
+              statusCode: response.statusCode,
+              error: 'Failed to parse response: ${e.toString()}',
+            );
+          }
+        }
+
+        if (jsonData is T) {
+          return ApiResponse<T>(
+            data: jsonData,
+            statusCode: response.statusCode,
+          );
+        } else {
+          return ApiResponse<T>(
+            statusCode: response.statusCode,
+            error: 'Response type mismatch',
+          );
+        }
+      } else {
+        developer.log("[Line 240] Error response received", name: "ApiClient");
+        String errorMessage;
+        try {
+          final errorData = json.decode(response.body);
+          developer.log('[Line 243] Error data: $errorData', name: "ApiClient");
+          errorMessage =
+              errorData['message']?.toString() ??
+              (errorData['error']?.toString() ?? 'Unknown error occurred');
+          developer.log(
+            '[Line 247] Error message: $errorMessage',
+            name: "ApiClient",
+          );
+        } catch (_) {
+          errorMessage =
+              response.body.isNotEmpty
+                  ? response.body
+                  : 'Request failed with status: ${response.statusCode}';
+          developer.log(
+            "[Line 253] Error message from body: $errorMessage",
+            name: "ApiClient",
+          );
+        }
+
+        developer.log("[Line 259] Returning error response", name: "ApiClient");
+
+        return ApiResponse<T>(
+          error: errorMessage,
+          statusCode: response.statusCode,
+        );
       }
-
-      final dynamic jsonData = json.decode(response.body);
-
-      if (fromJson != null) {
-        final T data = fromJson(jsonData);
-        return ApiResponse<T>(data: data, statusCode: response.statusCode);
-      }
-
-      return ApiResponse<T>(
-        data: jsonData as T,
-        statusCode: response.statusCode,
+    } catch (e) {
+      developer.log(
+        '[Line 267] Process response error: ${e.toString()}',
+        name: 'ApiClient',
+        error: e,
       );
-    } else {
-      String errorMessage;
-      try {
-        final errorData = json.decode(response.body);
-        errorMessage = errorData['message'] ?? 'Unknown error occurred';
-      } catch (_) {
-        errorMessage = response.body;
-      }
-
       return ApiResponse<T>(
-        error: errorMessage,
+        error: 'Failed to process response: ${e.toString()}',
         statusCode: response.statusCode,
       );
     }
