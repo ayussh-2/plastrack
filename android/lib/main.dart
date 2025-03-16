@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:waste2ways/config/theme.dart';
+import 'package:waste2ways/screens/permission_screen.dart';
 import 'package:waste2ways/screens/profile_screen.dart';
+import 'package:waste2ways/screens/report_trash_screen.dart';
+import 'package:waste2ways/services/permission_service.dart';
 import 'package:waste2ways/widgets/auth_state_wrapper.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
@@ -15,40 +18,83 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(Waste2Way());
+  runApp(const Waste2Way());
 }
 
-class Waste2Way extends StatelessWidget {
+class Waste2Way extends StatefulWidget {
   const Waste2Way({super.key});
+
+  @override
+  State<Waste2Way> createState() => _Waste2WayState();
+}
+
+class _Waste2WayState extends State<Waste2Way> {
+  final PermissionService _permissionService = PermissionService();
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    await _permissionService.checkPermissions();
+    setState(() {
+      _initialized = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthService())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider.value(value: _permissionService),
+      ],
       child: MaterialApp(
-        title: 'Firebase Auth Demo',
+        title: 'Waste 2 Ways',
         theme: AppTheme.lightTheme,
         routes: {
-          '/login': (context) => LoginScreen(),
-          '/register': (context) => RegistrationScreen(),
-          '/home': (context) => HomeScreen(),
-          '/profile': (context) => ProfileScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegistrationScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/profile': (context) => const ProfileScreen(),
+          '/report-trash': (context) => ReportTrashScreen(userId: ''),
+          '/permissions': (context) => const PermissionScreen(),
         },
-        home: AuthStateWrapper(
-          authenticatedRoute: HomeScreen(),
-          unauthenticatedRoute: LoginScreen(),
-          loadingWidget: Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading...'),
-                ],
-              ),
-            ),
-          ),
+        home:
+            !_initialized
+                ? const SplashScreen()
+                : _permissionService.permissionsChecked &&
+                    !_permissionService.allPermissionsGranted
+                ? const PermissionScreen()
+                : AuthStateWrapper(
+                  authenticatedRoute: const HomeScreen(),
+                  unauthenticatedRoute: const LoginScreen(),
+                  loadingWidget: const SplashScreen(),
+                ),
+      ),
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.eco_outlined, size: 80, color: AppTheme.primaryColor),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text('Loading...'),
+          ],
         ),
       ),
     );

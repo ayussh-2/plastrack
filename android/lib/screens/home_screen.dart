@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../config/theme.dart';
 import 'dart:developer' as developer;
+import '../screens/report_trash_screen.dart'; // Add this import
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -97,6 +98,45 @@ class HomeScreen extends StatelessWidget {
                           ),
                           textAlign: TextAlign.center,
                         ),
+
+                        const Spacer(),
+
+                        // "I found trash" button
+                        ElevatedButton.icon(
+                          icon: Icon(Icons.camera_alt, color: Colors.white),
+                          label: Text(
+                            'I found trash',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 5,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => ReportTrashScreen(
+                                      userId: user.firebaseId,
+                                    ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 40.0),
                       ],
                     ),
                   ),
