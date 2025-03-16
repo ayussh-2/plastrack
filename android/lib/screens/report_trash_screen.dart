@@ -23,13 +23,20 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
   bool _isLoading = false;
   double _severity = 3;
   final TrashReportService _reportService = TrashReportService();
-  final MapController _mapController = MapController();
+  // Initialize the map controller only when needed
+  MapController? _mapController;
 
   @override
   void initState() {
     super.initState();
     developer.log('User ID: ${widget.userId}', name: 'ReportTrashScreen');
     _openCamera();
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -46,17 +53,28 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
         _isLoading = false;
       });
 
-      _mapController.move(
-        LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-        15.0,
-      );
+      // Only move the map if controller is initialized and the map exists
+      if (_mapController != null && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            _mapController?.move(
+              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+              15.0,
+            );
+          } catch (e) {
+            developer.log('Error moving map: $e', name: 'ReportTrashScreen');
+          }
+        });
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
+      }
     }
   }
 
@@ -71,7 +89,9 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
       _getCurrentLocation();
     } else {
       // User canceled taking a photo, go back
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -117,6 +137,9 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize map controller if needed
+    _mapController ??= MapController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Report Trash'),

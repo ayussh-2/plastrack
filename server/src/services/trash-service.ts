@@ -19,11 +19,12 @@ export class TrashService {
             labelAnnotations: labels,
             safeSearchAnnotation: safeSearch,
         };
-        const geminiResponse = await getGeminiResponse(visionData);
+        const geminiResponse = "await getGeminiResponse(visionData)";
         return await prisma.trashReport.create({
             data: {
                 ...data,
                 aiResponse: geminiResponse,
+                severity: Number(data.severity),
             },
         });
     }

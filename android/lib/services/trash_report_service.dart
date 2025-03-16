@@ -8,6 +8,9 @@ import 'package:waste2ways/utils/api_client.dart';
 import 'package:waste2ways/models/trash_report_model.dart';
 
 class TrashReportService {
+  TrashReportModel? _trashReport;
+  TrashReportModel? get trashReport => _trashReport;
+
   final ApiClient _apiClient = ApiClient(enableLogging: true);
 
   final String _cloudinaryUrl =
@@ -15,6 +18,7 @@ class TrashReportService {
   final String _cloudinaryPreset = dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
 
   Future<String> _uploadImageToCloudinary(File imageFile) async {
+    developer.log('Uploading image to Cloudinary', name: 'TrashReportService');
     final uri = Uri.parse(_cloudinaryUrl);
     final request = http.MultipartRequest('POST', uri);
 
@@ -49,42 +53,41 @@ class TrashReportService {
     required String userId,
   }) async {
     try {
-      final imageUrl = await _uploadImageToCloudinary(image);
-      developer.log('imageUrl: $imageUrl', name: 'TrashReportService');
+      // final imageUrl = await _uploadImageToCloudinary(image);
+      final imageUrl =
+          "https://res.cloudinary.com/dmvdbpyqk/image/upload/v1742136422/esh6dwk5pktq8fpysmyj.jpg";
+
+      // developer.log('imageUrl: $imageUrl', name: 'TrashReportService');
 
       final response = await _apiClient.post(
         '/trash/generate',
         body: {
           'latitude': latitude.toString(),
           'longitude': longitude.toString(),
-          'severity': severity.toString(),
+          'severity': severity,
           'image': imageUrl,
-          'userId': userId,
+          'firebaseId': userId,
         },
-        fromJson: (json) => json,
+        fromJson: (json) => TrashReportModel.fromJson(json),
       );
+      _trashReport = response.data;
+      // _trashModel = TrashReportModel(
+      //   id: _trashReport!.id,
+      //   latitude: latitude.toString(),
+      //   longitude: longitude.toString(),
+      //   trashType: _trashReport!.trashType,
+      //   severity: severity,
+      //   image: imageUrl,
+      //   timestamp: _trashReport!.timestamp,
+      //   userId: userId,
+      //   aiResponse: _trashReport!.aiResponse,
+      // );
 
-      if (response.data != null) {
-        developer.log('Trash report submitted', name: 'TrashReportService');
-        developer.log(
-          'Response JSON: ${json.encode(response.data['data'])}',
-          name: 'TrashReportService',
-        );
-
-        final trashReport = TrashReportModel.fromJson(response.data['data']);
-        developer.log(
-          'Parsed TrashReport: ${json.encode(trashReport.toJson())}',
-          name: 'TrashReportService',
-        );
-
-        return trashReport;
-      } else {
-        developer.log(
-          'Error submitting trash report: ${response.error}',
-          name: 'TrashReportService',
-        );
-        throw Exception('Failed to submit trash report');
-      }
+      developer.log(
+        'Trash report submitted: ${_trashReport!.toJson()}',
+        name: 'TrashReportService',
+      );
+      return _trashReport!;
     } catch (e) {
       throw Exception('Error submitting report: $e');
     }

@@ -39,12 +39,11 @@ model TrashReport {
   severity      Int
   image         String
   timestamp     DateTime        @default(now())
-  user          User?           @relation(fields: [userId], references: [id])
-  userId        String?
+  user          User?           @relation(fields: [firebaseId], references: [firebaseId])
+  firebaseId    String?
   aiResponse    String?
   TrashFeedback TrashFeedback[]
 }
-
 model TrashFeedback {
   id        Int         @id @default(autoincrement())
   reportId  Int
