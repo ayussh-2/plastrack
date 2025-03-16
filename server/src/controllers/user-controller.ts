@@ -21,6 +21,22 @@ export const userController = {
         return handleSuccess(res, user, "User profile retrieved successfully");
     }),
 
+    updateMe: asyncHandler(async (req: Request, res: Response) => {
+        const userId = req.user!.id;
+        const { name, phone, city, state, firebaseId, email } = req.body;
+        const user = await userService.updateUser(userId, {
+            name,
+            phone,
+            city,
+            state,
+            firebaseId,
+            email,
+            updatedAt: new Date(),
+        });
+
+        return handleSuccess(res, user, "User profile updated successfully");
+    }),
+
     getAllUsers: asyncHandler(async (req: Request, res: Response) => {
         const { page, limit } = req.query;
         const result = await userService.getAllUsers({

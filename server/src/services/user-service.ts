@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { IUser, PaginationParams } from "../types";
+import { IUser, PaginationParams, UserUpdateInput } from "../types";
 import { AppError } from "../utils/asyncHandler";
 
 export class UserService {
@@ -11,6 +11,18 @@ export class UserService {
         if (!user) {
             return null;
         }
+
+        return user;
+    }
+
+    async updateUser(
+        firebaseId: string,
+        data: UserUpdateInput
+    ): Promise<IUser> {
+        const user = await prisma.user.update({
+            where: { firebaseId },
+            data,
+        });
 
         return user;
     }

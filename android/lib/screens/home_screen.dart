@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
         ),
         child:
             user == null
-                ? Center(child: CircularProgressIndicator())
+                ? _buildNotLoggedInView(context)
                 : SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -101,6 +101,49 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+      ),
+    );
+  }
+
+  Widget _buildNotLoggedInView(BuildContext context) {
+    return SafeArea(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.account_circle_outlined,
+              size: 80,
+              color: AppTheme.primaryColor,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Not logged in',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              child: Text(
+                'Log In',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

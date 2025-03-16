@@ -6,7 +6,17 @@ export interface IUser {
     phone: string | null;
     city: string | null;
     state: string | null;
-    createdAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface UserUpdateInput {
+    name: string;
+    phone: string;
+    city: string;
+    state: string;
+    firebaseId: string;
+    email: string;
     updatedAt: Date;
 }
 

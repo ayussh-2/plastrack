@@ -8,5 +8,6 @@ router.get("/me", authMiddleware, userController.getMe);
 router.get("/", authMiddleware, userController.getAllUsers);
 router.get("/:id", authMiddleware, userController.getUserById);
 router.post("/register", authMiddleware, userController.createUser);
+router.put("/me", authMiddleware, userController.updateMe);
 
 export default router;

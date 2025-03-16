@@ -154,19 +154,13 @@ class AuthService extends ChangeNotifier {
     required String state,
   }) async {
     try {
-      // Update user profile in your backend
-      // Example API call:
-      // final response = await _dio.put(
-      //   '/api/users/profile',
-      //   data: {
-      //     'name': name,
-      //     'phone': phone,
-      //     'city': city,
-      //     'state': state,
-      //   },
-      // );
+      final response = await _apiClient.put(
+        "/users/me",
+        body: {'name': name, 'phone': phone, 'city': city, 'state': state},
+        fromJson: (json) => UserModel.fromJson(json),
+      );
 
-      // Update local user model
+      _userModel = response.data;
       _userModel = UserModel(
         email: _userModel!.email,
         name: name,
@@ -175,7 +169,7 @@ class AuthService extends ChangeNotifier {
         state: state,
         firebaseId: '',
       );
-
+      developer.log(_userModel.toString(), name: 'AuthService');
       notifyListeners();
       return true;
     } catch (e) {
