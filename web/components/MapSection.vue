@@ -143,24 +143,6 @@
           :positive="true"
           :icon="MapPin"
         />
-        <!-- <StatsCard
-                    title="PET Concentrations"
-                    value="1,842"
-                    change="8%"
-                    :positive="true"
-                />
-                <StatsCard
-                    title="HDPE Hotspots"
-                    value="973"
-                    change="5%"
-                    :positive="false"
-                />
-                <StatsCard
-                    title="Collection Efficiency"
-                    value="76%"
-                    change="3%"
-                    :positive="true"
-                /> -->
       </div>
     </div>
   </div>
