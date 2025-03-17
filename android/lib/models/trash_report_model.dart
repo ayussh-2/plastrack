@@ -2,23 +2,24 @@ class TrashReportModel {
   final int id;
   final String latitude;
   final String longitude;
-  final String? trashType;
+  final String? trashType; // Make nullable
   final int severity;
   final String image;
-  final DateTime timestamp;
-  final String userId;
-  final String aiResponse;
+  final String timestamp;
+  final String firebaseId;
+  final String? aiResponse; // Make nullable if needed
 
   TrashReportModel({
     required this.id,
     required this.latitude,
     required this.longitude,
-    this.trashType,
+    this.trashType, // Optional parameter
     required this.severity,
     required this.image,
     required this.timestamp,
-    required this.userId,
-    required this.aiResponse,
+    required this.firebaseId,
+    this.aiResponse,
+    required String userId,
   });
 
   factory TrashReportModel.fromJson(Map<String, dynamic> json) {
@@ -29,9 +30,10 @@ class TrashReportModel {
       trashType: json['trashType'],
       severity: json['severity'],
       image: json['image'],
-      timestamp: DateTime.parse(json['timestamp']),
-      userId: json['userId'],
+      timestamp: json['timestamp'],
+      firebaseId: json['firebaseId'],
       aiResponse: json['aiResponse'],
+      userId: '',
     );
   }
 
@@ -43,8 +45,8 @@ class TrashReportModel {
       'trashType': trashType,
       'severity': severity,
       'image': image,
-      'timestamp': timestamp.toIso8601String(),
-      'userId': userId,
+      'timestamp': timestamp,
+      'firebaseId': firebaseId,
       'aiResponse': aiResponse,
     };
   }

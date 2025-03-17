@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:waste2ways/config/theme.dart';
+import 'package:waste2ways/models/trash_report_model.dart';
 import 'package:waste2ways/screens/permission_screen.dart';
 import 'package:waste2ways/screens/profile_screen.dart';
 import 'package:waste2ways/screens/report_trash_screen.dart';
@@ -13,6 +14,7 @@ import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/trash_report_result_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +63,21 @@ class _Waste2WayState extends State<Waste2Way> {
           '/home': (context) => const HomeScreen(),
           '/profile': (context) => const ProfileScreen(),
           '/report-trash': (context) => ReportTrashScreen(userId: ''),
+          '/report-result':
+              (context) => TrashReportResultScreen(
+                report: TrashReportModel(
+                  id: 0,
+                  latitude: '0.0',
+                  longitude: '0.0',
+                  severity: 0,
+                  image: '',
+                  timestamp: DateTime.now().toIso8601String(),
+                  userId: '',
+                  aiResponse: '',
+                  firebaseId: '',
+                ),
+              ),
+
           '/permissions': (context) => const PermissionScreen(),
         },
         home:

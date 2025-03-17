@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:waste2ways/screens/trash_report_result_screen.dart';
 import '../config/theme.dart';
 import '../services/trash_report_service.dart';
 import 'dart:developer' as developer;
@@ -108,7 +109,7 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
     });
 
     try {
-      await _reportService.submitTrashReport(
+      final report = await _reportService.submitTrashReport(
         latitude: _currentPosition!.latitude,
         longitude: _currentPosition!.longitude,
         severity: _severity.toInt(),
@@ -124,7 +125,13 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Report submitted successfully!')),
       );
-      Navigator.pop(context);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TrashReportResultScreen(report: report),
+        ),
+      );
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -141,148 +148,233 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
     _mapController ??= MapController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Report Trash'),
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
-      ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_image != null) ...[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            _image!,
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      const Text(
-                        'Current Location',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      if (_currentPosition != null)
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: FlutterMap(
-                              mapController: _mapController,
-                              options: MapOptions(
-                                initialCenter: LatLng(
-                                  _currentPosition!.latitude,
-                                  _currentPosition!.longitude,
-                                ),
-                                minZoom: 15.0,
+      // App bar removed as requested
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.backgroundColor1, AppTheme.backgroundColor2],
+          ),
+        ),
+        child: SafeArea(
+          child:
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Back button and title in a row
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back_ios),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            Text(
+                              'Report Trash',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor,
                               ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                TileLayer(
-                                  urlTemplate:
-                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName: 'com.waste2way.app',
+                                if (_image != null) ...[
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.file(
+                                      _image!,
+                                      height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
+
+                                Text(
+                                  'Current Location',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
                                 ),
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: LatLng(
-                                        _currentPosition!.latitude,
-                                        _currentPosition!.longitude,
-                                      ),
-                                      width: 40,
-                                      height: 40,
-                                      child: const Icon(
-                                        Icons.location_on,
-                                        color: Colors.red,
-                                        size: 40,
+                                const SizedBox(height: 8),
+
+                                if (_currentPosition != null)
+                                  Container(
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: FlutterMap(
+                                        mapController: _mapController,
+                                        options: MapOptions(
+                                          initialCenter: LatLng(
+                                            _currentPosition!.latitude,
+                                            _currentPosition!.longitude,
+                                          ),
+                                          minZoom: 15.0,
+                                        ),
+                                        children: [
+                                          TileLayer(
+                                            urlTemplate:
+                                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                            userAgentPackageName:
+                                                'com.waste2way.app',
+                                          ),
+                                          MarkerLayer(
+                                            markers: [
+                                              Marker(
+                                                point: LatLng(
+                                                  _currentPosition!.latitude,
+                                                  _currentPosition!.longitude,
+                                                ),
+                                                width: 40,
+                                                height: 40,
+                                                child: const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.red,
+                                                  size: 40,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
+                                  )
+                                else
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed: _getCurrentLocation,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.primaryColor,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
+                                        ),
+                                      ),
+                                      child: const Text('Get Location'),
+                                    ),
+                                  ),
+
+                                const SizedBox(height: 24),
+
+                                Text(
+                                  'Severity Level',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Low'),
+                                          const Text('Medium'),
+                                          const Text('High'),
+                                        ],
+                                      ),
+                                      Slider(
+                                        value: _severity,
+                                        min: 1,
+                                        max: 5,
+                                        divisions: 4,
+                                        activeColor: AppTheme.primaryColor,
+                                        label: _severity.toInt().toString(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _severity = value;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        )
-                      else
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Submit button at the bottom
                         ElevatedButton(
-                          onPressed: _getCurrentLocation,
-                          child: const Text('Get Location'),
-                        ),
-
-                      const SizedBox(height: 24),
-
-                      const Text(
-                        'Severity Level',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Low'),
-                          const Text('Medium'),
-                          const Text('High'),
-                        ],
-                      ),
-
-                      Slider(
-                        value: _severity,
-                        min: 1,
-                        max: 5,
-                        divisions: 4,
-                        activeColor: AppTheme.primaryColor,
-                        label: _severity.toInt().toString(),
-                        onChanged: (value) {
-                          setState(() {
-                            _severity = value;
-                          });
-                        },
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      ElevatedButton(
-                        onPressed: _submitReport,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          onPressed: _submitReport,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'Submit Report',
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
-                        child: const Text(
-                          'Submit Report',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
+        ),
+      ),
     );
   }
 }

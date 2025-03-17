@@ -12,8 +12,9 @@ const userService = new UserService();
 export const userController = {
     getMe: asyncHandler(async (req: Request, res: Response) => {
         const userId = req.user!.id;
+        console.log(userId);
         const user = await userService.findUserByFirebaseId(userId);
-        console.log("user", user);
+
         if (!user) {
             const error = new AppError("User not found", 404);
             return handleError(error, res);
