@@ -93,4 +93,39 @@ class TrashReportService {
       throw Exception('Error submitting report: $e');
     }
   }
+
+  // Add the new feedback submission method
+  Future<Map<String, dynamic>> submitFeedback(
+    int reportId,
+    String feedback,
+  ) async {
+    developer.log('Submitting feedback for report $reportId');
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/trash/feedback'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'reportId': reportId, 'feedback': feedback}),
+      );
+
+      developer.log('Feedback response: ${response.body}');
+
+      final jsonData = json.decode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return {'success': true, 'data': jsonData};
+      } else {
+        return {
+          'success': false,
+          'message': jsonData['message'] ?? 'Failed to submit feedback',
+        };
+      }
+    } catch (e) {
+      developer.log(
+        'Error submitting feedback: $e',
+        name: 'TrashReportService',
+        error: e,
+      );
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
 }

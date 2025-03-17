@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import '../config/theme.dart';
 import '../models/trash_report_model.dart';
+import '../services/trash_report_service.dart';
 
 class TrashReportResultScreen extends StatelessWidget {
   final TrashReportModel report;
+  final TrashReportService _reportService = TrashReportService();
 
-  const TrashReportResultScreen({super.key, required this.report});
+  TrashReportResultScreen({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +124,24 @@ class TrashReportResultScreen extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Buttons
+                // Feedback button
+                ElevatedButton.icon(
+                  onPressed: () => _showFeedbackModal(context),
+                  icon: const Icon(Icons.feedback),
+                  label: const Text('Add Feedback'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black87,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Navigation Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -172,6 +192,171 @@ class TrashReportResultScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showFeedbackModal(BuildContext context) async {
+    final TextEditingController feedbackController = TextEditingController();
+    bool isSubmitting = false;
+
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Add Your Feedback',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Let us know if our classification is correct or if you have any suggestions:',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: feedbackController,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your feedback here...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed:
+                            isSubmitting
+                                ? null
+                                : () async {
+                                  if (feedbackController.text.trim().isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Please enter feedback'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  setState(() {
+                                    isSubmitting = true;
+                                  });
+
+                                  final success = await _submitFeedback(
+                                    context,
+                                    report.id!,
+                                    feedbackController.text.trim(),
+                                  );
+
+                                  if (success && context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+
+                                  setState(() {
+                                    isSubmitting = false;
+                                  });
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child:
+                            isSubmitting
+                                ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Text('Send Feedback'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<bool> _submitFeedback(
+    BuildContext context,
+    int reportId,
+    String feedback,
+  ) async {
+    try {
+      final result = await _reportService.submitFeedback(reportId, feedback);
+
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Thank you for your feedback!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+      return false;
+    }
   }
 
   Widget _buildSectionCard({required String title, required String content}) {
