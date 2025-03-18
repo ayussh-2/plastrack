@@ -14,6 +14,7 @@ import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/main_screen.dart'; // Add import for MainScreen
 import 'screens/trash_report_result_screen.dart';
 
 void main() async {
@@ -60,7 +61,7 @@ class _Waste2WayState extends State<Waste2Way> {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegistrationScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/home': (context) => const MainScreen(), // Update to use MainScreen
           '/profile': (context) => const ProfileScreen(),
           '/report-trash': (context) => ReportTrashScreen(userId: ''),
           '/report-result':
@@ -77,8 +78,9 @@ class _Waste2WayState extends State<Waste2Way> {
                   firebaseId: '',
                 ),
               ),
-
           '/permissions': (context) => const PermissionScreen(),
+          '/main':
+              (context) => const MainScreen(), // Add direct route to MainScreen
         },
         home:
             !_initialized
@@ -87,7 +89,8 @@ class _Waste2WayState extends State<Waste2Way> {
                     !_permissionService.allPermissionsGranted
                 ? const PermissionScreen()
                 : AuthStateWrapper(
-                  authenticatedRoute: const HomeScreen(),
+                  authenticatedRoute:
+                      const MainScreen(), // Change to MainScreen
                   unauthenticatedRoute: const LoginScreen(),
                   loadingWidget: const SplashScreen(),
                 ),
