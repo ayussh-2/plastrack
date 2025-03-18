@@ -94,26 +94,52 @@ class TrashReportService {
     }
   }
 
-  // Add the new feedback submission method
   Future<Map<String, dynamic>> submitFeedback(
     int reportId,
     String feedback,
   ) async {
-    developer.log('Submitting feedback for report $reportId');
     try {
+      developer.log(
+        'Submitting feedback for report ID: $reportId',
+        name: 'TrashReportService',
+      );
+      developer.log('Feedback content: $feedback', name: 'TrashReportService');
+
       final response = await http.post(
         Uri.parse('$_baseUrl/trash/feedback'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'reportId': reportId, 'feedback': feedback}),
       );
 
-      developer.log('Feedback response: ${response.body}');
-
       final jsonData = json.decode(response.body);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        return {'success': true, 'data': jsonData};
+        if (jsonData['data'] != null &&
+            (jsonData['data']['isInvalid'] == true ||
+                jsonData['data']['isInValid'] == true)) {
+          String errorMessage =
+              'We have detected that your feedback was irrelevant.';
+          if (jsonData['data']['message'] != null) {
+            errorMessage += ' ' + jsonData['data']['message'];
+          }
+
+          return {
+            'success': false,
+            'message': "It seems like your feedback was irrelevant",
+          };
+        }
+
+        return {
+          'success': true,
+          'message':
+              jsonData['data']?['message'] ?? 'Feedback successfully submitted',
+          'data': jsonData['data'],
+        };
       } else {
+        developer.log(
+          'Server error: ${response.statusCode}',
+          name: 'TrashReportService',
+        );
         return {
           'success': false,
           'message': jsonData['message'] ?? 'Failed to submit feedback',

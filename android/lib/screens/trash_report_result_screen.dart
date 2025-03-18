@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import '../config/theme.dart';
 import '../models/trash_report_model.dart';
 import '../services/trash_report_service.dart';
+import 'dart:developer' as developer;
 
 class TrashReportResultScreen extends StatelessWidget {
   final TrashReportModel report;
@@ -17,7 +17,6 @@ class TrashReportResultScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      // App bar removed for minimal UI
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -28,7 +27,12 @@ class TrashReportResultScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.only(
+              top: 15.0,
+              bottom: 15.0,
+              left: 20.0,
+              right: 20.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -334,27 +338,54 @@ class TrashReportResultScreen extends StatelessWidget {
     try {
       final result = await _reportService.submitFeedback(reportId, feedback);
 
-      if (result['success']) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Thank you for your feedback!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (result['success'] == true) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Thank you for your feedback!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
         return true;
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result['message']),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Feedback Error'),
+                content: Text(result['message'] ?? 'Failed to submit feedback'),
+                actions: [
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            },
+          );
+        }
         return false;
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-      );
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('An unexpected error occurred: $e'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+      }
       return false;
     }
   }
