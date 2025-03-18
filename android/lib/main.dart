@@ -13,9 +13,9 @@ import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/main_screen.dart'; // Add import for MainScreen
+import 'screens/main_screen.dart';
 import 'screens/trash_report_result_screen.dart';
+import 'screens/hotspot_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +61,7 @@ class _Waste2WayState extends State<Waste2Way> {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegistrationScreen(),
+          '/hotspot': (context) => const HotspotScreen(),
           '/home': (context) => const MainScreen(), // Update to use MainScreen
           '/profile': (context) => const ProfileScreen(),
           '/report-trash': (context) => ReportTrashScreen(userId: ''),

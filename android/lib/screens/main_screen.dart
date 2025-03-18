@@ -5,6 +5,7 @@ import '../config/theme.dart';
 import '../screens/home_screen.dart';
 import '../screens/report_trash_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/hotspot_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
       const HomeScreen(),
       const Placeholder(), // Replace with Reports screen
       const Placeholder(), // This will be replaced with camera screen
-      const Placeholder(), // Replace with Hotspots Map screen
+      const HotspotScreen(),
       const ProfileScreen(),
     ];
   }
