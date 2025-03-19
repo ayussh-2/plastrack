@@ -195,4 +195,20 @@ export class TrashService {
             },
         });
     }
+
+    async getMyTrashReportsAndFeedbacks(firebaseId: string) {
+        const reportsAndFeedbacks = await prisma.trashFeedback.findMany({
+            where: {
+                report: {
+                    firebaseId,
+                },
+            },
+            select: {
+                report: true,
+                feedback: true,
+            },
+        });
+
+        return reportsAndFeedbacks;
+    }
 }

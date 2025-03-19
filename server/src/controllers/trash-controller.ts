@@ -95,4 +95,18 @@ export const trashController = {
             );
         }
     ),
+
+    getMyTrashReportsAndFeedbacks: asyncHandler(
+        async (req: Request, res: Response) => {
+            const { firebaseId } = req.body;
+            const reports = await trashService.getMyTrashReportsAndFeedbacks(
+                firebaseId as string
+            );
+            return handleSuccess(
+                res,
+                reports,
+                "Reports and feedbacks retrieved successfully"
+            );
+        }
+    ),
 };
