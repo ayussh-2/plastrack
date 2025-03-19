@@ -24,13 +24,11 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
   bool _isLoading = false;
   double _severity = 3;
   final TrashReportService _reportService = TrashReportService();
-  // Initialize the map controller only when needed
   MapController? _mapController;
 
   @override
   void initState() {
     super.initState();
-    developer.log('User ID: ${widget.userId}', name: 'ReportTrashScreen');
     _openCamera();
   }
 
