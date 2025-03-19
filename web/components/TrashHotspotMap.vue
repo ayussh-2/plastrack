@@ -122,9 +122,9 @@ watch(
   [() => props.hotspotData, () => props.activeFilter],
   ([newData, newFilter]) => {
     if (map.value && googleInstance.value) {
-      console.log('Filtering with:', newFilter); // Debug log
+      console.log("Filtering with:", newFilter); // Debug log
       const filteredData = filterHotspots(newData);
-      console.log('Filtered data:', filteredData); // Debug log
+      console.log("Filtered data:", filteredData); // Debug log
       renderHotspots(filteredData, googleInstance.value);
     }
   },
@@ -220,10 +220,31 @@ const renderHotspots = (hotspots, google) => {
   if (!bounds.isEmpty()) {
     map.value.fitBounds(bounds);
 
-    if (props.geoLocation) {
-      setTimeout(() => {
-        map.value.setCenter(props.geoLocation);
-      }, 100);
+    // Add padding to bounds
+    const padding = {
+      top: 50,
+      right: 50,
+      bottom: 50,
+      left: 50,
+    };
+
+    map.value.fitBounds(bounds, padding);
+
+    // Set maximum zoom level to prevent too much zoom
+    const listener = google.maps.event.addListener(
+      map.value,
+      "idle",
+      function () {
+        if (map.value.getZoom() > 16) {
+          map.value.setZoom(16);
+        }
+        google.maps.event.removeListener(listener);
+      }
+    );
+
+    // If there's only one point, set a fixed zoom
+    if (hotspots.length === 1) {
+      map.value.setZoom(15);
     }
   }
 };

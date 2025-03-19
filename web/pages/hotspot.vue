@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, nextTick } from "vue";
 import { Filter, ChevronDown, CheckCircle2 } from "lucide-vue-next";
 const { get } = useApi();
 
@@ -146,16 +146,29 @@ function getGeoLocation() {
   });
 }
 
+// Update the getHotspots function
 async function getHotspots() {
   isLoading.value = true;
   try {
-    const { data } = await get("/trash/hotspots");
-    hotspotData.value = data;
-
+    // Get geolocation first
     try {
       geoLocation.value = await getGeoLocation();
     } catch (error) {
       console.error("Failed to get geolocation:", error);
+      // Set default location (you can set this to your city's coordinates)
+      geoLocation.value = {
+        lat: 0, // Replace with your default latitude
+        lng: 0  // Replace with your default longitude
+      };
+    }
+
+    // Then fetch hotspots
+    const { data } = await get("/trash/hotspots");
+    hotspotData.value = data;
+
+    // If no hotspots found, show a message
+    if (!data || data.length === 0) {
+      console.log("No hotspots found in the area");
     }
   } catch (error) {
     console.error("Failed to fetch hotspots:", error);
@@ -163,6 +176,23 @@ async function getHotspots() {
     isLoading.value = false;
   }
 }
+
+// Add a watch effect for activeFilter changes
+watch(activeFilter, () => {
+  // Trigger map update when filter changes
+  if (hotspotData.value.length > 0) {
+    nextTick(() => {
+      // Force map to recenter and zoom after filter change
+      if (selectedLocation.value) {
+        // If a location is selected, center on it
+        geoLocation.value = {
+          lat: selectedLocation.value.lat,
+          lng: selectedLocation.value.lng
+        };
+      }
+    });
+  }
+});
 
 const setFilter = (id) => {
   activeFilter.value = id;
