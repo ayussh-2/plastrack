@@ -18,6 +18,7 @@ class _HotspotScreenState extends State<HotspotScreen> {
   final HotspotService _hotspotService = HotspotService();
 
   final Set<Circle> _circles = {};
+  final Set<Circle> _filteredCircles = {};
   final Location _locationService = Location();
   LocationData? _currentLocation;
 
@@ -25,10 +26,13 @@ class _HotspotScreenState extends State<HotspotScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
-  // Initial camera position (will be updated with user location)
+  bool _showLowSeverity = true;
+  bool _showMediumSeverity = true;
+  bool _showHighSeverity = true;
+
   static const CameraPosition _initialCameraPosition = CameraPosition(
-    target: LatLng(22.2587, 84.9034), // Default position (can be changed)
-    zoom: 14.0,
+    target: LatLng(22.2587, 84.9034),
+    zoom: 18.0,
   );
 
   @override
@@ -39,20 +43,16 @@ class _HotspotScreenState extends State<HotspotScreen> {
 
   Future<void> _loadData() async {
     try {
-      // Get user's current location
       await _getCurrentLocation();
-
-      // Fetch hotspots from the backend
       final hotspots = await _hotspotService.getHotspots();
 
       if (mounted) {
         setState(() {
           _hotspots = hotspots;
           _isLoading = false;
-          _updateCircles();
         });
 
-        // Determine best camera position
+        _updateCircles();
         _moveToOptimalPosition();
       }
     } catch (e) {
@@ -69,7 +69,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
     bool serviceEnabled;
     PermissionStatus permissionGranted;
 
-    // Check if location services are enabled
     serviceEnabled = await _locationService.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await _locationService.requestService();
@@ -78,7 +77,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
       }
     }
 
-    // Check if permission is granted
     permissionGranted = await _locationService.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await _locationService.requestPermission();
@@ -87,7 +85,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
       }
     }
 
-    // Get location
     final locationData = await _locationService.getLocation();
     if (mounted) {
       setState(() {
@@ -99,14 +96,11 @@ class _HotspotScreenState extends State<HotspotScreen> {
   void _updateCircles() {
     final circles =
         _hotspots.map((hotspot) {
-          // Calculate circle radius based on severity and report count
-          // Radius in meters, scaled by severity (1-5) and reportCount
-          final baseRadius = 100.0; // Base radius in meters
-          final severityMultiplier = hotspot.avgSeverity; // 1-5
+          final baseRadius = 2.0;
+          final severityMultiplier = hotspot.avgSeverity;
           final countFactor = _getCountFactor(hotspot.reportCount);
           final radius = baseRadius * severityMultiplier * countFactor;
 
-          // Color based on severity
           final color = _getSeverityColor(hotspot.avgSeverity);
 
           return Circle(
@@ -125,19 +119,55 @@ class _HotspotScreenState extends State<HotspotScreen> {
     setState(() {
       _circles.clear();
       _circles.addAll(circles);
+      _applyFilters();
     });
   }
 
-  // Get a scaling factor based on report count
-  double _getCountFactor(int reportCount) {
-    if (reportCount <= 1) return 0.8;
-    if (reportCount <= 3) return 1.0;
-    if (reportCount <= 5) return 1.2;
-    if (reportCount <= 10) return 1.4;
-    return 1.6; // For very large clusters
+  void _applyFilters() {
+    final filtered =
+        _circles.where((circle) {
+          final circleId = circle.circleId.value;
+          final parts = circleId.split('_');
+          if (parts.length < 3) return false;
+
+          final hotspot = _hotspots.firstWhere(
+            (h) => 'hotspot_${h.latGroup}_${h.lngGroup}' == circleId,
+            orElse:
+                () => Hotspot(
+                  latGroup: 0,
+                  lngGroup: 0,
+                  avgSeverity: 0,
+                  reportCount: 0,
+                  reports: [],
+                ),
+          );
+
+          if (hotspot.avgSeverity <= 0) return false;
+
+          if (hotspot.avgSeverity <= 2 && !_showLowSeverity) return false;
+          if (hotspot.avgSeverity > 2 &&
+              hotspot.avgSeverity <= 3.5 &&
+              !_showMediumSeverity)
+            return false;
+          if (hotspot.avgSeverity > 3.5 && !_showHighSeverity) return false;
+
+          return true;
+        }).toSet();
+
+    setState(() {
+      _filteredCircles.clear();
+      _filteredCircles.addAll(filtered);
+    });
   }
 
-  // Get color based on severity
+  double _getCountFactor(int reportCount) {
+    if (reportCount <= 1) return 0.8;
+    if (reportCount <= 3) return 0.9;
+    if (reportCount <= 5) return 1.0;
+    if (reportCount <= 10) return 1.1;
+    return 1.2;
+  }
+
   Color _getSeverityColor(double severity) {
     if (severity <= 1) return Colors.green;
     if (severity <= 2) return Colors.lightGreen;
@@ -146,7 +176,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
     return Colors.red;
   }
 
-  // Show info when a hotspot is tapped
   void _showHotspotInfo(Hotspot hotspot) {
     showModalBottomSheet(
       context: context,
@@ -235,29 +264,24 @@ class _HotspotScreenState extends State<HotspotScreen> {
     );
   }
 
-  // Find the optimal camera position to show both user location and hotspots
   Future<void> _moveToOptimalPosition() async {
     if (_controller.isCompleted) {
       final GoogleMapController controller = await _controller.future;
 
-      // If no hotspots or no current location, just return
       if (_hotspots.isEmpty && _currentLocation == null) return;
 
-      // If we have the user location but no hotspots, center on user
       if (_hotspots.isEmpty && _currentLocation != null) {
         controller.animateCamera(
           CameraUpdate.newLatLngZoom(
             LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-            14.0,
+            18.0,
           ),
         );
         return;
       }
 
-      // Calculate bounds that include all hotspots and user location
       double minLat = 90.0, maxLat = -90.0, minLng = 180.0, maxLng = -180.0;
 
-      // Include hotspots in bounds
       for (final hotspot in _hotspots) {
         minLat = hotspot.latGroup < minLat ? hotspot.latGroup : minLat;
         maxLat = hotspot.latGroup > maxLat ? hotspot.latGroup : maxLat;
@@ -265,7 +289,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
         maxLng = hotspot.lngGroup > maxLng ? hotspot.lngGroup : maxLng;
       }
 
-      // Include user location in bounds if available
       if (_currentLocation != null) {
         final userLat = _currentLocation!.latitude!;
         final userLng = _currentLocation!.longitude!;
@@ -275,17 +298,57 @@ class _HotspotScreenState extends State<HotspotScreen> {
         maxLng = userLng > maxLng ? userLng : maxLng;
       }
 
-      // Add padding to bounds
-      final latPadding = (maxLat - minLat) * 0.2;
-      final lngPadding = (maxLng - minLng) * 0.2;
+      final centerLat = (minLat + maxLat) / 2;
+      final centerLng = (minLng + maxLng) / 2;
 
-      controller.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          LatLngBounds(
-            southwest: LatLng(minLat - latPadding, minLng - lngPadding),
-            northeast: LatLng(maxLat + latPadding, maxLng + lngPadding),
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (_currentLocation != null) {
+        await controller.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+            18.0,
           ),
-          50.0, // padding in pixels
+        );
+        return;
+      }
+
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(LatLng(centerLat, centerLng), 18.0),
+      );
+
+      if (_hotspots.length > 1) {
+        try {
+          await controller.animateCamera(
+            CameraUpdate.newLatLngBounds(
+              LatLngBounds(
+                southwest: LatLng(minLat, minLng),
+                northeast: LatLng(maxLat, maxLng),
+              ),
+              70.0,
+            ),
+          );
+
+          final zoomLevel = await controller.getZoomLevel();
+          if (zoomLevel < 18.0) {
+            await controller.animateCamera(CameraUpdate.zoomTo(18.0));
+          }
+        } catch (e) {
+          await controller.animateCamera(
+            CameraUpdate.newLatLngZoom(LatLng(centerLat, centerLng), 18.0),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _centerOnUserLocation() async {
+    if (_currentLocation != null && _controller.isCompleted) {
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
+          18.0,
         ),
       );
     }
@@ -294,21 +357,6 @@ class _HotspotScreenState extends State<HotspotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trash Hotspots'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              setState(() {
-                _isLoading = true;
-                _errorMessage = null;
-              });
-              _loadData();
-            },
-          ),
-        ],
-      ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -339,36 +387,135 @@ class _HotspotScreenState extends State<HotspotScreen> {
                   GoogleMap(
                     mapType: MapType.normal,
                     initialCameraPosition: _initialCameraPosition,
-                    circles: _circles,
+                    circles:
+                        _filteredCircles.isEmpty ? _circles : _filteredCircles,
                     myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: true,
+                    compassEnabled: true,
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
-                      // Once map is created, position it optimally
-                      _moveToOptimalPosition();
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        _moveToOptimalPosition();
+                      });
                     },
                   ),
+
+                  if (_currentLocation != null && !_isLoading)
+                    Positioned(
+                      right: 16,
+                      bottom: 170,
+                      child: FloatingActionButton(
+                        onPressed: _centerOnUserLocation,
+                        heroTag: 'centerLocation',
+                        child: const Icon(Icons.my_location),
+                        tooltip: 'Center on my location',
+                      ),
+                    ),
+
                   if (_hotspots.isNotEmpty)
                     Positioned(
                       bottom: 16,
                       left: 16,
                       right: 16,
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              _legendItem(Colors.green, 'Low Severity'),
-                              _legendItem(Colors.yellow, 'Medium'),
-                              _legendItem(Colors.red, 'High Severity'),
-                            ],
+                      child: Column(
+                        children: [
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 8.0,
+                                      bottom: 4.0,
+                                    ),
+                                    child: Text(
+                                      'Filter by Severity:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      _filterButton(
+                                        'Low',
+                                        Colors.green,
+                                        _showLowSeverity,
+                                        (value) {
+                                          setState(() {
+                                            _showLowSeverity = value!;
+                                            _applyFilters();
+                                          });
+                                        },
+                                      ),
+                                      _filterButton(
+                                        'Medium',
+                                        Colors.yellow,
+                                        _showMediumSeverity,
+                                        (value) {
+                                          setState(() {
+                                            _showMediumSeverity = value!;
+                                            _applyFilters();
+                                          });
+                                        },
+                                      ),
+                                      _filterButton(
+                                        'High',
+                                        Colors.red,
+                                        _showHighSeverity,
+                                        (value) {
+                                          setState(() {
+                                            _showHighSeverity = value!;
+                                            _applyFilters();
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  _legendItem(Colors.green, 'Low Severity'),
+                                  _legendItem(Colors.yellow, 'Medium'),
+                                  _legendItem(Colors.red, 'High Severity'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                 ],
               ),
+    );
+  }
+
+  Widget _filterButton(
+    String label,
+    Color color,
+    bool isSelected,
+    Function(bool?) onChanged,
+  ) {
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      selectedColor: color.withOpacity(0.3),
+      checkmarkColor: Colors.black87,
+      onSelected: onChanged,
     );
   }
 
