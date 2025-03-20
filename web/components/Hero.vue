@@ -54,11 +54,11 @@
         </p>
 
         <div class="flex flex-wrap justify-center gap-4">
-          <NuxtLink to="/features" class="btn-primary">
-            Explore Solution
+          <NuxtLink to="/#download" class="btn-primary">
+            Download Our App
           </NuxtLink>
-          <NuxtLink to="/dashboard" class="btn-secondary">
-            Waste Analytics
+          <NuxtLink to="/#try" class="btn-secondary">
+            Try it Out
             <Icon name="lucide:arrow-right" class="inline w-4 h-4 ml-2" />
           </NuxtLink>
         </div>
