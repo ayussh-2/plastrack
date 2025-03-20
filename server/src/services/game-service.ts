@@ -33,4 +33,56 @@ export class GameService {
     });
     return user?.points ?? 0;
   }
+
+  async getLeaderboard(page: number = 1, limit: number = 8) {
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          points: "desc",
+        },
+        select: {
+          name: true,
+          points: true,
+          profilePicture: true,
+          city: true,
+          state: true,
+        },
+      }),
+      prisma.user.count(),
+    ]);
+
+    return {
+      users,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    };
+  }
+
+  async getUserRank(firebaseId: string) {
+    const currentUser = await prisma.user.findUnique({
+      where: { firebaseId },
+      select: { points: true },
+    });
+
+    if (!currentUser) {
+      return null;
+    }
+
+    const usersWithHigherScore = await prisma.user.count({
+      where: {
+        points: {
+          gt: currentUser.points,
+        },
+      },
+    });
+
+    return {
+      rank: usersWithHigherScore + 1,
+      points: currentUser.points,
+    };
+  }
 }
