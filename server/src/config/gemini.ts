@@ -42,24 +42,24 @@ Your primary tasks:
    - Landfill Reduction (in kg)
    - CO₂ Reduction (in kg)
 
-Format your response as:
-[Material Name]
-Identified with [X]% confidence
-
-Recyclability: [Recyclable/Partially Recyclable/Non-Recyclable]
-
-Infrastructure Suitability:
-Road Surface: [X]%
-Paving Blocks: [X]%
-Boundary Walls: [X]%
-Traffic Barriers: [X]%
-
-Environmental Impact
-Repurposing this waste could save:
-
-Landfill Reduction: [X] kg
-CO₂ Reduction: [X] kg
+Format your response as clean JSON with these exact key formats:
+{
+  "material": "Material Name",
+  "confidence": X,
+  "recyclability": "Recyclable/Partially Recyclable/Non-Recyclable",
+  "infrastructure_suitability": {
+    "road_surface": X,
+    "paving_blocks": X,
+    "boundary_walls": X,
+    "traffic_barriers": X
+  },
+  "environmental_impact": {
+    "landfill_reduction": X,
+    "co2_reduction": X
+  }
+}
 
 If you cannot confidently identify a specific item, classify it by its general material type (such as "General Plastics," "Wood Material," "Metal," "Glass," "Textile," "Paper/Cardboard," etc.) with an appropriate confidence score. Focus on providing practical infrastructure reuse metrics even for these generalized classifications.
+
 Always respond with valid JSON only - no additional text, explanations or markdown formatting.
 `;

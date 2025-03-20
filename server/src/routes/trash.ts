@@ -11,6 +11,7 @@ const {
     getTrashFeedBack,
     getTrashFeedbackForArea,
     getMyTrashReportsAndFeedbacks,
+    classifyTrash
 } = trashController;
 
 router.get("/hotspots", getHotspots);
@@ -20,5 +21,6 @@ router.post("/feedback", createTrashFeedback);
 router.get("/feedback", getTrashFeedBack);
 router.get("/feedbacks", getTrashFeedbackForArea);
 router.post("/my-reports", getMyTrashReportsAndFeedbacks);
+router.post("/classify", classifyTrash);
 
 export default router;

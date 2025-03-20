@@ -20,6 +20,12 @@ export const trashController = {
         );
     }),
 
+    classifyTrash: asyncHandler(async (req: Request, res: Response) => {
+        const strignified = await trashService.classifyTrash(req.body);
+        const report = JSON.parse(strignified);
+        return handleSuccess(res, report, "Trash classified successfully");
+    }),
+
     getHotspots: asyncHandler(async (req: Request, res: Response) => {
         const { days = 30, gridPrecision = 4 } = req.query;
         const hotspots = await trashService.getHotspots(

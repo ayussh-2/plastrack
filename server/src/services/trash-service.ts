@@ -17,21 +17,11 @@ export class TrashService {
   }
 
   async createReport(data: Omit<TrashReport, "id">) {
-    const { image } = data;
-    const [result] = await client.labelDetection(image);
-    const [safeSearchResult] = await client.safeSearchDetection(image);
-    const labels = result.labelAnnotations || [];
-    const safeSearch = safeSearchResult.safeSearchAnnotation || {};
-    const visionData = {
-      labelAnnotations: labels,
-      safeSearchAnnotation: safeSearch,
-    };
-    const geminiResponse = await getGeminiResponse(visionData);
-        const strigifiedResponse = cleanJsonResponse(geminiResponse)
+    const aiResponse = await this.classifyTrash(data);
     const report = await prisma.trashReport.create({
       data: {
         ...data,
-        aiResponse: strigifiedResponse,
+        aiResponse,
         severity: Number(data.severity),
         trashType: data.trashType || "unknown",
       },
@@ -43,6 +33,21 @@ export class TrashService {
     }
 
     return report;
+  }
+
+  async classifyTrash(data: { image: string }) {
+    const { image } = data;
+    const [result] = await client.labelDetection(image);
+    const [safeSearchResult] = await client.safeSearchDetection(image);
+    const labels = result.labelAnnotations || [];
+    const safeSearch = safeSearchResult.safeSearchAnnotation || {};
+    const visionData = {
+      labelAnnotations: labels,
+      safeSearchAnnotation: safeSearch,
+    };
+    const geminiResponse = await getGeminiResponse(visionData);
+    const strigifiedResponse = cleanJsonResponse(geminiResponse);
+    return strigifiedResponse;
   }
 
   async createMultipleReports(data: Omit<TrashReport, "id">[]) {
