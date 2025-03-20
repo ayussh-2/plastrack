@@ -11,13 +11,13 @@
             <NuxtLink to="/" class="flex items-center space-x-2">
                 <Icon
                     name="lucide:recycle"
-                    class="text-waste2way-teal scale-150"
+                    class="scale-150 text-waste2way-teal"
                 />
-                <span class="font-display font-bold text-xl">Waste2Way</span>
+                <span class="text-xl font-bold font-display">Waste2Way</span>
             </NuxtLink>
 
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center space-x-8">
+            <div class="items-center hidden space-x-8 md:flex">
                 <NuxtLink
                     v-for="item in navItems"
                     :key="item.name"
@@ -33,13 +33,13 @@
                     {{ item.name }}
                 </NuxtLink>
                 <NuxtLink to="/dashboard" class="btn-primary">
-                    Get Started
+                    Download Our App
                 </NuxtLink>
             </div>
 
             <!-- Mobile Menu Button -->
             <button
-                class="md:hidden text-2xl p-2"
+                class="p-2 text-2xl md:hidden"
                 @click="mobileMenuOpen = !mobileMenuOpen"
             >
                 <Icon v-if="mobileMenuOpen" name="lucide:x" />
@@ -51,7 +51,7 @@
         <Transition name="slide">
             <div
                 v-if="mobileMenuOpen"
-                class="fixed inset-0 z-40 bg-white/90 dark:bg-waste2way-dark/95 backdrop-blur-lg flex flex-col items-center justify-center space-y-8 md:hidden pt-20"
+                class="fixed inset-0 z-40 flex flex-col items-center justify-center pt-20 space-y-8 bg-white/90 dark:bg-waste2way-dark/95 backdrop-blur-lg md:hidden"
             >
                 <NuxtLink
                     v-for="item in navItems"
@@ -67,10 +67,10 @@
                 </NuxtLink>
                 <NuxtLink
                     to="/dashboard"
-                    class="btn-primary mt-4"
+                    class="mt-4 btn-primary"
                     @click="mobileMenuOpen = false"
                 >
-                    Get Started
+                    Download Our App
                 </NuxtLink>
             </div>
         </Transition>
@@ -84,7 +84,6 @@ const mobileMenuOpen = ref(false);
 const navItems = [
     { name: "Home", path: "/" },
     { name: "Features", path: "/features" },
-    { name: "Dashboard", path: "/dashboard" },
     { name: "Community", path: "/community" },
 ];
 
