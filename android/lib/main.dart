@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:waste2ways/config/theme.dart';
+import 'package:waste2ways/models/trash_report_model.dart';
 import 'package:waste2ways/screens/permission_screen.dart';
 import 'package:waste2ways/screens/profile_screen.dart';
 import 'package:waste2ways/screens/report_trash_screen.dart';
@@ -12,7 +13,10 @@ import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
+import 'screens/trash_report_result_screen.dart';
+import 'screens/hotspot_screen.dart';
+import 'screens/reports_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,10 +62,27 @@ class _Waste2WayState extends State<Waste2Way> {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegistrationScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/hotspot': (context) => const HotspotScreen(),
+          '/home': (context) => const MainScreen(),
           '/profile': (context) => const ProfileScreen(),
           '/report-trash': (context) => ReportTrashScreen(userId: ''),
+          '/report-result':
+              (context) => TrashReportResultScreen(
+                report: TrashReportModel(
+                  id: 0,
+                  latitude: '0.0',
+                  longitude: '0.0',
+                  severity: 0,
+                  image: '',
+                  timestamp: DateTime.now().toIso8601String(),
+                  userId: '',
+                  aiResponse: '',
+                  firebaseId: '',
+                ),
+              ),
           '/permissions': (context) => const PermissionScreen(),
+          '/my-reports': (context) => const ReportsScreen(),
+          '/main': (context) => const MainScreen(),
         },
         home:
             !_initialized
@@ -70,7 +91,8 @@ class _Waste2WayState extends State<Waste2Way> {
                     !_permissionService.allPermissionsGranted
                 ? const PermissionScreen()
                 : AuthStateWrapper(
-                  authenticatedRoute: const HomeScreen(),
+                  authenticatedRoute:
+                      const MainScreen(), // Change to MainScreen
                   unauthenticatedRoute: const LoginScreen(),
                   loadingWidget: const SplashScreen(),
                 ),

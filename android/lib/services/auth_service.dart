@@ -64,6 +64,7 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> _fetchUserData(String firebaseId) async {
+    developer.log('Fetching user data...', name: 'AuthService');
     try {
       final response = await _apiClient.get(
         "/users/me",

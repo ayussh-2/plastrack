@@ -3,22 +3,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:waste2ways/config/constants.dart';
 import 'dart:developer' as developer;
-import 'package:waste2ways/utils/api_client.dart';
 import 'package:waste2ways/models/trash_report_model.dart';
 
 class TrashReportService {
   TrashReportModel? _trashReport;
   TrashReportModel? get trashReport => _trashReport;
 
-  final ApiClient _apiClient = ApiClient(enableLogging: true);
-
+  final String _baseUrl = Constants.baseUrl;
   final String _cloudinaryUrl =
       'https://api.cloudinary.com/v1_1/${dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? ''}/upload';
   final String _cloudinaryPreset = dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
 
   Future<String> _uploadImageToCloudinary(File imageFile) async {
-    developer.log('Uploading image to Cloudinary', name: 'TrashReportService');
     final uri = Uri.parse(_cloudinaryUrl);
     final request = http.MultipartRequest('POST', uri);
 
@@ -53,43 +51,107 @@ class TrashReportService {
     required String userId,
   }) async {
     try {
-      // final imageUrl = await _uploadImageToCloudinary(image);
-      final imageUrl =
-          "https://res.cloudinary.com/dmvdbpyqk/image/upload/v1742136422/esh6dwk5pktq8fpysmyj.jpg";
+      final imageUrl = await _uploadImageToCloudinary(image);
+      // final imageUrl =
+      //     "https://res.cloudinary.com/dmvdbpyqk/image/upload/v1742136422/esh6dwk5pktq8fpysmyj.jpg";
 
-      // developer.log('imageUrl: $imageUrl', name: 'TrashReportService');
+      final Map<String, String> requestBody = {
+        'latitude': latitude.toString(),
+        'longitude': longitude.toString(),
+        'severity': severity.toString(),
+        'image': imageUrl,
+        'firebaseId': userId,
+      };
 
-      final response = await _apiClient.post(
-        '/trash/generate',
-        body: {
-          'latitude': latitude.toString(),
-          'longitude': longitude.toString(),
-          'severity': severity,
-          'image': imageUrl,
-          'firebaseId': userId,
-        },
-        fromJson: (json) => TrashReportModel.fromJson(json),
+      final response = await http.post(
+        Uri.parse('$_baseUrl/trash/generate'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(requestBody),
       );
-      _trashReport = response.data;
-      // _trashModel = TrashReportModel(
-      //   id: _trashReport!.id,
-      //   latitude: latitude.toString(),
-      //   longitude: longitude.toString(),
-      //   trashType: _trashReport!.trashType,
-      //   severity: severity,
-      //   image: imageUrl,
-      //   timestamp: _trashReport!.timestamp,
-      //   userId: userId,
-      //   aiResponse: _trashReport!.aiResponse,
-      // );
 
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData is Map && jsonData.containsKey('data')) {
+          _trashReport = TrashReportModel.fromJson(jsonData['data']);
+
+          return _trashReport!;
+        } else {
+          throw Exception('Invalid response format: missing data field');
+        }
+      } else {
+        throw Exception(
+          'Server error: ${response.statusCode}, body: ${response.body}',
+        );
+      }
+    } catch (e) {
       developer.log(
-        'Trash report submitted: ${_trashReport!.toJson()}',
+        'Error submitting trash report: $e',
+        name: 'TrashReportService',
+        error: e,
+      );
+      throw Exception('Error submitting report: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> submitFeedback(
+    int reportId,
+    String feedback,
+  ) async {
+    try {
+      developer.log(
+        'Submitting feedback for report ID: $reportId',
         name: 'TrashReportService',
       );
-      return _trashReport!;
+      developer.log('Feedback content: $feedback', name: 'TrashReportService');
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/trash/feedback'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'reportId': reportId, 'feedback': feedback}),
+      );
+
+      final jsonData = json.decode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (jsonData['data'] != null &&
+            (jsonData['data']['isInvalid'] == true ||
+                jsonData['data']['isInValid'] == true)) {
+          String errorMessage =
+              'We have detected that your feedback was irrelevant.';
+          if (jsonData['data']['message'] != null) {
+            errorMessage += ' ' + jsonData['data']['message'];
+          }
+
+          return {
+            'success': false,
+            'message': "It seems like your feedback was irrelevant",
+          };
+        }
+
+        return {
+          'success': true,
+          'message':
+              jsonData['data']?['message'] ?? 'Feedback successfully submitted',
+          'data': jsonData['data'],
+        };
+      } else {
+        developer.log(
+          'Server error: ${response.statusCode}',
+          name: 'TrashReportService',
+        );
+        return {
+          'success': false,
+          'message': jsonData['message'] ?? 'Failed to submit feedback',
+        };
+      }
     } catch (e) {
-      throw Exception('Error submitting report: $e');
+      developer.log(
+        'Error submitting feedback: $e',
+        name: 'TrashReportService',
+        error: e,
+      );
+      return {'success': false, 'message': 'Error: $e'};
     }
   }
 }

@@ -19,12 +19,13 @@ export class TrashService {
             labelAnnotations: labels,
             safeSearchAnnotation: safeSearch,
         };
-        const geminiResponse = "await getGeminiResponse(visionData)";
+        const geminiResponse = await getGeminiResponse(visionData);
         return await prisma.trashReport.create({
             data: {
                 ...data,
                 aiResponse: geminiResponse,
                 severity: Number(data.severity),
+                trashType: data.trashType || "unknown",
             },
         });
     }
@@ -140,19 +141,25 @@ export class TrashService {
 
         if (!feedbackReview.isValid) {
             return {
-                success: false,
+                isInvalid: true,
                 message:
                     "The feedback you provided seems not correct for the given trash." +
                     feedbackReview.explanation,
             };
         }
 
-        return await prisma.trashFeedback.create({
+        const validFeedback = await prisma.trashFeedback.create({
             data: {
                 reportId,
                 feedback,
             },
         });
+
+        return {
+            isInValid: false,
+            feedback: validFeedback,
+            message: "Feedback successfully submitted",
+        };
     }
 
     async getTrashFeedback(reportId: number) {
@@ -187,5 +194,21 @@ export class TrashService {
                 report: true,
             },
         });
+    }
+
+    async getMyTrashReportsAndFeedbacks(firebaseId: string) {
+        const reportsAndFeedbacks = await prisma.trashFeedback.findMany({
+            where: {
+                report: {
+                    firebaseId,
+                },
+            },
+            select: {
+                report: true,
+                feedback: true,
+            },
+        });
+
+        return reportsAndFeedbacks;
     }
 }
