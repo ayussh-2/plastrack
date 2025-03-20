@@ -69,4 +69,4 @@ function cleanJsonResponse(response: string): string {
     return cleaned;
 }
 
-export { validateFeedback };
+export { validateFeedback,cleanJsonResponse };

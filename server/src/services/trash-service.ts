@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { TrashReport, HotspotData } from "../types";
-import { validateFeedback } from "@/utils/validateFeedback";
+import { cleanJsonResponse, validateFeedback } from "@/utils/validateFeedback";
 import { ImageAnnotatorClient } from "@google-cloud/vision";
 import { getGeminiResponse } from "@/lib/gemini";
 import { GameService } from "./game-service";
@@ -27,10 +27,11 @@ export class TrashService {
       safeSearchAnnotation: safeSearch,
     };
     const geminiResponse = await getGeminiResponse(visionData);
+        const strigifiedResponse = cleanJsonResponse(geminiResponse)
     const report = await prisma.trashReport.create({
       data: {
         ...data,
-        aiResponse: geminiResponse,
+        aiResponse: strigifiedResponse,
         severity: Number(data.severity),
         trashType: data.trashType || "unknown",
       },

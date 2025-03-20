@@ -77,7 +77,7 @@ async function getGeminiResponse(input: string | any) {
         const parts = [{ text: prompt }];
 
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.0-flash",
             systemInstruction: systemInstruction,
             generationConfig,
             safetySettings,
@@ -123,7 +123,6 @@ async function getGeminiResponse(input: string | any) {
                 "Max attempts exceeded or no response from the server"
             );
         }
-        console.log("Gemini response:", result.response.text());
         return result.response.text();
     } catch (e: any) {
         console.error("Gemini API error:", e);
