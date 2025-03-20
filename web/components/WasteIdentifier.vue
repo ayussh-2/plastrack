@@ -7,7 +7,8 @@
         </h2>
         <p class="max-w-2xl mx-auto text-muted-foreground">
           Our AI-powered system identifies waste types with 90%+ accuracy and
-          determines their suitability for their usage in sustainable infrastructure.
+          determines their suitability for their usage in sustainable
+          infrastructure.
         </p>
       </div>
 
@@ -74,8 +75,8 @@
             </div>
             <h3 class="mb-2 text-xl font-medium">No Image Uploaded</h3>
             <p class="text-muted-foreground">
-              Upload an image to identify waste type and assess its
-              potential for sustainable usage.
+              Upload an image to identify waste type and assess its potential
+              for sustainable usage.
             </p>
           </div>
 
@@ -190,16 +191,6 @@
                 </div>
               </div>
             </div>
-
-            <div class="mt-6">
-              <button
-                @click="addToHeatmap"
-                class="flex items-center justify-center w-full py-2 btn-primary"
-              >
-                <Icon name="lucide:map-pin" class="w-4 h-4 mr-2" />
-                Add to Waste Heatmap
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -207,32 +198,43 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from "vue";
+import type {
+  WasteClassificationResponse,
+  AnalysisResult,
+} from "~/types/waste";
+import { useApi } from "~/composables/useApi";
+import { uploadToCloudinary } from "~/utils/cloudinary";
+
 const isDragging = ref(false);
-const image = ref(null);
+const image = ref<string | null>(null);
 const analyzing = ref(false);
-const results = ref(null);
+const results = ref<AnalysisResult | null>(null);
 
-const handleFileDrop = (e) => {
+const handleFileDrop = (e: DragEvent) => {
   isDragging.value = false;
-  const file = e.dataTransfer.files[0];
-  processFile(file);
-};
-
-const handleFileSelect = (e) => {
-  if (e.target.files && e.target.files[0]) {
-    processFile(e.target.files[0]);
+  const file = e.dataTransfer?.files[0];
+  if (file) {
+    processFile(file);
   }
 };
 
-const processFile = (file) => {
+const handleFileSelect = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    processFile(target.files[0]);
+  }
+};
+
+const processFile = async (file: File) => {
   if (file && file.type.match("image.*")) {
     const reader = new FileReader();
 
     reader.onload = (e) => {
       if (e.target && typeof e.target.result === "string") {
         image.value = e.target.result;
-        analyzeImage();
+        analyzeImage(file);
       }
     };
 
@@ -240,44 +242,64 @@ const processFile = (file) => {
   }
 };
 
-const analyzeImage = () => {
+const analyzeImage = async (file: File) => {
   analyzing.value = true;
   results.value = null;
 
-  // Simulate API call with timeout
-  // This would be replaced with an actual call to the Waste Identification API
-  setTimeout(() => {
+  try {
+    const api = useApi();
+    const cloudinaryUrl = await uploadToCloudinary(file);
+
+    const response = await api.post<WasteClassificationResponse>(
+      "/trash/classify",
+      {
+        image: cloudinaryUrl,
+      }
+    );
+
     analyzing.value = false;
-    // Mock results based on the Waste Identification API structure
-    results.value = {
-      type: "Polyethylene Terephthalate (PET)",
-      confidence: 92.3, // Higher accuracy based on document
-      recyclable: true,
-      recyclabilityScore: 88,
-      suitability: [
-        { purpose: "Road Surface", score: 87 },
-        { purpose: "Paving Blocks", score: 92 },
-        { purpose: "Boundary Walls", score: 78 },
-        { purpose: "Traffic Barriers", score: 65 },
-      ],
-      impacts: {
-        landfillReduction: 2.6,
-        co2Reduction: 3.8,
-      },
-    };
-  }, 2500);
+
+    if (response.success) {
+      const result: AnalysisResult = {
+        type: response.data.material,
+        confidence: response.data.confidence,
+        recyclable: response.data.recyclability.includes("Recyclable"),
+        recyclabilityScore: response.data.confidence,
+        suitability: [
+          {
+            purpose: "Road Surface",
+            score: response.data.infrastructure_suitability.road_surface,
+          },
+          {
+            purpose: "Paving Blocks",
+            score: response.data.infrastructure_suitability.paving_blocks,
+          },
+          {
+            purpose: "Boundary Walls",
+            score: response.data.infrastructure_suitability.boundary_walls,
+          },
+          {
+            purpose: "Traffic Barriers",
+            score: response.data.infrastructure_suitability.traffic_barriers,
+          },
+        ],
+        impacts: {
+          landfillReduction:
+            response.data.environmental_impact.landfill_reduction,
+          co2Reduction: response.data.environmental_impact.co2_reduction,
+        },
+      };
+
+      results.value = result;
+    }
+  } catch (error) {
+    console.error("Error analyzing image:", error);
+    analyzing.value = false;
+  }
 };
 
 const resetAnalysis = () => {
   image.value = null;
   results.value = null;
-};
-
-const addToHeatmap = () => {
-  // This would integrate with the Geospatial Data API
-  // to update waste hotspots and heat maps
-  alert(
-    "Location added to waste heatmap! This data will help municipal authorities prioritize collection areas."
-  );
 };
 </script>
