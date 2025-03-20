@@ -4,6 +4,7 @@
   >
     <!-- Background gradient -->
     <div
+     id="home"
       class="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-waste2way-teal/5 to-waste2way-blue/10"
     />
 

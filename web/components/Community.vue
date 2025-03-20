@@ -1,5 +1,8 @@
 <template>
-  <div class="py-16 bg-gradient-to-b from-background to-waste2way-blue/5">
+  <div
+    id="community"
+    class="py-16 bg-gradient-to-b from-background to-waste2way-blue/5"
+  >
     <div class="section-container">
       <div class="mb-12 text-center">
         <h2 class="mb-4 text-3xl font-bold md:text-4xl">
