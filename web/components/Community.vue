@@ -11,7 +11,7 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 gap-10 lg:grid-cols-2">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-1">
         <!-- Leaderboard Section -->
         <div class="p-6 glass-card dark:glass-card-dark rounded-2xl">
           <div class="flex items-center justify-between mb-6">
@@ -60,61 +60,7 @@
           </div>
         </div>
 
-        <!-- Achievements Section -->
-        <div>
-          <h3 class="flex items-center mb-6 text-xl font-medium">
-            <Award class="w-5 h-5 mr-2 text-waste2way-teal" />
-            Your Achievements
-          </h3>
-
-          <div class="space-y-5">
-            <AchievementCard
-              v-for="(achievement, index) in achievements"
-              :key="index"
-              :icon="achievement.icon"
-              :title="achievement.title"
-              :description="achievement.description"
-              :progress="achievement.progress"
-            />
-          </div>
-
-          <div class="p-6 mt-8 glass-card dark:glass-card-dark rounded-2xl">
-            <h4 class="mb-4 font-medium">Recent Activity</h4>
-            <div class="space-y-4">
-              <div class="flex space-x-3">
-                <div class="w-1 rounded-full bg-waste2way-teal"></div>
-                <div>
-                  <p class="text-sm">You identified a new PET waste sample</p>
-                  <p class="text-xs text-muted-foreground">
-                    2 hours ago • +15 points
-                  </p>
-                </div>
-              </div>
-              <div class="flex space-x-3">
-                <div class="w-1 rounded-full bg-waste2way-blue"></div>
-                <div>
-                  <p class="text-sm">
-                    You reached level 5 in waste identification
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    Yesterday • Achievement unlocked
-                  </p>
-                </div>
-              </div>
-              <div class="flex space-x-3">
-                <div class="w-1 rounded-full bg-waste2way-coral"></div>
-                <div>
-                  <p class="text-sm">
-                    You reported a waste hotspot in your area
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    3 days ago • +30 points
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
 
       <div class="mt-12 text-center">

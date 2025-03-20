@@ -122,7 +122,7 @@
                 class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center"
             >
                 <p class="text-white/60 text-sm mb-4 md:mb-0">
-                    &copy; {{ currentYear }} Waste2Way. All rights reserved.
+                     Made with ❤️ by devRejects
                 </p>
                 <div class="flex space-x-6">
                     <a

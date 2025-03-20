@@ -2,10 +2,9 @@
   <div class="py-16 bg-gradient-to-b from-background to-waste2way-teal/5">
     <div class="section-container">
       <div class="mb-12 text-center">
-        <h2 class="mb-4 text-3xl font-bold md:text-4xl">Geospatial Insights</h2>
+        <h2 class="mb-4 text-3xl font-bold md:text-4xl">Trash Hotspot Map</h2>
         <p class="max-w-2xl mx-auto text-muted-foreground">
-          Visualize waste hotspots and identify areas for potential
-          infrastructure projects.
+          Real-time visualization of waste hotspots in your area
         </p>
       </div>
 
@@ -13,62 +12,22 @@
       <div
         class="relative rounded-2xl overflow-hidden shadow-xl h-[500px] mb-8"
       >
-        <!-- Interactive map would be implemented here with an actual mapping library -->
-        <div class="absolute inset-0 bg-slate-100">
-          <!-- Placeholder map background -->
+        <div
+          v-if="isLoading"
+          class="absolute inset-0 flex items-center justify-center bg-slate-100"
+        >
           <div
-            class="w-full h-full opacity-70 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')]"
-          ></div>
-
-          <!-- Sample hotspots on the map -->
-          <div
-            v-for="hotspot in filteredHotspots"
-            :key="hotspot.id"
-            :class="[
-              'absolute rounded-full animate-pulse-light',
-              hotspot.size === 'large'
-                ? 'w-24 h-24 bg-red-500/40'
-                : hotspot.size === 'medium'
-                ? 'w-16 h-16 bg-yellow-500/40'
-                : 'w-12 h-12 bg-green-500/40',
-            ]"
-            :style="{
-              left: `${hotspot.lng}%`,
-              top: `${hotspot.lat}%`,
-              transform: 'translate(-50%, -50%)',
-            }"
-          >
-            <div
-              :class="[
-                'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full',
-                hotspot.size === 'large'
-                  ? 'w-8 h-8 bg-red-500'
-                  : hotspot.size === 'medium'
-                  ? 'w-6 h-6 bg-yellow-500'
-                  : 'w-4 h-4 bg-green-500',
-              ]"
-            >
-              <MapPin
-                class="absolute text-white transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-                :size="hotspot.size === 'large' ? 16 : 12"
-              />
-            </div>
-            <div
-              class="absolute mt-1 transform -translate-x-1/2 top-full left-1/2 whitespace-nowrap"
-            >
-              <span
-                class="px-2 py-1 text-xs text-white rounded-full bg-slate-700"
-              >
-                {{ hotspot.label }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Overlay gradient -->
-          <div
-            class="absolute inset-0 pointer-events-none bg-gradient-to-t from-slate-200/50 to-transparent"
+            class="w-12 h-12 border-b-2 rounded-full animate-spin border-waste2way-teal"
           ></div>
         </div>
+
+        <TrashHotspotMap
+          v-if="geoLocation && !isLoading"
+          :hotspot-data="hotspotData"
+          :geoLocation="geoLocation"
+          :selected-location="selectedLocation"
+          @location-selected="handleLocationSelect"
+        />
 
         <!-- Map controls overlay -->
         <div class="absolute z-10 top-4 right-4">
@@ -133,104 +92,123 @@
           </div>
         </div>
       </div>
-
-      <!-- Stats cards -->
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
-        <StatsCard
-          title="Total Waste Locations"
-          value="4,287"
-          change="12%"
-          :positive="true"
-          :icon="MapPin"
-        />
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { MapPin, Filter, ChevronDown, CheckCircle2 } from "lucide-vue-next";
+import { ref, watch, nextTick } from "vue";
+import { Filter, ChevronDown, CheckCircle2 } from "lucide-vue-next";
+const { get } = useApi();
 
 // State
-const activeFilter = ref("all");
+const hotspotData = ref([]);
+const geoLocation = ref(null);
+const isLoading = ref(false);
 const filtersOpen = ref(false);
+const activeFilter = ref("all");
+const selectedLocation = ref(null);
 
 // Data
 const filters = [
-  { id: "all", label: "All Waste Types" },
-  { id: "pet", label: "PET (Type 1)" },
-  { id: "hdpe", label: "HDPE (Type 2)" },
-  { id: "pvc", label: "PVC (Type 3)" },
-  { id: "ldpe", label: "LDPE (Type 4)" },
-];
-
-const hotspots = [
-  {
-    id: 1,
-    lat: 30,
-    lng: 45,
-    type: "pet",
-    size: "large",
-    label: "Coastal Region A",
-  },
-  {
-    id: 2,
-    lat: 60,
-    lng: 20,
-    type: "hdpe",
-    size: "medium",
-    label: "Urban Center B",
-  },
-  {
-    id: 3,
-    lat: 45,
-    lng: 70,
-    type: "pvc",
-    size: "small",
-    label: "Rural Area C",
-  },
-  {
-    id: 4,
-    lat: 20,
-    lng: 30,
-    type: "ldpe",
-    size: "large",
-    label: "Industrial Zone D",
-  },
-  {
-    id: 5,
-    lat: 70,
-    lng: 60,
-    type: "pet",
-    size: "medium",
-    label: "Riverside E",
-  },
+  { id: "all", label: "All Severities" },
+  { id: "high", label: "High Concentration" },
+  { id: "medium", label: "Medium Concentration" },
+  { id: "low", label: "Low Concentration" },
 ];
 
 const legends = [
-  { color: "bg-red-500", label: "High Concentration" },
-  { color: "bg-yellow-500", label: "Medium Concentration" },
-  { color: "bg-green-500", label: "Low Concentration" },
+  { color: "bg-red-600", label: "Critical (Level 5)" },
+  { color: "bg-orange-500", label: "High (Level 4)" },
+  { color: "bg-yellow-500", label: "Medium (Level 3)" },
+  { color: "bg-green-500", label: "Low (Level 1-2)" },
 ];
 
-// Computed properties
-const filteredHotspots = computed(() => {
-  return hotspots.filter(
-    (hotspot) =>
-      activeFilter.value === "all" || hotspot.type === activeFilter.value
-  );
+function getGeoLocation() {
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting geolocation:", error.message);
+          reject(error);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+      reject(new Error("Geolocation not supported"));
+    }
+  });
+}
+
+// Update the getHotspots function
+async function getHotspots() {
+  isLoading.value = true;
+  try {
+    // Get geolocation first
+    try {
+      geoLocation.value = await getGeoLocation();
+    } catch (error) {
+      console.error("Failed to get geolocation:", error);
+      // Set default location (you can set this to your city's coordinates)
+      geoLocation.value = {
+        lat: 0, // Replace with your default latitude
+        lng: 0  // Replace with your default longitude
+      };
+    }
+
+    // Then fetch hotspots
+    const { data } = await get("/trash/hotspots");
+    hotspotData.value = data;
+
+    // If no hotspots found, show a message
+    if (!data || data.length === 0) {
+      console.log("No hotspots found in the area");
+    }
+  } catch (error) {
+    console.error("Failed to fetch hotspots:", error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// Add a watch effect for activeFilter changes
+watch(activeFilter, () => {
+  // Trigger map update when filter changes
+  if (hotspotData.value.length > 0) {
+    nextTick(() => {
+      // Force map to recenter and zoom after filter change
+      if (selectedLocation.value) {
+        // If a location is selected, center on it
+        geoLocation.value = {
+          lat: selectedLocation.value.lat,
+          lng: selectedLocation.value.lng
+        };
+      }
+    });
+  }
 });
 
-// Methods
 const setFilter = (id) => {
   activeFilter.value = id;
   filtersOpen.value = false;
 };
+
+const handleLocationSelect = (location) => {
+  selectedLocation.value = location;
+};
+
+onMounted(() => {
+  getHotspots();
+});
 </script>
 
 <style scoped>
-/* You may need to define these animations */
 .animate-pulse-light {
   animation: pulse 2s infinite;
 }
