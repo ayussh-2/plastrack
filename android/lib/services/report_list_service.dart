@@ -27,7 +27,7 @@ class ReportListService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'firebaseId': currentUserId}),
       );
-
+      developer.log(response.toString(),name:"ReportListService");
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final jsonData = json.decode(response.body);
 

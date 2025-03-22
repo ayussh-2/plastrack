@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:waste2ways/config/theme.dart';
 import 'package:waste2ways/models/report_model.dart';
@@ -146,6 +148,14 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Parse AI Response JSON
+    Map<String, dynamic> aiData = {};
+    try {
+      aiData = json.decode(report.aiResponse);
+    } catch (e) {
+      print('Error parsing AI response: $e');
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -164,7 +174,7 @@ class ReportCard extends StatelessWidget {
         children: [
           // Report image
           ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
             ),
@@ -215,8 +225,8 @@ class ReportCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Trash Type: ${report.trashType.toUpperCase()}',
-                        style: TextStyle(
+                        report.trashType.toUpperCase(),
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -233,7 +243,7 @@ class ReportCard extends StatelessWidget {
                       ),
                       child: Text(
                         'Severity: ${report.getSeverityText()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -247,15 +257,21 @@ class ReportCard extends StatelessWidget {
                   style: TextStyle(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 16),
+
+                // Enhanced AI Analysis Section
                 ExpansionTile(
-                  title: Text(
+                  initiallyExpanded: true,
+                  title: const Text(
                     'AI Analysis',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(report.aiResponse),
+                      child:
+                          aiData.isNotEmpty
+                              ? _buildAiAnalysisContent(aiData)
+                              : Text(report.aiResponse),
                     ),
                   ],
                 ),
@@ -294,6 +310,244 @@ class ReportCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // New method to build the structured AI analysis content
+  Widget _buildAiAnalysisContent(Map<String, dynamic> aiData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Material and Confidence Row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 2,
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(color: Colors.black, fontSize: 15),
+                  children: [
+                    const TextSpan(
+                      text: 'Material: ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: aiData['material']?.toString() ?? 'Unknown'),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: _getConfidenceColor(aiData['confidence']),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Confidence: ${aiData['confidence']}%',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Recyclability
+        RichText(
+          text: TextSpan(
+            style: const TextStyle(color: Colors.black, fontSize: 15),
+            children: [
+              const TextSpan(
+                text: 'Recyclability: ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: aiData['recyclability']?.toString() ?? 'Unknown',
+                style: TextStyle(
+                  color: _getRecyclabilityColor(aiData['recyclability']),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Infrastructure Suitability Section
+        const Text(
+          'Infrastructure Suitability',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+
+        if (aiData['infrastructure_suitability'] != null) ...[
+          ...aiData['infrastructure_suitability'].entries.map((entry) {
+            final double percentage =
+                (entry.value is num) ? (entry.value as num).toDouble() : 0.0;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _formatInfrastructureName(entry.key),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  LinearProgressIndicator(
+                    value: percentage / 100,
+                    backgroundColor: Colors.grey[200],
+                    color: _getPercentageColor(percentage),
+                    minHeight: 8,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${percentage.toStringAsFixed(0)}%',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    textAlign: TextAlign.end,
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+
+        const SizedBox(height: 20),
+
+        // Environmental Impact Section
+        const Text(
+          'Environmental Impact',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 12),
+
+        if (aiData['environmental_impact'] != null) ...[
+          Row(
+            children: [
+              Expanded(
+                child: _buildEnvironmentalImpactCard(
+                  'Landfill Reduction',
+                  '${aiData['environmental_impact']['landfill_reduction']?.toString() ?? '0'} kg',
+                  Icons.delete_outline,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildEnvironmentalImpactCard(
+                  'CO₂ Reduction',
+                  '${aiData['environmental_impact']['co2_reduction']?.toString() ?? '0'} kg',
+                  Icons.co2,
+                ),
+              ),
+            ],
+          ),
+        ],
+
+        const SizedBox(height: 16),
+
+        // Notes Section
+        if (aiData['notes'] != null) ...[
+          const Text(
+            'Notes:',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            aiData['notes'].toString(),
+            style: TextStyle(color: Colors.grey[800], fontSize: 14),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // Helper widget for environmental impact cards
+  Widget _buildEnvironmentalImpactCard(
+    String title,
+    String value,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.green[200]!),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: Colors.green[700], size: 28),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.green[700],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper method to format infrastructure names
+  String _formatInfrastructureName(String name) {
+    return name
+        .split('_')
+        .map((word) => word.substring(0, 1).toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
+  // Helper method to get color based on confidence percentage
+  Color _getConfidenceColor(dynamic confidence) {
+    if (confidence == null) return Colors.grey;
+
+    final conf = confidence is num ? confidence.toDouble() : 0.0;
+    if (conf >= 80) return Colors.green;
+    if (conf >= 60) return Colors.orange;
+    return Colors.red;
+  }
+
+  // Helper method to get color based on recyclability status
+  Color _getRecyclabilityColor(dynamic recyclability) {
+    if (recyclability == null) return Colors.grey;
+
+    switch (recyclability.toString().toLowerCase()) {
+      case 'recyclable':
+        return Colors.green;
+      case 'partially recyclable':
+        return Colors.orange;
+      case 'not recyclable':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Helper method to get color based on percentage value
+  Color _getPercentageColor(double percentage) {
+    if (percentage >= 70) return Colors.green;
+    if (percentage >= 40) return Colors.orange;
+    return Colors.red;
   }
 
   Color _getSeverityColor(int severity) {
