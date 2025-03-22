@@ -95,102 +95,128 @@
           </div>
 
           <div v-else-if="results" class="h-full">
-            <div class="flex items-center mb-6">
+            <!-- Show error state if error exists -->
+            <div v-if="results.error" class="flex items-center mb-6">
               <div
-                class="flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-waste2way-green/10"
+                class="flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-waste2way-coral/10"
               >
                 <Icon
-                  name="lucide:check"
-                  class="w-6 h-6 text-waste2way-green"
+                  name="lucide:alert-triangle"
+                  class="w-6 h-6 text-waste2way-coral"
                 />
               </div>
               <div>
-                <h3 class="text-xl font-medium">
-                  {{ results.type }}
+                <h3 class="text-xl font-medium text-waste2way-coral">
+                  Analysis Failed
                 </h3>
-                <p class="text-muted-foreground">
-                  Identified with
-                  {{ results.confidence.toFixed(1) }}% confidence
+                <p class="text-muted-foreground">{{ results.error }}</p>
+              </div>
+            </div>
+
+            <!-- Show results if no error -->
+            <template v-else>
+              <div class="flex items-center mb-6">
+                <div
+                  class="flex items-center justify-center w-12 h-12 mr-4 rounded-full bg-waste2way-green/10"
+                >
+                  <Icon
+                    name="lucide:check"
+                    class="w-6 h-6 text-waste2way-green"
+                  />
+                </div>
+                <div>
+                  <h3 class="text-xl font-medium">
+                    {{ results.type }}
+                  </h3>
+                  <p class="text-muted-foreground">
+                    Identified with
+                    {{ results.confidence?.toFixed(1) }}% confidence
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                  <span class="text-sm font-medium">Recyclability</span>
+                  <span
+                    :class="[
+                      'text-sm font-medium',
+                      results.recyclable
+                        ? 'text-waste2way-green'
+                        : 'text-waste2way-coral',
+                    ]"
+                  >
+                    {{ results.recyclable ? "Recyclable" : "Non-recyclable" }}
+                  </span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-muted">
+                  <div
+                    class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
+                    :style="{ width: `${results.recyclabilityScore}%` }"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="mb-3 font-medium">Infrastructure Suitability</h4>
+                <div class="space-y-3">
+                  <div
+                    v-for="(item, index) in results.suitability"
+                    :key="index"
+                  >
+                    <div class="flex justify-between mb-1">
+                      <span class="text-sm">{{ item.purpose }}</span>
+                      <span class="text-sm font-medium">{{ item.score }}%</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-muted">
+                      <div
+                        class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
+                        :style="{ width: `${item.score}%` }"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="mb-3 font-medium">Environmental Impact</h4>
+                <p class="mb-3 text-sm text-muted-foreground">
+                  Repurposing this waste could save:
                 </p>
-              </div>
-            </div>
-
-            <div class="mb-6">
-              <div class="flex justify-between mb-2">
-                <span class="text-sm font-medium">Recyclability</span>
-                <span
-                  :class="[
-                    'text-sm font-medium',
-                    results.recyclable
-                      ? 'text-waste2way-green'
-                      : 'text-waste2way-coral',
-                  ]"
-                >
-                  {{ results.recyclable ? "Recyclable" : "Non-recyclable" }}
-                </span>
-              </div>
-              <div class="w-full h-2 rounded-full bg-muted">
-                <div
-                  class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
-                  :style="{ width: `${results.recyclabilityScore}%` }"
-                ></div>
-              </div>
-            </div>
-
-            <div class="mb-6">
-              <h4 class="mb-3 font-medium">Infrastructure Suitability</h4>
-              <div class="space-y-3">
-                <div v-for="(item, index) in results.suitability" :key="index">
-                  <div class="flex justify-between mb-1">
-                    <span class="text-sm">{{ item.purpose }}</span>
-                    <span class="text-sm font-medium">{{ item.score }}%</span>
-                  </div>
-                  <div class="w-full h-2 rounded-full bg-muted">
-                    <div
-                      class="h-2 rounded-full bg-gradient-to-r from-waste2way-teal to-waste2way-blue"
-                      :style="{ width: `${item.score}%` }"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 class="mb-3 font-medium">Environmental Impact</h4>
-              <p class="mb-3 text-sm text-muted-foreground">
-                Repurposing this waste could save:
-              </p>
-              <div class="grid grid-cols-2 gap-3">
-                <div
-                  class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
-                >
-                  <div class="flex items-center mb-1">
-                    <Icon
-                      name="lucide:trash-2"
-                      class="w-4 h-4 mr-2 text-waste2way-teal"
-                    />
-                    <span class="text-sm font-medium">Landfill Reduction</span>
-                  </div>
-                  <span class="text-lg font-bold"
-                    >{{ results.impacts.landfillReduction }} kg</span
+                <div class="grid grid-cols-2 gap-3">
+                  <div
+                    class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
                   >
-                </div>
-                <div
-                  class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
-                >
-                  <div class="flex items-center mb-1">
-                    <Icon
-                      name="lucide:cloud"
-                      class="w-4 h-4 mr-2 text-waste2way-blue"
-                    />
-                    <span class="text-sm font-medium">CO₂ Reduction</span>
+                    <div class="flex items-center mb-1">
+                      <Icon
+                        name="lucide:trash-2"
+                        class="w-4 h-4 mr-2 text-waste2way-teal"
+                      />
+                      <span class="text-sm font-medium"
+                        >Landfill Reduction</span
+                      >
+                    </div>
+                    <span class="text-lg font-bold"
+                      >{{ results?.impacts?.landfillReduction }} kg</span
+                    >
                   </div>
-                  <span class="text-lg font-bold"
-                    >{{ results.impacts.co2Reduction }} kg</span
+                  <div
+                    class="p-3 rounded-lg bg-waste2way-dark/10 dark:bg-waste2way-dark/20"
                   >
+                    <div class="flex items-center mb-1">
+                      <Icon
+                        name="lucide:cloud"
+                        class="w-4 h-4 mr-2 text-waste2way-blue"
+                      />
+                      <span class="text-sm font-medium">CO₂ Reduction</span>
+                    </div>
+                    <span class="text-lg font-bold"
+                      >{{ results?.impacts?.co2Reduction }} kg</span
+                    >
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
@@ -260,6 +286,13 @@ const analyzeImage = async (file: File) => {
     analyzing.value = false;
 
     if (response.success) {
+      if (response.data?.error) {
+        results.value = {
+          error: response.data?.error,
+        };
+        return;
+      }
+
       const result: AnalysisResult = {
         type: response.data.material,
         confidence: response.data.confidence,
@@ -294,6 +327,10 @@ const analyzeImage = async (file: File) => {
     }
   } catch (error) {
     console.error("Error analyzing image:", error);
+    results.value = {
+      error: "An error occurred while analyzing the image. Please try again.",
+    };
+  } finally {
     analyzing.value = false;
   }
 };

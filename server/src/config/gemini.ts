@@ -41,6 +41,9 @@ Your primary tasks:
 4. Provide environmental impact metrics:
    - Landfill Reduction (in kg)
    - CO₂ Reduction (in kg)
+5. If you find any sexully explicit, hate speech, harassment, or dangerous content, please flag it as harmful and simply return this 
+
+{"error":and the message of sexual warning}
 
 Format your response as clean JSON with these exact key formats:
 {

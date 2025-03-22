@@ -2,6 +2,7 @@ export interface WasteClassificationResponse {
   success: boolean;
   message: string;
   data: {
+    error: any;
     material: string;
     confidence: number;
     recyclability: string;
@@ -19,15 +20,16 @@ export interface WasteClassificationResponse {
 }
 
 export interface AnalysisResult {
-  type: string;
-  confidence: number;
-  recyclable: boolean;
-  recyclabilityScore: number;
-  suitability: Array<{
+  error?: string;
+  type?: string;
+  confidence?: number;
+  recyclable?: boolean;
+  recyclabilityScore?: number;
+  suitability?: Array<{
     purpose: string;
     score: number;
   }>;
-  impacts: {
+  impacts?: {
     landfillReduction: number;
     co2Reduction: number;
   };
