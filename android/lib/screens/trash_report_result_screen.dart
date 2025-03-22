@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import '../models/trash_report_model.dart';
 import '../services/trash_report_service.dart';
-import 'dart:developer' as developer;
 
 class TrashReportResultScreen extends StatelessWidget {
-  final TrashReportModel report;
+  final TrashClassificationResponse report;
   final TrashReportService _reportService = TrashReportService();
 
   TrashReportResultScreen({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> sections = _parseAiResponse(
-      report.aiResponse ?? '',
-    );
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -65,7 +60,7 @@ class TrashReportResultScreen extends StatelessWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            report.image ?? '',
+                            report.image,
                             height: 200,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -102,6 +97,11 @@ class TrashReportResultScreen extends StatelessWidget {
 
                         const SizedBox(height: 24),
 
+                        // Material and Confidence
+                        _buildMaterialSection(report),
+
+                        const SizedBox(height: 24),
+
                         // Report sections
                         Text(
                           'Waste Classification Results',
@@ -114,13 +114,37 @@ class TrashReportResultScreen extends StatelessWidget {
 
                         const SizedBox(height: 16),
 
-                        // Display each section
-                        ...sections.map(
-                          (section) => _buildSectionCard(
-                            title: section['title'] ?? '',
-                            content: section['content'] ?? '',
-                          ),
+                        // Main classification details
+                        _buildSectionCard(
+                          title: 'Classification',
+                          content:
+                              'Material: ${report.material}\nConfidence: ${report.confidence}%',
+                          icon: Icons.category,
                         ),
+
+                        _buildSectionCard(
+                          title: 'Recyclability',
+                          content: report.recyclability,
+                          icon: Icons.recycling,
+                        ),
+
+                        // Infrastructure suitability
+                        _buildInfrastructureSuitabilitySection(
+                          report.infrastructureSuitability,
+                        ),
+
+                        // Environmental impact
+                        _buildEnvironmentalImpactSection(
+                          report.environmentalImpact,
+                        ),
+
+                        // Notes
+                        if (report.notes.isNotEmpty)
+                          _buildSectionCard(
+                            title: 'Additional Notes',
+                            content: report.notes,
+                            icon: Icons.note,
+                          ),
                       ],
                     ),
                   ),
@@ -194,6 +218,343 @@ class TrashReportResultScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMaterialSection(TrashClassificationResponse report) {
+    Color confidenceColor;
+    if (report.confidence >= 80) {
+      confidenceColor = Colors.green;
+    } else if (report.confidence >= 50) {
+      confidenceColor = Colors.orange;
+    } else {
+      confidenceColor = Colors.red;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            report.material,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: report.confidence / 100,
+                    backgroundColor: Colors.grey.shade200,
+                    color: confidenceColor,
+                    minHeight: 10,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '${report.confidence}%',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: confidenceColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Confidence Level',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfrastructureSuitabilitySection(
+    Map<String, dynamic> suitability,
+  ) {
+    if (suitability.isEmpty) {
+      return Container();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.build, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Construction Reuse Potential',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+          ...suitability.entries.map((entry) {
+            // Convert snake_case to Title Case
+            final formattedKey = entry.key
+                .split('_')
+                .map(
+                  (word) =>
+                      word.isEmpty
+                          ? ''
+                          : '${word[0].toUpperCase()}${word.substring(1)}',
+                )
+                .join(' ');
+
+            // Get value as integer
+            final value =
+                entry.value is int
+                    ? entry.value
+                    : (entry.value is double
+                        ? entry.value.toInt()
+                        : int.tryParse(entry.value.toString()) ?? 0);
+
+            // Choose color based on value
+            Color progressColor;
+            if (value >= 70) {
+              progressColor = Colors.green;
+            } else if (value >= 40) {
+              progressColor = Colors.amber;
+            } else {
+              progressColor = Colors.grey;
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(formattedKey, style: const TextStyle(fontSize: 14)),
+                      Text(
+                        '$value%',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: progressColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: value / 100,
+                      backgroundColor: Colors.grey.shade200,
+                      color: progressColor,
+                      minHeight: 8,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnvironmentalImpactSection(Map<String, dynamic> impact) {
+    if (impact.isEmpty) {
+      return Container();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.eco, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Environmental Impact',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Repurposing this waste could save:',
+            style: TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+
+          // Vertical list of impact metrics
+          ...impact.entries.map((entry) {
+            // Convert snake_case to Title Case
+            final formattedKey = entry.key
+                .split('_')
+                .map(
+                  (word) =>
+                      word.isEmpty
+                          ? ''
+                          : '${word[0].toUpperCase()}${word.substring(1)}',
+                )
+                .join(' ');
+
+            // Get value
+            final value =
+                entry.value is int
+                    ? entry.value
+                    : (entry.value is double
+                        ? entry.value.toInt()
+                        : int.tryParse(entry.value.toString()) ?? 0);
+
+            // Get appropriate icon based on metric name
+            IconData metricIcon = Icons.eco;
+            String unit = 'kg';
+
+            if (formattedKey.toLowerCase().contains('landfill')) {
+              metricIcon = Icons.delete_outline;
+            } else if (formattedKey.toLowerCase().contains('co2') ||
+                formattedKey.toLowerCase().contains('carbon')) {
+              metricIcon = Icons.cloud_outlined;
+            } else if (formattedKey.toLowerCase().contains('water')) {
+              metricIcon = Icons.water_drop_outlined;
+            } else if (formattedKey.toLowerCase().contains('energy')) {
+              metricIcon = Icons.bolt_outlined;
+              unit = 'kWh';
+            }
+
+            return Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(metricIcon, size: 24, color: Colors.grey.shade700),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      formattedKey,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$value $unit',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionCard({
+    required String title,
+    required String content,
+    required IconData icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon, color: AppTheme.primaryColor, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Divider(),
+          const SizedBox(height: 8),
+          Text(content, style: const TextStyle(fontSize: 14)),
+        ],
       ),
     );
   }
@@ -287,7 +648,7 @@ class TrashReportResultScreen extends StatelessWidget {
 
                                   final success = await _submitFeedback(
                                     context,
-                                    report.id!,
+                                    report.id,
                                     feedbackController.text.trim(),
                                   );
 
@@ -388,90 +749,5 @@ class TrashReportResultScreen extends StatelessWidget {
       }
       return false;
     }
-  }
-
-  Widget _buildSectionCard({required String title, required String content}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                _getIconForSection(title),
-                color: AppTheme.primaryColor,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Divider(),
-          const SizedBox(height: 8),
-          Text(content, style: const TextStyle(fontSize: 14)),
-        ],
-      ),
-    );
-  }
-
-  IconData _getIconForSection(String title) {
-    switch (title.toLowerCase()) {
-      case 'classification':
-        return Icons.category;
-      case 'subcategory':
-        return Icons.label;
-      case 'disposal method':
-        return Icons.delete_outline;
-      case 'environmental impact':
-        return Icons.eco;
-      case 'construction reuse potential':
-        return Icons.build;
-      case 'reduction tips':
-        return Icons.lightbulb_outline;
-      default:
-        return Icons.info_outline;
-    }
-  }
-
-  List<Map<String, String>> _parseAiResponse(String aiResponse) {
-    final List<Map<String, String>> sections = [];
-    final lines = aiResponse.split('\n');
-
-    for (final line in lines) {
-      if (line.trim().isEmpty) continue;
-
-      final parts = line.split(':');
-      if (parts.length < 2) continue;
-
-      final title = parts[0].replaceAll('-', '').trim();
-      final content = parts.sublist(1).join(':').trim();
-
-      sections.add({'title': title, 'content': content});
-    }
-
-    return sections;
   }
 }

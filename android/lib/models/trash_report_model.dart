@@ -1,53 +1,53 @@
-class TrashReportModel {
-  final int id;
-  final String latitude;
-  final String longitude;
-  final String? trashType; // Make nullable
-  final int severity;
+class TrashClassificationResponse {
+  final String material;
+  final int confidence;
+  final String recyclability;
+  final Map<String, dynamic> infrastructureSuitability;
+  final Map<String, dynamic> environmentalImpact;
+  final String notes;
   final String image;
-  final String timestamp;
-  final String firebaseId;
-  final String? aiResponse; // Make nullable if needed
+  final int id;
 
-  TrashReportModel({
-    required this.id,
-    required this.latitude,
-    required this.longitude,
-    this.trashType, // Optional parameter
-    required this.severity,
+  TrashClassificationResponse({
+    required this.material,
+    required this.confidence,
+    required this.recyclability,
+    required this.infrastructureSuitability,
+    required this.environmentalImpact,
+    required this.notes,
     required this.image,
-    required this.timestamp,
-    required this.firebaseId,
-    this.aiResponse,
-    required String userId,
+    required this.id,
   });
 
-  factory TrashReportModel.fromJson(Map<String, dynamic> json) {
-    return TrashReportModel(
-      id: json['id'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      trashType: json['trashType'],
-      severity: json['severity'],
-      image: json['image'],
-      timestamp: json['timestamp'],
-      firebaseId: json['firebaseId'],
-      aiResponse: json['aiResponse'],
-      userId: '',
+  factory TrashClassificationResponse.fromJson(Map<String, dynamic> json) {
+    return TrashClassificationResponse(
+      material: json['material'] ?? 'Unknown',
+      confidence: json['confidence'] ?? 0,
+      recyclability: json['recyclability'] ?? 'Unknown',
+      infrastructureSuitability: json['infrastructure_suitability'] ?? {},
+      environmentalImpact: json['environmental_impact'] ?? {},
+      notes: json['notes'] ?? '',
+      image: json['image'] ?? '',
+      id: json['id'] ?? 0,
     );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'latitude': latitude,
-      'longitude': longitude,
-      'trashType': trashType,
-      'severity': severity,
-      'image': image,
-      'timestamp': timestamp,
-      'firebaseId': firebaseId,
-      'aiResponse': aiResponse,
-    };
+class TrashApiResponse {
+  final bool success;
+  final String message;
+  final TrashClassificationResponse? data;
+
+  TrashApiResponse({required this.success, required this.message, this.data});
+
+  factory TrashApiResponse.fromJson(Map<String, dynamic> json) {
+    return TrashApiResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data:
+          json['data'] != null
+              ? TrashClassificationResponse.fromJson(json['data'])
+              : null,
+    );
   }
 }

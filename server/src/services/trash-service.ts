@@ -18,21 +18,21 @@ export class TrashService {
 
   async createReport(data: Omit<TrashReport, "id">) {
     const aiResponse = await this.classifyTrash(data);
+    const parsedResponse = JSON.parse(aiResponse);
     const report = await prisma.trashReport.create({
       data: {
         ...data,
         aiResponse,
         severity: Number(data.severity),
-        trashType: data.trashType || "unknown",
+        trashType: parsedResponse.material || "unknown",
       },
     });
 
-    // Award points for creating a report
     if (data.firebaseId) {
       await this.gameService.awardPointsForReport(data.firebaseId);
     }
 
-    return report;
+    return { ...parsedResponse, image: report.image, id: report.id };
   }
 
   async classifyTrash(data: { image: string }) {

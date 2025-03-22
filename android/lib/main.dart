@@ -21,7 +21,11 @@ import 'screens/reports_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    name: "ocean-beacon",
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const Waste2Way());
 }
 
@@ -68,16 +72,15 @@ class _Waste2WayState extends State<Waste2Way> {
           '/report-trash': (context) => ReportTrashScreen(userId: ''),
           '/report-result':
               (context) => TrashReportResultScreen(
-                report: TrashReportModel(
+                report: TrashClassificationResponse(
+                  material: "",
+                  confidence: 0,
+                  recyclability: "",
+                  infrastructureSuitability: {},
+                  environmentalImpact: {},
+                  notes: "",
+                  image: "",
                   id: 0,
-                  latitude: '0.0',
-                  longitude: '0.0',
-                  severity: 0,
-                  image: '',
-                  timestamp: DateTime.now().toIso8601String(),
-                  userId: '',
-                  aiResponse: '',
-                  firebaseId: '',
                 ),
               ),
           '/permissions': (context) => const PermissionScreen(),

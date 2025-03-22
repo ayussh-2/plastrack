@@ -8,8 +8,8 @@ import 'dart:developer' as developer;
 import 'package:waste2ways/models/trash_report_model.dart';
 
 class TrashReportService {
-  TrashReportModel? _trashReport;
-  TrashReportModel? get trashReport => _trashReport;
+  TrashClassificationResponse? _trashReport;
+  TrashClassificationResponse? get trashReport => _trashReport;
 
   final String _baseUrl = Constants.baseUrl;
   final String _cloudinaryUrl =
@@ -43,7 +43,7 @@ class TrashReportService {
     }
   }
 
-  Future<TrashReportModel> submitTrashReport({
+  Future<TrashClassificationResponse> submitTrashReport({
     required double latitude,
     required double longitude,
     required int severity,
@@ -73,7 +73,7 @@ class TrashReportService {
         final jsonData = json.decode(response.body);
 
         if (jsonData is Map && jsonData.containsKey('data')) {
-          _trashReport = TrashReportModel.fromJson(jsonData['data']);
+          _trashReport = TrashClassificationResponse.fromJson(jsonData['data']);
 
           return _trashReport!;
         } else {
