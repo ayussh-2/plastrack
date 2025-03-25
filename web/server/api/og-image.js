@@ -196,96 +196,9 @@ export default defineEventHandler(async (event) => {
         ctx.textAlign = "left";
         ctx.fillText("Waste Hotspot Alert", 60, headingY);
 
-        let severityText, severityColor;
-        if (severity >= 5) {
-            severityText = "Critical (Level 5)";
-            severityColor = "#dc2626";
-        } else if (severity === 4) {
-            severityText = "High (Level 4)";
-            severityColor = "#f97316";
-        } else if (severity === 3) {
-            severityText = "Medium (Level 3)";
-            severityColor = "#eab308";
-        } else {
-            severityText = "Low (Level 1-2)";
-            severityColor = "#22c55e";
-        }
+        // The severity badge and scale have been removed
 
-        ctx.fillStyle = severityColor;
-        const badgeWidth = 180;
-        const badgeHeight = 40;
-        const badgeX = 60;
-        const badgeY = headingY + 30;
-        ctx.beginPath();
-        ctx.arc(badgeX + 20, badgeY + 20, 20, Math.PI, 1.5 * Math.PI);
-        ctx.lineTo(badgeX + badgeWidth - 20, badgeY);
-        ctx.arc(badgeX + badgeWidth - 20, badgeY + 20, 20, 1.5 * Math.PI, 0);
-        ctx.lineTo(badgeX + badgeWidth, badgeY + badgeHeight - 20);
-        ctx.arc(
-            badgeX + badgeWidth - 20,
-            badgeY + badgeHeight - 20,
-            20,
-            0,
-            0.5 * Math.PI
-        );
-        ctx.lineTo(badgeX + 20, badgeY + badgeHeight);
-        ctx.arc(
-            badgeX + 20,
-            badgeY + badgeHeight - 20,
-            20,
-            0.5 * Math.PI,
-            Math.PI
-        );
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.font = "bold 18px Arial, sans-serif";
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(severityText, badgeX + 20, badgeY + 27);
-
-        const scaleY = badgeY + badgeHeight + 40;
-        const scaleX = 60;
-        const dotSize = 28;
-        const dotGap = 10;
-
-        ctx.font = "bold 18px Arial, sans-serif";
-        ctx.fillStyle = "#475569";
-        ctx.fillText("Severity Scale:", scaleX, scaleY - 15);
-
-        const colors = ["#22c55e", "#22c55e", "#eab308", "#f97316", "#dc2626"];
-        const labels = ["Low", "Low", "Medium", "High", "Critical"];
-
-        for (let i = 0; i < 5; i++) {
-            ctx.fillStyle = i + 1 <= severity ? colors[i] : "#e2e8f0";
-            ctx.beginPath();
-            ctx.arc(
-                scaleX + (dotSize + dotGap) * i + dotSize / 2,
-                scaleY + dotSize / 2,
-                dotSize / 2,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
-
-            ctx.fillStyle = i + 1 <= severity ? "#ffffff" : "#94a3b8";
-            ctx.font = "bold 14px Arial, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(
-                i + 1,
-                scaleX + (dotSize + dotGap) * i + dotSize / 2,
-                scaleY + dotSize / 2 + 5
-            );
-
-            ctx.fillStyle = "#475569";
-            ctx.font = "12px Arial, sans-serif";
-            ctx.fillText(
-                labels[i],
-                scaleX + (dotSize + dotGap) * i + dotSize / 2,
-                scaleY + dotSize + 15
-            );
-        }
-
-        const ctaY = scaleY + dotSize + 50;
+        const ctaY = headingY + 70; // Adjusted position after removing severity components
         ctx.font = "22px Arial, sans-serif";
         ctx.textAlign = "left";
         ctx.fillStyle = "#475569";
