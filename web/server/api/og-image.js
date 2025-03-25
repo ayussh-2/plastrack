@@ -5,7 +5,6 @@ export default defineEventHandler(async (event) => {
 
     const lat = parseFloat(query.lat || 0);
     const lng = parseFloat(query.lng || 0);
-    const severity = parseInt(query.severity || 3);
 
     const width = 1200;
     const height = 630;
@@ -18,11 +17,10 @@ export default defineEventHandler(async (event) => {
         try {
             const response = await $fetch("/api/trash/hotspots", {
                 method: "GET",
-                baseURL: process.env.API_BASE_URL || "http://localhost:3000",
+                baseURL: process.env.API_BASE_URL || "http://localhost:4000",
             });
 
             hotspotData = response.data || [];
-            console.log(`Fetched ${hotspotData.length} hotspots`);
         } catch (error) {
             console.error("Failed to fetch hotspots:", error);
         }
