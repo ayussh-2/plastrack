@@ -12,6 +12,7 @@ class AuthStateWrapper extends StatelessWidget {
     required this.authenticatedRoute,
     required this.unauthenticatedRoute,
     this.loadingWidget,
+    required List<String> publicRoutes,
   }) : super(key: key);
 
   @override

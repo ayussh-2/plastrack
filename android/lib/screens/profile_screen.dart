@@ -134,10 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.black54),
-                        onPressed: () => Navigator.pop(context),
-                      ),
                       Text(
                         'Your Profile',
                         style: TextStyle(

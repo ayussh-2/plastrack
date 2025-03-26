@@ -42,10 +42,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 // Header with back button
                 Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios),
-                      onPressed: () => Navigator.pop(context),
-                    ),
                     Text(
                       'My Reports',
                       style: TextStyle(
@@ -148,7 +144,6 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Parse AI Response JSON
     Map<String, dynamic> aiData = {};
     try {
       aiData = json.decode(report.aiResponse);

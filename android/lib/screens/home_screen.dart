@@ -23,84 +23,88 @@ class HomeScreen extends StatelessWidget {
             colors: [AppTheme.backgroundColor1, AppTheme.backgroundColor2],
           ),
         ),
-        child:
-            user == null
-                ? _buildNotLoggedInView(context)
-                : SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profile');
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: AppTheme.primaryColor
-                                    .withOpacity(0.2),
-                                child: Icon(
-                                  Icons.person,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.logout, color: Colors.black54),
-                              onPressed: () async {
-                                await authService.logout();
-                                // ignore: use_build_context_synchronously
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  '/login',
-                                );
-                              },
-                            ),
-                          ],
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Settings icon is now shown for all users
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
+                        child: Icon(
+                          Icons.settings,
+                          color: AppTheme.primaryColor,
                         ),
-
-                        const SizedBox(height: 60.0),
-
-                        // Welcome message
-                        Center(
-                          child: ShaderMask(
-                            shaderCallback:
-                                (bounds) => LinearGradient(
-                                  colors: [
-                                    AppTheme.primaryColor,
-                                    AppTheme.secondaryColor,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds),
-                            child: Text(
-                              'Welcome, ${user.name}!',
-                              style: TextStyle(
-                                fontSize: 32.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        const Spacer(),
-
-                        const SizedBox(height: 40.0),
-                      ],
+                      ),
                     ),
-                  ),
+                    if (user != null)
+                      IconButton(
+                        icon: Icon(Icons.logout, color: Colors.black54),
+                        onPressed: () async {
+                          await authService.logout();
+                          // ignore: use_build_context_synchronously
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
+                  ],
                 ),
+
+                user == null
+                    ? _buildNotLoggedInContent(context)
+                    : _buildLoggedInContent(user),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildNotLoggedInView(BuildContext context) {
-    return SafeArea(
+  Widget _buildLoggedInContent(user) {
+    return Expanded(
+      child: Column(
+        children: [
+          const SizedBox(height: 60.0),
+
+          // Welcome message
+          Center(
+            child: ShaderMask(
+              shaderCallback:
+                  (bounds) => LinearGradient(
+                    colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+              child: Text(
+                'Welcome, ${user.name}!',
+                style: TextStyle(
+                  fontSize: 32.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16.0),
+
+          const Spacer(),
+
+          const SizedBox(height: 40.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotLoggedInContent(BuildContext context) {
+    return Expanded(
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

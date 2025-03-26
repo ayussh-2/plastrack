@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:waste2ways/config/constants.dart';
 import 'package:waste2ways/config/theme.dart';
 import 'package:waste2ways/models/trash_report_model.dart';
 import 'package:waste2ways/screens/permission_screen.dart';
@@ -17,6 +18,7 @@ import 'screens/main_screen.dart';
 import 'screens/trash_report_result_screen.dart';
 import 'screens/hotspot_screen.dart';
 import 'screens/reports_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +27,7 @@ void main() async {
     name: "ocean-beacon",
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Constants.initializeBaseUrl();
 
   runApp(const Waste2Way());
 }
@@ -85,19 +88,39 @@ class _Waste2WayState extends State<Waste2Way> {
               ),
           '/permissions': (context) => const PermissionScreen(),
           '/my-reports': (context) => const ReportsScreen(),
+          '/settings': (context) => const SettingsScreen(),
           '/main': (context) => const MainScreen(),
         },
+        initialRoute:
+            !_initialized
+                ? '/'
+                : _permissionService.permissionsChecked &&
+                    !_permissionService.allPermissionsGranted
+                ? '/permissions'
+                : null,
         home:
             !_initialized
                 ? const SplashScreen()
                 : _permissionService.permissionsChecked &&
                     !_permissionService.allPermissionsGranted
                 ? const PermissionScreen()
-                : AuthStateWrapper(
-                  authenticatedRoute:
-                      const MainScreen(), // Change to MainScreen
-                  unauthenticatedRoute: const LoginScreen(),
-                  loadingWidget: const SplashScreen(),
+                : Builder(
+                  builder: (context) {
+                    final route = ModalRoute.of(context)?.settings.name;
+                    // Allow direct access to settings without authentication
+                    if (route == '/settings') {
+                      return const SettingsScreen();
+                    }
+                    // Use AuthStateWrapper for all other routes
+                    return AuthStateWrapper(
+                      authenticatedRoute: const MainScreen(),
+                      unauthenticatedRoute: const LoginScreen(),
+                      loadingWidget: const SplashScreen(),
+                      publicRoutes: const [
+                        '/settings',
+                      ], // Define settings as a public route
+                    );
+                  },
                 ),
       ),
     );
