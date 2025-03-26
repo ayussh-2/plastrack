@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:waste2ways/config/constants.dart';
 import 'package:waste2ways/config/theme.dart';
 import 'package:waste2ways/models/trash_report_model.dart';
+import 'package:waste2ways/screens/leaderboard_screen.dart';
 import 'package:waste2ways/screens/permission_screen.dart';
 import 'package:waste2ways/screens/profile_screen.dart';
 import 'package:waste2ways/screens/report_trash_screen.dart';
@@ -90,6 +91,7 @@ class _Waste2WayState extends State<Waste2Way> {
           '/my-reports': (context) => const ReportsScreen(),
           '/settings': (context) => const SettingsScreen(),
           '/main': (context) => const MainScreen(),
+          '/leaderboard': (context) => const LeaderboardScreen(),
         },
         initialRoute:
             !_initialized
