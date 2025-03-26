@@ -2,10 +2,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../services/game_service.dart';
 import '../models/rank_model.dart';
 import '../config/theme.dart';
+import '../config/constants.dart';
 import 'dart:developer' as developer;
 
 class HomeScreen extends StatefulWidget {
@@ -251,11 +255,57 @@ class _HomeScreenState extends State<HomeScreen>
 
           const Spacer(),
 
-          // Play game button
           Center(
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/report-trash');
+                  onTap: () async {
+                    try {
+                      LocationPermission permission =
+                          await Geolocator.checkPermission();
+                      if (permission == LocationPermission.denied) {
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Location permission denied'),
+                            ),
+                          );
+                          return;
+                        }
+                      }
+
+                      Position position = await Geolocator.getCurrentPosition(
+                        desiredAccuracy: LocationAccuracy.high,
+                      );
+
+                      final shareUrl =
+                          '${Constants.ogImageEndpoint}?lat=${position.latitude}&lng=${position.longitude}';
+
+                      try {
+                        final res = await Share.share(
+                          'Check out this trash hotspot! $shareUrl',
+                          subject: 'Waste 2 Ways - Trash Hotspot',
+                        );
+                        developer.log('Share result: $res', name: 'HomeScreen');
+                      } on MissingPluginException catch (e) {
+                        developer.log(
+                          'Missing plugin for sharing: $e',
+                          name: 'HomeScreen',
+                        );
+                        await Clipboard.setData(ClipboardData(text: shareUrl));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Link copied to clipboard! Plugin for sharing is missing.',
+                            ),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
                   },
                   child: Container(
                     width: screenSize.width * 0.7,
@@ -282,13 +332,13 @@ class _HomeScreenState extends State<HomeScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.camera_alt_rounded,
+                          Icons.share_location,
                           color: Colors.white,
                           size: 28,
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Scan Trash',
+                          'Share trash location!',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,

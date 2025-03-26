@@ -30,6 +30,7 @@ dependencies:
     intl: 0.18.1
     shared_preferences: ^2.2.0
     flutter_animate: ^4.5.2
+    share_plus: ^10.1.4
 
 dev_dependencies:
     flutter_test:
