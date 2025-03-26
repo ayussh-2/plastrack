@@ -104,23 +104,11 @@ class _Waste2WayState extends State<Waste2Way> {
                 : _permissionService.permissionsChecked &&
                     !_permissionService.allPermissionsGranted
                 ? const PermissionScreen()
-                : Builder(
-                  builder: (context) {
-                    final route = ModalRoute.of(context)?.settings.name;
-                    // Allow direct access to settings without authentication
-                    if (route == '/settings') {
-                      return const SettingsScreen();
-                    }
-                    // Use AuthStateWrapper for all other routes
-                    return AuthStateWrapper(
-                      authenticatedRoute: const MainScreen(),
-                      unauthenticatedRoute: const LoginScreen(),
-                      loadingWidget: const SplashScreen(),
-                      publicRoutes: const [
-                        '/settings',
-                      ], // Define settings as a public route
-                    );
-                  },
+                : AuthStateWrapper(
+                  authenticatedRoute: const MainScreen(),
+                  unauthenticatedRoute: const LoginScreen(),
+                  loadingWidget: const SplashScreen(),
+                  publicRoutes: const ['/settings', '/login', '/register'],
                 ),
       ),
     );

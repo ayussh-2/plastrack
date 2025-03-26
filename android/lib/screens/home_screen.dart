@@ -1,11 +1,58 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../services/game_service.dart';
+import '../models/rank_model.dart';
 import '../config/theme.dart';
 import 'dart:developer' as developer;
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  RankModel? userRank;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserRank();
+  }
+
+  Future<void> _fetchUserRank() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.userModel;
+
+    if (user != null) {
+      setState(() {
+        isLoading = true;
+      });
+
+      try {
+        final gameService = GameService();
+        final auth = authService.user;
+        final rank = await gameService.getUserRank(auth!.uid);
+        if (mounted) {
+          setState(() {
+            userRank = rank;
+            isLoading = false;
+          });
+        }
+      } catch (e) {
+        developer.log('Error fetching rank: $e', name: 'HomeScreen');
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,13 +140,90 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 24.0),
+
+          // Rank information
+          if (isLoading)
+            CircularProgressIndicator(color: AppTheme.primaryColor)
+          else if (userRank != null)
+            _buildRankCard(),
 
           const Spacer(),
 
           const SizedBox(height: 40.0),
         ],
       ),
+    );
+  }
+
+  Widget _buildRankCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.primaryColor.withOpacity(0.7),
+            AppTheme.secondaryColor.withOpacity(0.7),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.emoji_events, color: Colors.white, size: 28),
+              const SizedBox(width: 8),
+              Text(
+                'Your Ranking',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildRankItem('Rank', '#${userRank?.rank ?? 0}'),
+              _buildRankItem('Points', '${userRank?.points ?? 0}'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRankItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 

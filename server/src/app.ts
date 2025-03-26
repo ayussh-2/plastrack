@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Define the root path first
 app.get("/", (req, res) => {
-    res.status(200).json({ status: "ok", message: "Ocean Beacon Server" });
+    res.status(200).json({ status: "ok", message: "Waste2ways Server" });
 });
 
 // Then API routes
