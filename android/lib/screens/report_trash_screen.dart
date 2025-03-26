@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -214,56 +215,113 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
 
                                 if (_currentPosition != null)
                                   Container(
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: FlutterMap(
-                                        mapController: _mapController,
-                                        options: MapOptions(
-                                          initialCenter: LatLng(
-                                            _currentPosition!.latitude,
-                                            _currentPosition!.longitude,
+                                        height: 140,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
                                           ),
-                                          minZoom: 15.0,
-                                        ),
-                                        children: [
-                                          TileLayer(
-                                            urlTemplate:
-                                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                            userAgentPackageName:
-                                                'com.waste2way.app',
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              AppTheme.primaryColor.withOpacity(
+                                                0.1,
+                                              ),
+                                              AppTheme.secondaryColor
+                                                  .withOpacity(0.1),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
                                           ),
-                                          MarkerLayer(
-                                            markers: [
-                                              Marker(
-                                                point: LatLng(
-                                                  _currentPosition!.latitude,
-                                                  _currentPosition!.longitude,
-                                                ),
-                                                width: 40,
-                                                height: 40,
-                                                child: const Icon(
-                                                  Icons.location_on,
-                                                  color: Colors.red,
-                                                  size: 40,
-                                                ),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          10,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme
+                                                          .primaryColor
+                                                          .withOpacity(0.2),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            40,
+                                                          ),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.location_on,
+                                                      color: Colors.red,
+                                                      size: 26,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Latitude: ${_currentPosition!.latitude.toStringAsFixed(6)}',
+                                                          style:
+                                                              const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 4,
+                                                        ),
+                                                        Text(
+                                                          'Longitude: ${_currentPosition!.longitude.toStringAsFixed(6)}',
+                                                          style:
+                                                              const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Text(
+                                                          'Location captured successfully',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Colors
+                                                                    .green[700],
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
+                                        ),
+                                      )
+                                      .animate()
+                                      .fadeIn(duration: 600.ms)
+                                      .slideY(begin: 0.2, end: 0)
                                 else
                                   Container(
                                     padding: const EdgeInsets.all(16),
