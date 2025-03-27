@@ -66,6 +66,7 @@ class _Waste2WayState extends State<Waste2Way> {
       ],
       child: MaterialApp(
         title: 'Waste 2 Ways',
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routes: {
           '/login': (context) => const LoginScreen(),

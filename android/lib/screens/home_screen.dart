@@ -1,10 +1,11 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:waste2ways/models/report_model.dart';
+import 'package:waste2ways/services/report_list_service.dart';
 import '../services/auth_service.dart';
 import '../services/game_service.dart';
 import '../models/rank_model.dart';
@@ -23,12 +24,15 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   RankModel? userRank;
   bool isLoading = false;
+  bool isLoadingReports = false;
+  List<Report> userReports = [];
   late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _fetchUserRank();
+    _fetchUserReports();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -65,6 +69,35 @@ class _HomeScreenState extends State<HomeScreen>
         if (mounted) {
           setState(() {
             isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _fetchUserReports() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.userModel;
+
+    if (user != null) {
+      setState(() {
+        isLoadingReports = true;
+      });
+
+      try {
+        final reportService = ReportListService();
+        final reports = await reportService.getUserReports();
+        if (mounted) {
+          setState(() {
+            userReports = reports;
+            isLoadingReports = false;
+          });
+        }
+      } catch (e) {
+        developer.log('Error fetching reports: $e', name: 'HomeScreen');
+        if (mounted) {
+          setState(() {
+            isLoadingReports = false;
           });
         }
       }
@@ -248,6 +281,35 @@ class _HomeScreenState extends State<HomeScreen>
             _buildRankCard()
                 .animate()
                 .fadeIn(duration: 1000.ms)
+                .scale(
+                  begin: const Offset(0.95, 0.95),
+                  end: const Offset(1, 1),
+                ),
+
+          const SizedBox(height: 24.0),
+
+          // Stats card
+          if (isLoadingReports)
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  CircularProgressIndicator(color: AppTheme.secondaryColor),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Loading your stats...',
+                    style: TextStyle(
+                      color: AppTheme.secondaryColor.withOpacity(0.7),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            _buildStatsCard()
+                .animate()
+                .fadeIn(duration: 1000.ms, delay: 200.ms)
                 .scale(
                   begin: const Offset(0.95, 0.95),
                   end: const Offset(1, 1),
@@ -487,6 +549,137 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildRankItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.white.withOpacity(0.9), size: 20),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+            shadows: [
+              Shadow(
+                color: Colors.black26,
+                blurRadius: 2,
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatsCard() {
+    // Calculate the number of reports with feedback
+    final reportsWithFeedback =
+        userReports
+            .where(
+              (report) =>
+                  report.feedback != null && report.feedback!.isNotEmpty,
+            )
+            .length;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.secondaryColor.withOpacity(0.8),
+            AppTheme.primaryColor.withOpacity(0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.secondaryColor.withOpacity(0.2),
+            blurRadius: 20,
+            spreadRadius: 1,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.insights,
+                color: Colors.white,
+                size: 28,
+                shadows: [
+                  Shadow(
+                    color: Colors.black26,
+                    blurRadius: 5,
+                    offset: const Offset(1, 1),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Your Impact',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black26,
+                      blurRadius: 2,
+                      offset: Offset(1, 1),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatsItem(
+                'Reports',
+                '${userReports.length}',
+                Icons.report_outlined,
+              ),
+              Container(
+                height: 50,
+                width: 1,
+                color: Colors.white.withOpacity(0.3),
+              ),
+              _buildStatsItem(
+                'Feedback',
+                '$reportsWithFeedback',
+                Icons.comment_outlined,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsItem(String label, String value, IconData icon) {
     return Column(
       children: [
         Row(
