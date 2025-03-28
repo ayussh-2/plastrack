@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/appdb
     depends_on:

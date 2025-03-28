@@ -11,6 +11,6 @@ RUN bun install
 COPY . .
 RUN bunx prisma generate
 
-EXPOSE 3000
+EXPOSE 4000
 
 ENTRYPOINT ["/entrypoint.sh"]
