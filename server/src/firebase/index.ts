@@ -1,10 +1,9 @@
 import { initializeApp, cert, ServiceAccount } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-// import serviceAccountJSON from "./cert.json";
-import getFirebaseConfig from "@/helpers/firebaseConfigHandler";
+import { env } from "@/config";
 
 const app = initializeApp({
-  credential: cert(getFirebaseConfig() as ServiceAccount),
+  credential: cert(env.firebase as ServiceAccount),
 });
 
 export const auth = getAuth(app);
