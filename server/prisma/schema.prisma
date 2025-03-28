@@ -44,11 +44,24 @@ model TrashReport {
   firebaseId    String?
   aiResponse    String?
   TrashFeedback TrashFeedback[]
+  complaints Complaint[] 
 }
+
 model TrashFeedback {
   id        Int         @id @default(autoincrement())
   reportId  Int
   report    TrashReport @relation(fields: [reportId], references: [id])
   feedback  String
   timestamp DateTime    @default(now())
+}
+
+model Complaint {
+  id        Int         @id @default(autoincrement())
+  reportId  Int
+  complaint String
+  status    String      @default("pending")
+  timestamp DateTime    @default(now())
+  report    TrashReport @relation(fields: [reportId], references: [id])
+
+  @@map("Complaint")
 }
