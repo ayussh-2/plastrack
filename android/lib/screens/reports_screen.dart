@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:waste2ways/config/theme.dart';
 import 'package:waste2ways/models/report_model.dart';
 import 'package:waste2ways/services/report_list_service.dart';
@@ -12,14 +13,26 @@ class ReportsScreen extends StatefulWidget {
   State<ReportsScreen> createState() => _ReportsScreenState();
 }
 
-class _ReportsScreenState extends State<ReportsScreen> {
+class _ReportsScreenState extends State<ReportsScreen>
+    with SingleTickerProviderStateMixin {
   final ReportListService _reportService = ReportListService();
   late Future<List<Report>> _reportsFuture;
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _reportsFuture = _reportService.getUserReports();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -28,105 +41,86 @@ class _ReportsScreenState extends State<ReportsScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [AppTheme.backgroundColor1, AppTheme.backgroundColor2],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 16.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header with back button
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    Text(
-                      'My Reports',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
+                _buildHeader(context)
+                    .animate()
+                    .fadeIn(duration: 600.ms)
+                    .slideY(begin: -0.2, end: 0),
 
                 const SizedBox(height: 24),
 
-                // Reports list
                 Expanded(
                   child: FutureBuilder<List<Report>>(
                     future: _reportsFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (snapshot.hasError) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.error_outline,
-                                color: Colors.red,
-                                size: 60,
+                              CircularProgressIndicator(
+                                color: AppTheme.primaryColor,
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Failed to load reports',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    // Fixed: changed from named parameter to positional parameter
-                                    _reportsFuture =
-                                        _reportService.getUserReports();
-                                  });
-                                },
-                                child: const Text('Retry'),
+                                'Loading your reports...',
+                                style: TextStyle(
+                                  color: AppTheme.primaryColor.withOpacity(0.7),
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),
-                        );
+                        ).animate().fadeIn(duration: 500.ms);
+                      }
+
+                      if (snapshot.hasError) {
+                        return _buildErrorState()
+                            .animate()
+                            .fadeIn(duration: 800.ms)
+                            .scale(
+                              begin: const Offset(0.9, 0.9),
+                              end: const Offset(1, 1),
+                            );
                       }
 
                       final reports = snapshot.data ?? [];
 
                       if (reports.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: AppTheme.primaryColor,
-                                size: 60,
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'You haven\'t submitted any reports yet',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        );
+                        return _buildEmptyState()
+                            .animate()
+                            .fadeIn(duration: 800.ms)
+                            .scale(
+                              begin: const Offset(0.9, 0.9),
+                              end: const Offset(1, 1),
+                            );
                       }
 
                       return ListView.builder(
+                        physics: const BouncingScrollPhysics(),
                         itemCount: reports.length,
                         itemBuilder: (context, index) {
                           final report = reports[index];
-                          return ReportCard(report: report);
+                          return ReportCard(report: report)
+                              .animate(
+                                delay: Duration(milliseconds: 100 * index),
+                              )
+                              .fadeIn(duration: 600.ms)
+                              .slideY(begin: 0.2, end: 0);
                         },
                       );
                     },
@@ -135,6 +129,199 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          borderRadius: BorderRadius.circular(40),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              Icons.arrow_back,
+              color: AppTheme.primaryColor,
+              size: 24,
+            ),
+          ),
+        ),
+        Text(
+          'Reports',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primaryColor,
+            letterSpacing: 1,
+          ),
+        ),
+        SizedBox(width: 48), // Balance the layout
+      ],
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              spreadRadius: 1,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.red.withOpacity(0.1),
+              ),
+              child: AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _animationController.value * 0.05,
+                    child: const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 60,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Failed to load reports',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'There was an error loading your reports. Please try again.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: AppTheme.primaryColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 5,
+              ),
+              onPressed: () {
+                setState(() {
+                  _reportsFuture = _reportService.getUserReports();
+                });
+              },
+              child: const Text(
+                'Retry',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              spreadRadius: 1,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.primaryColor.withOpacity(0.2),
+                    AppTheme.secondaryColor.withOpacity(0.2),
+                  ],
+                ),
+              ),
+              child: Icon(
+                Icons.info_outline,
+                size: 60,
+                color: AppTheme.primaryColor,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'No Reports Yet',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'You haven\'t submitted any reports yet. Start by reporting some waste!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );
@@ -148,7 +335,6 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Parse AI Response JSON
     Map<String, dynamic> aiData = {};
     try {
       aiData = json.decode(report.aiResponse);
@@ -157,62 +343,149 @@ class ReportCard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Report image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            ),
-            child: Image.network(
-              report.image,
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
+          // Report image with gradient overlay
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                child: Image.network(
+                  report.image,
                   height: 200,
                   width: double.infinity,
-                  color: Colors.grey[300],
-                  child: Icon(
-                    Icons.broken_image,
-                    color: Colors.grey[500],
-                    size: 50,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.grey[500],
+                        size: 50,
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                          color: AppTheme.primaryColor,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Date overlay
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
-                );
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  height: 200,
-                  width: double.infinity,
-                  color: Colors.grey[200],
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    report.getFormattedDate(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+              // Trash type and severity overlay
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          report.trashType.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black54,
+                                blurRadius: 2,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getSeverityColor(report.severity),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Severity: ${report.getSeverityText()}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
 
           // Report details
@@ -221,49 +494,21 @@ class ReportCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        report.trashType.toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getSeverityColor(report.severity),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Severity: ${report.getSeverityText()}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Reported on ${report.getFormattedDate()}',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 16),
-
                 // Enhanced AI Analysis Section
                 ExpansionTile(
-                  initiallyExpanded: true,
-                  title: const Text(
-                    'AI Analysis',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  initiallyExpanded: false,
+                  title: Row(
+                    children: [
+                      Icon(Icons.computer, color: AppTheme.primaryColor),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'AI Analysis',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                   children: [
                     Padding(
@@ -281,19 +526,30 @@ class ReportCard extends StatelessWidget {
                   const Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      'Your Feedback:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.comment_outlined,
+                          color: AppTheme.primaryColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Your Feedback:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[300]!),
                     ),
                     child: Text(
                       report.feedback!,
@@ -318,63 +574,109 @@ class ReportCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Material and Confidence Row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 2,
-              child: RichText(
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.primaryColor.withOpacity(0.1),
+                AppTheme.secondaryColor.withOpacity(0.1),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 2,
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(color: Colors.black, fontSize: 15),
+                    children: [
+                      const TextSpan(
+                        text: 'Material: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: aiData['material']?.toString() ?? 'Unknown',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _getConfidenceColor(aiData['confidence']),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Confidence: ${aiData['confidence']}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Recyclability
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: _getRecyclabilityColor(
+                aiData['recyclability'],
+              ).withOpacity(0.5),
+            ),
+            borderRadius: BorderRadius.circular(8),
+            color: _getRecyclabilityColor(
+              aiData['recyclability'],
+            ).withOpacity(0.1),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                aiData['recyclability']?.toString().toLowerCase() ==
+                        'recyclable'
+                    ? Icons.check_circle
+                    : aiData['recyclability']?.toString().toLowerCase() ==
+                        'partially recyclable'
+                    ? Icons.info
+                    : Icons.cancel,
+                color: _getRecyclabilityColor(aiData['recyclability']),
+              ),
+              const SizedBox(width: 8),
+              RichText(
                 text: TextSpan(
                   style: const TextStyle(color: Colors.black, fontSize: 15),
                   children: [
                     const TextSpan(
-                      text: 'Material: ',
+                      text: 'Recyclability: ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    TextSpan(text: aiData['material']?.toString() ?? 'Unknown'),
+                    TextSpan(
+                      text: aiData['recyclability']?.toString() ?? 'Unknown',
+                      style: TextStyle(
+                        color: _getRecyclabilityColor(aiData['recyclability']),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: _getConfidenceColor(aiData['confidence']),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Confidence: ${aiData['confidence']}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // Recyclability
-        RichText(
-          text: TextSpan(
-            style: const TextStyle(color: Colors.black, fontSize: 15),
-            children: [
-              const TextSpan(
-                text: 'Recyclability: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              TextSpan(
-                text: aiData['recyclability']?.toString() ?? 'Unknown',
-                style: TextStyle(
-                  color: _getRecyclabilityColor(aiData['recyclability']),
                 ),
               ),
             ],
@@ -383,55 +685,118 @@ class ReportCard extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Infrastructure Suitability Section
-        const Text(
-          'Infrastructure Suitability',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-
         if (aiData['infrastructure_suitability'] != null) ...[
-          ...aiData['infrastructure_suitability'].entries.map((entry) {
-            final double percentage =
-                (entry.value is num) ? (entry.value as num).toDouble() : 0.0;
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey[50],
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.business, color: AppTheme.primaryColor),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Infrastructure Suitability',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _formatInfrastructureName(entry.key),
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: percentage / 100,
-                    backgroundColor: Colors.grey[200],
-                    color: _getPercentageColor(percentage),
-                    minHeight: 8,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${percentage.toStringAsFixed(0)}%',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    textAlign: TextAlign.end,
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                ...aiData['infrastructure_suitability'].entries.map((entry) {
+                  final double percentage =
+                      (entry.value is num)
+                          ? (entry.value as num).toDouble()
+                          : 0.0;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _formatInfrastructureName(entry.key),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Stack(
+                          children: [
+                            Container(
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: percentage / 100,
+                              child: Container(
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      _getPercentageColor(percentage),
+                                      _getPercentageColor(
+                                        percentage,
+                                      ).withOpacity(0.7),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getPercentageColor(
+                                  percentage,
+                                ).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '${percentage.toStringAsFixed(0)}%',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: _getPercentageColor(percentage),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
         ],
 
-        const SizedBox(height: 20),
-
         // Environmental Impact Section
-        const Text(
-          'Environmental Impact',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(height: 12),
-
         if (aiData['environmental_impact'] != null) ...[
           Row(
             children: [
@@ -442,7 +807,7 @@ class ReportCard extends StatelessWidget {
                   Icons.delete_outline,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildEnvironmentalImpactCard(
                   'CO₂ Reduction',
@@ -458,14 +823,37 @@ class ReportCard extends StatelessWidget {
 
         // Notes Section
         if (aiData['notes'] != null) ...[
-          const Text(
-            'Notes:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            aiData['notes'].toString(),
-            style: TextStyle(color: Colors.grey[800], fontSize: 14),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.amber[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.amber[100]!),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: Colors.amber[700]),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Notes:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.amber[900],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  aiData['notes'].toString(),
+                  style: TextStyle(color: Colors.grey[800], fontSize: 14),
+                ),
+              ],
+            ),
           ),
         ],
       ],
@@ -479,11 +867,21 @@ class ReportCard extends StatelessWidget {
     IconData icon,
   ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green[200]!),
+        gradient: LinearGradient(
+          colors: [Colors.green[50]!, Colors.green[100]!],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
