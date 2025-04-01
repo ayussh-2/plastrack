@@ -43,12 +43,85 @@ model TrashReport {
   user          User?           @relation(fields: [firebaseId], references: [firebaseId])
   firebaseId    String?
   aiResponse    String?
+  resolved  Boolean  @default(false)
   TrashFeedback TrashFeedback[]
 }
+
 model TrashFeedback {
   id        Int         @id @default(autoincrement())
   reportId  Int
   report    TrashReport @relation(fields: [reportId], references: [id])
   feedback  String
   timestamp DateTime    @default(now())
+}
+
+model VirtualTree {
+  id          Int      @id @default(autoincrement())
+  firebaseId  String
+  count       Int
+  tokensSpent Int
+  createdAt   DateTime @default(now())
+}
+
+model RealTreePlanting {
+  id            Int      @id @default(autoincrement())
+  status        String   // SCHEDULED, IN_PROGRESS, COMPLETED
+  treesPlanted  Int      @default(0)
+  scheduledDate DateTime
+  completedDate DateTime?
+  createdAt     DateTime @default(now())
+}
+
+model Badge {
+  firebaseId String
+  type       String
+  awardedAt  DateTime @default(now())
+
+  @@id([firebaseId, type])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  firebaseId String
+  type       String
+  message    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Truck {
+  id          Int           @id @default(autoincrement())
+  truckNumber String        @unique
+  status      String        // AVAILABLE, ASSIGNED, MAINTENANCE
+  createdAt   DateTime      @default(now())
+  CleanupTask CleanupTask[]
+}
+
+model CleanupTask {
+  id                Int                @id @default(autoincrement())
+  latitude          Float
+  longitude         Float
+  reportCount       Int
+  avgSeverity       Float
+  status            String             // ASSIGNED, IN_PROGRESS, COMPLETED
+  reportIds         Int[]
+  truckId           Int
+  truck             Truck              @relation(fields: [truckId], references: [id])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  RecyclingMaterial RecyclingMaterial?
+}
+
+model RecyclingMaterial {
+  id             Int         @id @default(autoincrement())
+  cleanupTaskId  Int         @unique
+  cleanupTask    CleanupTask @relation(fields: [cleanupTaskId], references: [id])
+  plasticWeight  Float
+  paperWeight    Float
+  glassWeight    Float
+  metalWeight    Float
+  organicWeight  Float
+  otherWeight    Float
+  destinationType String      // RECYCLING_CENTER, INFRASTRUCTURE, SCRAP_ARTISTS
+  createdAt      DateTime    @default(now())
 }
