@@ -6,8 +6,11 @@ import { cleanJsonResponse, validateFeedback } from "@/utils/validateFeedback";
 import { ImageAnnotatorClient } from "@google-cloud/vision";
 import { getGeminiResponse } from "@/lib/gemini";
 import { GameService } from "./game-service";
+import { env } from "@/config";
 
-const client = new ImageAnnotatorClient();
+const client = new ImageAnnotatorClient({
+  credentials: env.visionAPI,
+});
 
 export class TrashService {
     private gameService: GameService;
