@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:waste2ways/config/theme.dart';
-import 'package:waste2ways/models/report_model.dart';
-import 'package:waste2ways/services/report_list_service.dart';
+import 'package:plastrack/config/theme.dart';
+import 'package:plastrack/models/report_model.dart';
+import 'package:plastrack/services/report_list_service.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});

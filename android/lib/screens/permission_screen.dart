@@ -37,7 +37,7 @@ class PermissionScreen extends StatelessWidget {
 
                 // Title
                 Text(
-                  'Waste 2 Ways',
+                  'Plastrack',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

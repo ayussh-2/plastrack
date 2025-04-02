@@ -2,15 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:waste2ways/config/constants.dart';
-import 'package:waste2ways/config/theme.dart';
-import 'package:waste2ways/models/trash_report_model.dart';
-import 'package:waste2ways/screens/leaderboard_screen.dart';
-import 'package:waste2ways/screens/permission_screen.dart';
-import 'package:waste2ways/screens/profile_screen.dart';
-import 'package:waste2ways/screens/report_trash_screen.dart';
-import 'package:waste2ways/services/permission_service.dart';
-import 'package:waste2ways/widgets/auth_state_wrapper.dart';
+import 'package:plastrack/config/constants.dart';
+import 'package:plastrack/config/theme.dart';
+import 'package:plastrack/models/trash_report_model.dart';
+import 'package:plastrack/screens/leaderboard_screen.dart';
+import 'package:plastrack/screens/permission_screen.dart';
+import 'package:plastrack/screens/profile_screen.dart';
+import 'package:plastrack/screens/report_trash_screen.dart';
+import 'package:plastrack/services/permission_service.dart';
+import 'package:plastrack/widgets/auth_state_wrapper.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
@@ -30,17 +30,17 @@ void main() async {
   );
   await Constants.initializeBaseUrl();
 
-  runApp(const Waste2Way());
+  runApp(const Plastrack());
 }
 
-class Waste2Way extends StatefulWidget {
-  const Waste2Way({super.key});
+class Plastrack extends StatefulWidget {
+  const Plastrack({super.key});
 
   @override
-  State<Waste2Way> createState() => _Waste2WayState();
+  State<Plastrack> createState() => _PlastrackState();
 }
 
-class _Waste2WayState extends State<Waste2Way> {
+class _PlastrackState extends State<Plastrack> {
   final PermissionService _permissionService = PermissionService();
   bool _initialized = false;
 
@@ -65,7 +65,7 @@ class _Waste2WayState extends State<Waste2Way> {
         ChangeNotifierProvider.value(value: _permissionService),
       ],
       child: MaterialApp(
-        title: 'Waste 2 Ways',
+        title: 'Plastrack',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         routes: {

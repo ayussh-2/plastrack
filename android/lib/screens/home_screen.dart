@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:plastrack/models/report_model.dart';
+import 'package:plastrack/services/report_list_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:waste2ways/models/report_model.dart';
-import 'package:waste2ways/services/report_list_service.dart';
 import '../services/auth_service.dart';
 import '../services/game_service.dart';
 import '../models/rank_model.dart';
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         Text(
-          'Waste 2 Ways',
+          'Plastrack',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

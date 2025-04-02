@@ -94,7 +94,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 end: Alignment.bottomRight,
                               ).createShader(bounds),
                           child: const Text(
-                            "Waste 2 Way",
+                            "Plastrack",
                             style: TextStyle(
                               fontSize: 28.0,
                               color: Colors.white,

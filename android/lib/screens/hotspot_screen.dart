@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:waste2ways/models/hotspot_model.dart';
-import 'package:waste2ways/services/hotspot_service.dart';
+
 import 'package:intl/intl.dart';
+import 'package:plastrack/models/hotspot_model.dart';
+import 'package:plastrack/services/hotspot_service.dart';
 
 class HotspotScreen extends StatefulWidget {
   const HotspotScreen({Key? key}) : super(key: key);

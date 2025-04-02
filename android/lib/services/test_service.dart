@@ -1,4 +1,4 @@
-import 'package:waste2ways/utils/api_client.dart';
+import 'package:plastrack/utils/api_client.dart';
 
 class TestService {
   final ApiClient _apiClient = ApiClient(enableLogging: true);

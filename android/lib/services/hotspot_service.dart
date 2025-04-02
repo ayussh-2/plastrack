@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:waste2ways/config/constants.dart';
-import 'package:waste2ways/models/hotspot_model.dart';
 import 'dart:developer' as developer;
+
+import 'package:plastrack/config/constants.dart';
+import 'package:plastrack/models/hotspot_model.dart';
 
 class HotspotService {
   final String _baseUrl = Constants.baseUrl;

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:waste2ways/config/constants.dart';
+import 'package:plastrack/config/constants.dart';
 import 'dart:developer' as developer;
-import 'package:waste2ways/models/trash_report_model.dart';
+import 'package:plastrack/models/trash_report_model.dart';
 
 class TrashReportService {
   TrashClassificationResponse? _trashReport;

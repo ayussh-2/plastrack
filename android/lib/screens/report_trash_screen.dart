@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:waste2ways/screens/trash_report_result_screen.dart';
+import 'package:plastrack/screens/trash_report_result_screen.dart';
 import '../config/theme.dart';
 import '../services/trash_report_service.dart';
 import 'dart:developer' as developer;
@@ -26,10 +26,12 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
   double _severity = 3;
   final TrashReportService _reportService = TrashReportService();
   MapController? _mapController;
+  bool _mapReady = false;
 
   @override
   void initState() {
     super.initState();
+    _mapController = MapController();
     _openCamera();
   }
 
@@ -53,8 +55,8 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
         _isLoading = false;
       });
 
-      // Only move the map if controller is initialized and the map exists
-      if (_mapController != null && mounted) {
+      // Only move the map if the map is ready and we're still mounted
+      if (_mapReady && _mapController != null && mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           try {
             _mapController?.move(
@@ -143,9 +145,6 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize map controller if needed
-    _mapController ??= MapController();
-
     return Scaffold(
       // App bar removed as requested
       body: Container(
@@ -213,7 +212,7 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
                                 ),
                                 const SizedBox(height: 8),
 
-                                if (_currentPosition != null)
+                                if (_currentPosition != null) ...[
                                   Container(
                                         height: 140,
                                         decoration: BoxDecoration(
@@ -321,8 +320,8 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
                                       )
                                       .animate()
                                       .fadeIn(duration: 600.ms)
-                                      .slideY(begin: 0.2, end: 0)
-                                else
+                                      .slideY(begin: 0.2, end: 0),
+                                ] else
                                   Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
@@ -354,7 +353,7 @@ class _ReportTrashScreenState extends State<ReportTrashScreen> {
                                 const SizedBox(height: 24),
 
                                 Text(
-                                  'Severity Level',
+                                  'Quantity of Trash',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,

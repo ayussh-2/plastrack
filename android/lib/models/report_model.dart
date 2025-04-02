@@ -25,7 +25,11 @@ class Report {
     this.feedback,
   });
 
-  factory Report.fromJson(Map<String, dynamic> reportJson, {String? feedback}) {
+  factory Report.fromJson(
+    Map<String, dynamic> reportJson, {
+    String? feedback,
+    Map<String, dynamic>? aiResponseJson,
+  }) {
     return Report(
       id: reportJson['id'],
       latitude: reportJson['latitude'],
