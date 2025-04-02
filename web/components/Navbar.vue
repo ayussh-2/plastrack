@@ -28,7 +28,11 @@
         >
           {{ item.name }}
         </NuxtLink>
-        <NuxtLink to="/dashboard" class="btn-primary">
+        <NuxtLink
+          to="https://drive.google.com/drive/folders/1MGh4RPTK3X3uy_Qxf6IqcC_DmzfCDLH0"
+          target="_blank"
+          class="btn-primary"
+        >
           Download Our App
         </NuxtLink>
       </div>
