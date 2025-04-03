@@ -2,10 +2,8 @@ FROM oven/bun:latest
 
 WORKDIR /app
 
-# Copy files with explicit line ending conversion
-COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+# COPY --chmod=0755 entrypoint.sh /entrypoint.sh
 
-# Rest of the Dockerfile remains the same
 COPY package.json bun.lockb ./
 RUN bun install
 COPY . .
@@ -13,4 +11,6 @@ RUN bunx prisma generate
 
 EXPOSE 4000
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENV NODE_ENV=development
+
+ENTRYPOINT ["bun","run","dev"]

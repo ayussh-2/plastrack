@@ -78,7 +78,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <router-link to="/community" class="btn-primary">
+                <router-link to="#" class="btn-primary">
                     Join Our Community
                 </router-link>
             </div>

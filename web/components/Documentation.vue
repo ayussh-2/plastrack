@@ -1,7 +1,7 @@
 <template>
     <div
         id="documentation"
-        class="py-16 bg-gradient-to-b from-background to-waste2way-teal/5"
+        class="py-16 bg-gradient-to-b from-background to-PLastrack-teal/5"
     >
         <div class="section-container">
             <div class="mb-12 text-center">
@@ -9,7 +9,7 @@
                     Documentation
                 </h2>
                 <p class="max-w-2xl mx-auto text-muted-foreground">
-                    Comprehensive guide to using the Waste2Way platform and
+                    Comprehensive guide to using the PLastrack platform and
                     understanding its features
                 </p>
             </div>
@@ -25,7 +25,7 @@
                         class="px-5 py-2 text-sm font-medium transition-all rounded-full"
                         :class="
                             selectedTab === tab.id
-                                ? 'bg-waste2way-teal text-white shadow-md'
+                                ? 'bg-PLastrack-teal text-white shadow-md'
                                 : 'hover:bg-white/10'
                         "
                         @click="selectedTab = tab.id"
@@ -52,15 +52,15 @@
                             >
                                 <a
                                     :href="`#${section.id}`"
-                                    class="flex items-center transition-colors hover:text-waste2way-teal"
+                                    class="flex items-center transition-colors hover:text-PLastrack-teal"
                                     :class="
                                         activeSection === section.id
-                                            ? 'text-waste2way-teal font-medium'
+                                            ? 'text-PLastrack-teal font-medium'
                                             : ''
                                     "
                                 >
                                     <div
-                                        class="w-1.5 h-1.5 mr-2 rounded-full bg-waste2way-teal"
+                                        class="w-1.5 h-1.5 mr-2 rounded-full bg-PLastrack-teal"
                                     ></div>
                                     {{ section.title }}
                                 </a>
@@ -79,7 +79,7 @@
                             class="mb-10"
                         >
                             <h3
-                                class="mb-4 text-xl font-bold text-waste2way-teal"
+                                class="mb-4 text-xl font-bold text-PLastrack-teal"
                             >
                                 {{ section.title }}
                             </h3>
@@ -102,7 +102,7 @@
                                     class="flex"
                                 >
                                     <div
-                                        class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-waste2way-teal/10 text-waste2way-teal font-medium"
+                                        class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-PLastrack-teal/10 text-PLastrack-teal font-medium"
                                     >
                                         {{ idx + 1 }}
                                     </div>
@@ -121,7 +121,7 @@
 
                             <div
                                 v-if="section.code"
-                                class="mt-6 p-4 bg-waste2way-dark/90 rounded-lg overflow-x-auto"
+                                class="mt-6 p-4 bg-PLastrack-dark/90 rounded-lg overflow-x-auto"
                             >
                                 <pre
                                     class="text-sm text-white font-mono"
@@ -162,7 +162,7 @@ export default {
                             id: "overview",
                             title: "Overview",
                             content: [
-                                "The Waste2Way web platform provides a comprehensive interface for waste management and infrastructure planning using recycled materials.",
+                                "The PLastrack web platform provides a comprehensive interface for waste management and infrastructure planning using recycled materials.",
                                 "The platform combines AI-powered waste identification, community engagement through gamification, and real-time mapping of waste hotspots.",
                             ],
                         },
@@ -239,7 +239,7 @@ export default {
                             id: "mobile-overview",
                             title: "Mobile App Overview",
                             content: [
-                                "The Waste2Way mobile app allows users to report waste on the go, track their contributions, and stay updated on community activities.",
+                                "The PLastrack mobile app allows users to report waste on the go, track their contributions, and stay updated on community activities.",
                                 "Available for Android devices, the app provides a streamlined version of the web platform with additional mobile-specific features.",
                             ],
                         },
@@ -247,7 +247,7 @@ export default {
                             id: "installation",
                             title: "Installation",
                             content: [
-                                "Download the Waste2Way app from the Google Play Store or directly from our website.",
+                                "Download the PLastrack app from the Google Play Store or directly from our website.",
                             ],
                             steps: [
                                 {
@@ -313,7 +313,7 @@ export default {
                             id: "api-overview",
                             title: "API Overview",
                             content: [
-                                "The Waste2Way API allows developers to integrate our waste management and analysis capabilities into their own applications.",
+                                "The PLastrack API allows developers to integrate our waste management and analysis capabilities into their own applications.",
                                 "All endpoints require authentication using Firebase tokens.",
                             ],
                         },
@@ -450,7 +450,7 @@ html {
 }
 
 /* Active section indicator animation */
-a.text-waste2way-teal .bg-waste2way-teal {
+a.text-PLastrack-teal .bg-PLastrack-teal {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
