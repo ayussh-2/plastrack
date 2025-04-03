@@ -2,15 +2,27 @@ FROM oven/bun:latest
 
 WORKDIR /app
 
-# COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+COPY package.json bun.lock ./
 
-COPY package.json bun.lockb ./
+COPY prisma ./prisma/
+
 RUN bun install
+
 COPY . .
-RUN bunx prisma generate
+
+RUN printf '#!/bin/sh\n\
+if [ "$RUN_MIGRATIONS" = "true" ]; then\n\
+  echo "Running database migrations..."\n\
+  bunx prisma migrate deploy\n\
+fi\n\
+\n\
+exec "$@"\n' > /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 4000
 
 ENV NODE_ENV=development
+ENV RUN_MIGRATIONS=true
 
-ENTRYPOINT ["bun","run","dev"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["bun", "run", "dev"]
