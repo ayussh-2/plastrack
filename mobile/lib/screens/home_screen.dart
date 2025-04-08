@@ -10,7 +10,7 @@ import '../services/auth_service.dart';
 import '../services/game_service.dart';
 import '../models/rank_model.dart';
 import '../config/theme.dart';
-import '../config/constants.dart';
+import '../utils/preferences_utils.dart';
 import 'dart:developer' as developer;
 
 class HomeScreen extends StatefulWidget {
@@ -57,10 +57,15 @@ class _HomeScreenState extends State<HomeScreen>
       try {
         final gameService = GameService();
         final auth = authService.user;
-        final rank = await gameService.getUserRank(auth!.uid);
+        final rankModel = (await gameService.getUserRank(auth!.uid))!;
+        final updatedRankModel = RankModel(
+          rank: rankModel.rank + 1,
+          points: rankModel.points,
+        );
+
         if (mounted) {
           setState(() {
-            userRank = rank;
+            userRank = updatedRankModel;
             isLoading = false;
           });
         }
@@ -102,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen>
         }
       }
     }
+  }
+
+  // Add this method for refresh functionality
+  Future<void> _refreshData() async {
+    await Future.wait([_fetchUserRank(), _fetchUserReports()]);
   }
 
   @override
@@ -209,249 +219,273 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildLoggedInContent(user, Size screenSize) {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 40.0),
+      child: RefreshIndicator(
+        color: AppTheme.primaryColor,
+        backgroundColor: Colors.white,
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40.0),
 
-          // Welcome message with animation
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primaryColor.withOpacity(0.1),
-                    AppTheme.secondaryColor.withOpacity(0.1),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.05),
-                    blurRadius: 15,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 8),
+              // Welcome message with animation
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
                   ),
-                ],
-              ),
-              child: ShaderMask(
-                shaderCallback:
-                    (bounds) => LinearGradient(
-                      colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.primaryColor.withOpacity(0.1),
+                        AppTheme.secondaryColor.withOpacity(0.1),
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                    ).createShader(bounds),
-                child: Text(
-                  'Welcome, ${user.name}!',
-                  style: const TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ),
-          ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.3, end: 0),
-
-          const SizedBox(height: 40.0),
-
-          // Rank information
-          if (isLoading)
-            Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  CircularProgressIndicator(color: AppTheme.primaryColor),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading your rank...',
-                    style: TextStyle(
-                      color: AppTheme.primaryColor.withOpacity(0.7),
-                      fontSize: 16,
                     ),
-                  ),
-                ],
-              ),
-            )
-          else if (userRank != null)
-            _buildRankCard()
-                .animate()
-                .fadeIn(duration: 1000.ms)
-                .scale(
-                  begin: const Offset(0.95, 0.95),
-                  end: const Offset(1, 1),
-                ),
-
-          const SizedBox(height: 24.0),
-
-          // Stats card
-          if (isLoadingReports)
-            Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  CircularProgressIndicator(color: AppTheme.secondaryColor),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Loading your stats...',
-                    style: TextStyle(
-                      color: AppTheme.secondaryColor.withOpacity(0.7),
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            _buildStatsCard()
-                .animate()
-                .fadeIn(duration: 1000.ms, delay: 200.ms)
-                .scale(
-                  begin: const Offset(0.95, 0.95),
-                  end: const Offset(1, 1),
-                ),
-
-          const Spacer(),
-
-          Center(
-                child: GestureDetector(
-                  onTap: () async {
-                    try {
-                      LocationPermission permission =
-                          await Geolocator.checkPermission();
-                      if (permission == LocationPermission.denied) {
-                        permission = await Geolocator.requestPermission();
-                        if (permission == LocationPermission.denied) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Location permission denied'),
-                            ),
-                          );
-                          return;
-                        }
-                      }
-
-                      Position position = await Geolocator.getCurrentPosition(
-                        desiredAccuracy: LocationAccuracy.high,
-                      );
-
-                      final shareUrl =
-                          '${Constants.ogImageEndpoint}?lat=${position.latitude}&lng=${position.longitude}';
-
-                      try {
-                        final res = await Share.share(
-                          'Check out this trash hotspot! $shareUrl',
-                          subject: 'Waste 2 Ways - Trash Hotspot',
-                        );
-                        developer.log('Share result: $res', name: 'HomeScreen');
-                      } on MissingPluginException catch (e) {
-                        developer.log(
-                          'Missing plugin for sharing: $e',
-                          name: 'HomeScreen',
-                        );
-                        await Clipboard.setData(ClipboardData(text: shareUrl));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Link copied to clipboard! Plugin for sharing is missing.',
-                            ),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                    }
-                  },
-                  child: Container(
-                    width: screenSize.width * 0.7,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor,
-                          AppTheme.secondaryColor,
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.05),
+                        blurRadius: 15,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 8),
                       ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
+                    ],
+                  ),
+                  child: ShaderMask(
+                    shaderCallback:
+                        (bounds) => LinearGradient(
+                          colors: [
+                            AppTheme.primaryColor,
+                            AppTheme.secondaryColor,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                    child: Text(
+                      'Welcome, ${user.name}!',
+                      style: const TextStyle(
+                        fontSize: 32.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.3, end: 0),
+
+              const SizedBox(height: 40.0),
+
+              // Rank information
+              if (isLoading)
+                Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 30),
+                      CircularProgressIndicator(color: AppTheme.primaryColor),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Loading your rank...',
+                        style: TextStyle(
+                          color: AppTheme.primaryColor.withOpacity(0.7),
+                          fontSize: 16,
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                )
+              else if (userRank != null)
+                _buildRankCard()
+                    .animate()
+                    .fadeIn(duration: 1000.ms)
+                    .scale(
+                      begin: const Offset(0.95, 0.95),
+                      end: const Offset(1, 1),
+                    ),
+
+              const SizedBox(height: 24.0),
+
+              // Stats card
+              if (isLoadingReports)
+                Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      CircularProgressIndicator(color: AppTheme.secondaryColor),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Loading your stats...',
+                        style: TextStyle(
+                          color: AppTheme.secondaryColor.withOpacity(0.7),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                _buildStatsCard()
+                    .animate()
+                    .fadeIn(duration: 1000.ms, delay: 200.ms)
+                    .scale(
+                      begin: const Offset(0.95, 0.95),
+                      end: const Offset(1, 1),
+                    ),
+
+              // Replace Spacer with SizedBox for better scroll behavior
+              const SizedBox(height: 40.0),
+
+              Center(
+                    child: GestureDetector(
+                      onTap: () async {
+                        try {
+                          LocationPermission permission =
+                              await Geolocator.checkPermission();
+                          if (permission == LocationPermission.denied) {
+                            permission = await Geolocator.requestPermission();
+                            if (permission == LocationPermission.denied) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Location permission denied'),
+                                ),
+                              );
+                              return;
+                            }
+                          }
+
+                          Position position =
+                              await Geolocator.getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.high,
+                              );
+
+                          final shareUrl =
+                              '${PreferencesUtils.DEFAULT_FRONTEND_URL}/api/og-image?lat=${position.latitude}&lng=${position.longitude}';
+
+                          try {
+                            final res = await Share.share(
+                              'Check out this trash hotspot! $shareUrl',
+                              subject: 'Plastrack - Trash Hotspot',
+                            );
+                            developer.log(
+                              'Share result: $res',
+                              name: 'HomeScreen',
+                            );
+                          } on MissingPluginException catch (e) {
+                            developer.log(
+                              'Missing plugin for sharing: $e',
+                              name: 'HomeScreen',
+                            );
+                            await Clipboard.setData(
+                              ClipboardData(text: shareUrl),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Link copied to clipboard! Plugin for sharing is missing.',
+                                ),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        }
+                      },
+                      child: Container(
+                        width: screenSize.width * 0.7,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryColor,
+                              AppTheme.secondaryColor,
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.share_location,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'Share trash location!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(delay: 300.ms, duration: 1000.ms)
+                  .slideY(begin: 0.3, end: 0),
+
+              const SizedBox(height: 20.0),
+
+              // Leaderboard button
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/leaderboard');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8.0,
+                      horizontal: 16.0,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.share_location,
-                          color: Colors.white,
-                          size: 28,
+                          Icons.leaderboard,
+                          color: AppTheme.primaryColor.withOpacity(0.8),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Text(
-                          'Share trash location!',
+                          'View Leaderboard',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
+                            color: AppTheme.primaryColor.withOpacity(0.8),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              )
-              .animate()
-              .fadeIn(delay: 300.ms, duration: 1000.ms)
-              .slideY(begin: 0.3, end: 0),
+              ).animate().fadeIn(delay: 400.ms, duration: 1000.ms),
 
-          // Leaderboard button
-          Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/leaderboard');
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 16.0,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.leaderboard,
-                      color: AppTheme.primaryColor.withOpacity(0.8),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'View Leaderboard',
-                      style: TextStyle(
-                        color: AppTheme.primaryColor.withOpacity(0.8),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ).animate().fadeIn(delay: 400.ms, duration: 1000.ms),
-
-          const SizedBox(height: 20.0),
-        ],
+              // Add extra space at bottom for better scrolling experience
+              const SizedBox(height: 30.0),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -716,123 +750,130 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  // Make not logged in screen scrollable too for smaller devices
   Widget _buildNotLoggedInContent(BuildContext context) {
     return Expanded(
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                spreadRadius: 1,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor.withOpacity(0.2),
-                          AppTheme.secondaryColor.withOpacity(0.2),
-                        ],
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.account_circle_outlined,
-                      size: 80,
-                      color: AppTheme.primaryColor,
-                    ),
-                  )
-                  .animate()
-                  .fadeIn(duration: 600.ms)
-                  .scale(
-                    begin: const Offset(0.8, 0.8),
-                    end: const Offset(1, 1),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 10),
                   ),
-              const SizedBox(height: 30),
-              Text(
-                'Join the Recycling Game!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
-              const SizedBox(height: 16),
-              Text(
-                'Sign in to track your progress, compete with friends, and make a difference.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  height: 1.4,
-                ),
-              ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppTheme.primaryColor,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 5,
-                    ),
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/login');
-                    },
-                    child: const Text(
-                      'Sign In',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 600.ms, duration: 600.ms),
-                  const SizedBox(width: 16),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.primaryColor,
-                      side: BorderSide(color: AppTheme.primaryColor),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/register');
-                    },
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 800.ms, duration: 600.ms),
                 ],
               ),
-            ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryColor.withOpacity(0.2),
+                              AppTheme.secondaryColor.withOpacity(0.2),
+                            ],
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.account_circle_outlined,
+                          size: 80,
+                          color: AppTheme.primaryColor,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: 600.ms)
+                      .scale(
+                        begin: const Offset(0.8, 0.8),
+                        end: const Offset(1, 1),
+                      ),
+                  const SizedBox(height: 30),
+                  Text(
+                    'Join the Recycling Game!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ).animate().fadeIn(delay: 200.ms, duration: 600.ms),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Sign in to track your progress, compete with friends, and make a difference.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                      height: 1.4,
+                    ),
+                  ).animate().fadeIn(delay: 400.ms, duration: 600.ms),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: AppTheme.primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 5,
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ).animate().fadeIn(delay: 600.ms, duration: 600.ms),
+                      const SizedBox(width: 16),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.primaryColor,
+                          side: BorderSide(color: AppTheme.primaryColor),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/register');
+                        },
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ).animate().fadeIn(delay: 800.ms, duration: 600.ms),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

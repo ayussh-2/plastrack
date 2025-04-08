@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:plastrack/config/theme.dart';
 import 'package:plastrack/models/report_model.dart';
 import 'package:plastrack/services/report_list_service.dart';
+import 'package:plastrack/utils/preferences_utils.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -135,45 +136,16 @@ class _ReportsScreenState extends State<ReportsScreen>
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          borderRadius: BorderRadius.circular(40),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.arrow_back,
-              color: AppTheme.primaryColor,
-              size: 24,
-            ),
-          ),
+    return Center(
+      child: Text(
+        'Reports',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: AppTheme.primaryColor,
+          letterSpacing: 1.2,
         ),
-        Text(
-          'Reports',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
-            letterSpacing: 1,
-          ),
-        ),
-        SizedBox(width: 48), // Balance the layout
-      ],
+      ),
     );
   }
 

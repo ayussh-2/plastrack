@@ -31,13 +31,9 @@ class TrashReportResultScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Back button and title in a row
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios),
-                      onPressed: () => Navigator.pop(context),
-                    ),
                     Text(
                       'Waste Classification',
                       style: TextStyle(
@@ -171,26 +167,8 @@ class TrashReportResultScreen extends StatelessWidget {
 
                 // Navigation Buttons
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Back'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade200,
-                          foregroundColor: Colors.black87,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {

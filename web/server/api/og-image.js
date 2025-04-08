@@ -2,22 +2,33 @@ import { createCanvas, loadImage } from "canvas";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
+    const config = useRuntimeConfig();
 
     const lat = parseFloat(query.lat || 0);
     const lng = parseFloat(query.lng || 0);
 
+    const zoom = 18;
+
     const width = 1200;
     const height = 630;
+    const borderWidth = 12;
+    const borderPadding = 20;
+    const effectiveBorderSpace = borderPadding + borderWidth / 2;
 
-    const mapWidth = 600;
-    const mapHeight = 400;
+    const usableWidth = width - effectiveBorderSpace * 2;
+    const usableHeight = height - effectiveBorderSpace * 2;
+
+    const imageWidth = Math.floor(usableWidth * 0.45);
+    const gapWidth = Math.floor(usableWidth * 0.05);
+    const mapWidth = Math.floor(usableWidth * 0.45);
+    const mapHeight = Math.floor(usableHeight * 0.65);
 
     try {
         let hotspotData = [];
         try {
             const response = await $fetch("/api/trash/hotspots", {
                 method: "GET",
-                baseURL: process.env.API_BASE_URL || "http://localhost:4000",
+                baseURL: config.public.apiBaseUrl,
             });
 
             hotspotData = response.data || [];
@@ -38,8 +49,46 @@ export default defineEventHandler(async (event) => {
         ctx.fillRect(0, 0, width, height);
 
         ctx.strokeStyle = "rgba(20, 184, 166, 0.3)";
-        ctx.lineWidth = 12;
-        ctx.strokeRect(20, 20, width - 40, height - 40);
+        ctx.lineWidth = borderWidth;
+        ctx.strokeRect(
+            borderPadding,
+            borderPadding,
+            width - borderPadding * 2,
+            height - borderPadding * 2
+        );
+
+        const infoIX = effectiveBorderSpace;
+        const infoIY = (height - mapHeight) / 2;
+        const mapX = infoIX + imageWidth + gapWidth;
+        const mapY = infoIY;
+
+        try {
+            const infoImage = await loadImage(
+                "https://res.cloudinary.com/dmvdbpyqk/image/upload/v1744096384/style-removebg-preview_cuiwhb.png"
+            );
+
+            const infoImageAspectRatio = infoImage.width / infoImage.height;
+            let infoImageHeight = mapHeight;
+            let infoImageWidth = infoImageHeight * infoImageAspectRatio;
+
+            if (infoImageWidth > imageWidth) {
+                infoImageWidth = imageWidth * 0.9;
+                infoImageHeight = infoImageWidth / infoImageAspectRatio;
+            }
+
+            const centeredinfoIX = infoIX + (imageWidth - infoImageWidth) / 2;
+            const centeredinfoIY = infoIY + (mapHeight - infoImageHeight) / 2;
+
+            ctx.drawImage(
+                infoImage,
+                centeredinfoIX,
+                centeredinfoIY,
+                infoImageWidth,
+                infoImageHeight
+            );
+        } catch (e) {
+            console.error("Error loading infoImage image:", e);
+        }
 
         const getSeverityColor = (severity, opacity = 0.6) => {
             const colors = {
@@ -53,16 +102,14 @@ export default defineEventHandler(async (event) => {
         };
 
         try {
-            const googleMapsKey = process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-            const zoom = 20;
-            const mapX = width - mapWidth - 50;
-            const mapY = (height - mapHeight) / 2;
+            const googleMapsKey = config.public.googleMapsApiKey;
 
             if (googleMapsKey) {
                 const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${mapWidth}x${mapHeight}&key=${googleMapsKey}`;
                 const mapImage = await loadImage(mapUrl);
                 ctx.drawImage(mapImage, mapX, mapY, mapWidth, mapHeight);
 
+                // Map border
                 ctx.strokeStyle = "#e2e8f0";
                 ctx.lineWidth = 2;
                 ctx.strokeRect(mapX, mapY, mapWidth, mapHeight);
@@ -139,6 +186,7 @@ export default defineEventHandler(async (event) => {
                         }
                     });
 
+                    // Current location marker
                     ctx.beginPath();
                     ctx.arc(
                         mapX + mapWidth / 2,
@@ -153,6 +201,7 @@ export default defineEventHandler(async (event) => {
                     ctx.lineWidth = 3;
                     ctx.stroke();
                 } else {
+                    // Current location marker when no hotspots
                     ctx.beginPath();
                     ctx.arc(
                         mapX + mapWidth / 2,
@@ -169,83 +218,39 @@ export default defineEventHandler(async (event) => {
                 }
             } else {
                 ctx.fillStyle = "#f1f5f9";
-                ctx.fillRect(width - 650, (height - 400) / 2, 600, 400);
+                ctx.fillRect(mapX, mapY, mapWidth, mapHeight);
 
                 ctx.fillStyle = "#94a3b8";
                 ctx.font = "24px Arial, sans-serif";
                 ctx.textAlign = "center";
                 ctx.fillText(
                     "Map preview unavailable",
-                    width - 350,
-                    height / 2
+                    mapX + mapWidth / 2,
+                    mapY + mapHeight / 2
                 );
+
                 ctx.fillStyle = "#dc2626";
                 ctx.beginPath();
-                ctx.arc(width - 350, height / 2 - 50, 10, 0, Math.PI * 2);
+                ctx.arc(
+                    mapX + mapWidth / 2,
+                    mapY + mapHeight / 2 - 50,
+                    10,
+                    0,
+                    Math.PI * 2
+                );
                 ctx.fill();
             }
         } catch (mapError) {
             console.error("Error loading map image:", mapError);
         }
 
-        const headingY = height / 3 - 70;
-        ctx.font = "bold 48px Arial, sans-serif";
-        ctx.fillStyle = "#0f172a";
-        ctx.textAlign = "left";
-        ctx.fillText("Waste Hotspot Alert", 60, headingY);
-
-        // The severity badge and scale have been removed
-
-        const ctaY = headingY + 70; // Adjusted position after removing severity components
-        ctx.font = "22px Arial, sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillStyle = "#475569";
-        ctx.fillText("This location requires immediate attention", 60, ctaY);
-        ctx.fillText(
-            "from authorities. Help keep our environment clean.",
-            60,
-            ctaY + 30
-        );
-
-        const legendX = width - 220;
-        const legendY = (height - mapHeight) / 2 + 20;
-
-        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.fillRect(legendX, legendY, 170, 130);
-        ctx.strokeStyle = "#e2e8f0";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(legendX, legendY, 170, 130);
-
-        ctx.font = "bold 14px Arial, sans-serif";
-        ctx.fillStyle = "#475569";
-        ctx.textAlign = "left";
-        ctx.fillText("Waste Concentration", legendX + 10, legendY + 20);
-
-        const legendItems = [
-            { color: "#ff0000", label: "Critical (Level 5)" },
-            { color: "#ffa500", label: "High (Level 4)" },
-            { color: "#ffff00", label: "Medium (Level 3)" },
-            { color: "#90ee90", label: "Low (Level 2)" },
-            { color: "#00ff00", label: "Very Low (Level 1)" },
-        ];
-
-        legendItems.forEach((item, i) => {
-            ctx.beginPath();
-            ctx.arc(legendX + 20, legendY + 40 + i * 18, 6, 0, 2 * Math.PI);
-            ctx.fillStyle = item.color;
-            ctx.fill();
-
-            ctx.font = "12px Arial, sans-serif";
-            ctx.fillStyle = "#475569";
-            ctx.textAlign = "left";
-            ctx.fillText(item.label, legendX + 35, legendY + 44 + i * 18);
-        });
-
         const buffer = canvas.toBuffer("image/png");
 
         setHeaders(event, {
             "Content-Type": "image/png",
             "Cache-Control": "public, max-age=86400, s-maxage=86400",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET",
         });
 
         return buffer;

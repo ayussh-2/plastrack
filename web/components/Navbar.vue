@@ -13,7 +13,9 @@
                     name="lucide:recycle"
                     class="scale-150 text-waste2way-teal"
                 />
-                <span class="text-xl font-bold font-display">Plastrack</span>
+                <span class="text-xl font-bold font-display text-waste2way-teal"
+                    >Plastrack</span
+                >
             </NuxtLink>
 
             <!-- Desktop Menu -->

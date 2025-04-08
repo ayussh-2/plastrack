@@ -11,7 +11,7 @@
                             class="scale-150 text-waste2way-teal"
                         />
                         <span class="font-sans text-xl font-bold"
-                            >Waste2Way</span
+                            >Plastrack</span
                         >
                     </NuxtLink>
                 </div>
