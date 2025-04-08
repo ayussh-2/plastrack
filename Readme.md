@@ -43,7 +43,7 @@ Our platform serves various stakeholders including individuals, waste management
 -   **Authentication**: Firebase Auth
 -   **Storage**: Cloudinary
 -   **Maps**: Google Maps API
--   **Hosting**: Vercel
+-   **Hosting**: Google Cloud Run
 
 ### Mobile App
 
